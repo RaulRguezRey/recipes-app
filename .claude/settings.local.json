@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx expo install @react-native-async-storage/async-storage expo-image-picker)"
+    ]
+  }
+}

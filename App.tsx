@@ -2,28 +2,38 @@ import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import RecipesScreen from './screens/RecipesScreen';
+import SettingsScreen from './screens/SettingsScreen';
 
-type Screen = 'Recipes' | 'Planning' | 'Shopping List' | 'Nutrition';
+type Screen = 'Recipes' | 'Planning' | 'Shopping List' | 'Nutrition' | 'Settings';
 
 const TABS: { name: Screen; icon: string }[] = [
   { name: 'Recipes', icon: '🍽' },
   { name: 'Planning', icon: '📅' },
   { name: 'Shopping List', icon: '🛒' },
   { name: 'Nutrition', icon: '🥗' },
+  { name: 'Settings', icon: '⚙️' },
 ];
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('Recipes');
+
+  function renderScreen() {
+    if (currentScreen === 'Recipes') return <RecipesScreen />;
+    if (currentScreen === 'Settings') return <SettingsScreen />;
+    return (
+      <View style={styles.content}>
+        <Text style={styles.screenText}>{currentScreen}</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.root}>
         <StatusBar style="auto" />
 
-        {/* Contenido principal */}
-        <View style={styles.content}>
-          <Text style={styles.screenText}>{currentScreen}</Text>
-        </View>
+        {renderScreen()}
 
         {/* Tab Bar */}
         <View style={styles.tabBar}>
