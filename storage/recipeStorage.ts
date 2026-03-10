@@ -52,3 +52,22 @@ export async function addIngredient(ingredient: Ingredient): Promise<void> {
     await AsyncStorage.setItem(INGREDIENTS_KEY, JSON.stringify(ingredients));
   }
 }
+
+// ─── Origins ──────────────────────────────────────────────────────────────────
+
+const ORIGINS_KEY = '@origins';
+
+export async function getOrigins(): Promise<string[]> {
+  const json = await AsyncStorage.getItem(ORIGINS_KEY);
+  return json ? JSON.parse(json) : [];
+}
+
+export async function addOrigin(origin: string): Promise<void> {
+  const origins = await getOrigins();
+  const normalised = origin.trim();
+  const exists = origins.some((o) => o.toLowerCase() === normalised.toLowerCase());
+  if (!exists) {
+    origins.push(normalised);
+    await AsyncStorage.setItem(ORIGINS_KEY, JSON.stringify(origins));
+  }
+}

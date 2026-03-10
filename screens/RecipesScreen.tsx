@@ -1,5 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -8,13 +8,16 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  type ScrollView as ScrollViewType,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { addIngredient, addRecipe, deleteRecipe, getIngredients, getRecipes, updateRecipe } from '../storage/recipeStorage';
+import ActionSheet from '../components/ActionSheet';
+import SelectModal from '../components/SelectModal';
+import { addIngredient, addOrigin, addRecipe, deleteRecipe, getIngredients, getOrigins, getRecipes, updateRecipe } from '../storage/recipeStorage';
 import { Difficulty, Ingredient, MealType, Recipe, RecipeIngredient } from '../types/Recipe';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -25,6 +28,8 @@ function newId() {
 
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'snack', 'dinner'];
 const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard'];
+const UNITS = ['g', 'ud', 'ml', 'tsp', 'tbsp'];
+const PREDEFINED_ORIGINS = ['Italiana', 'Mexicana', 'Española', 'Asiática', 'Francesa', 'Americana', 'Árabe', 'India', 'Japonesa', 'Griega'];
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = {
   easy: '🟢 Easy',
@@ -125,9 +130,60 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
   );
   const [steps, setSteps] = useState<string[]>(recipe?.steps ?? ['']);
 
+  const [nameError, setNameError] = useState(false);
+  const scrollRef = useRef<ScrollViewType>(null);
+
   const [newIngName, setNewIngName] = useState('');
+  const [newIngId, setNewIngId] = useState('');
   const [newIngQty, setNewIngQty] = useState('');
-  const [newIngUnit, setNewIngUnit] = useState('');
+  const [newIngUnit, setNewIngUnit] = useState('g');
+
+  // Photo action sheet
+  const [showPhotoSheet, setShowPhotoSheet] = useState(false);
+
+  // Origin dropdown
+  const [allOrigins, setAllOrigins] = useState<string[]>([]);
+  const [showOriginModal, setShowOriginModal] = useState(false);
+  const [showCustomOriginInput, setShowCustomOriginInput] = useState(false);
+  const [customOriginText, setCustomOriginText] = useState('');
+
+  // Ingredient autocomplete
+  const [localIngredients, setLocalIngredients] = useState<Ingredient[]>(allIngredients);
+
+  const suggestedIng = newIngName.trim().length > 0
+    ? localIngredients.find((i) =>
+        i.name.toLowerCase().startsWith(newIngName.trim().toLowerCase()) &&
+        i.name.toLowerCase() !== newIngName.trim().toLowerCase()
+      )
+    : undefined;
+
+  useEffect(() => { getOrigins().then(setAllOrigins); }, []);
+
+  const mergedOrigins = [
+    ...PREDEFINED_ORIGINS,
+    ...allOrigins.filter((o) => !PREDEFINED_ORIGINS.map((p) => p.toLowerCase()).includes(o.toLowerCase())),
+  ];
+
+  async function handleOriginSelect(value: string) {
+    if (value === '__custom__') {
+      setShowOriginModal(false);
+      setShowCustomOriginInput(true);
+    } else {
+      setOrigin(value);
+      setShowOriginModal(false);
+    }
+  }
+
+  async function handleCustomOriginConfirm() {
+    const trimmed = customOriginText.trim();
+    if (!trimmed) return;
+    await addOrigin(trimmed);
+    const updated = await getOrigins();
+    setAllOrigins(updated);
+    setOrigin(trimmed);
+    setCustomOriginText('');
+    setShowCustomOriginInput(false);
+  }
 
   async function pickImage(source: 'gallery' | 'camera') {
     let result;
@@ -144,20 +200,28 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
   }
 
   function addIngredientRow() {
-    if (!newIngName.trim()) return;
-    const existingIng = allIngredients.find(
-      (i) => i.name.toLowerCase() === newIngName.trim().toLowerCase()
-    );
-    const ingredientId = existingIng?.id ?? newId();
-    if (!existingIng) {
-      addIngredient({ id: ingredientId, name: newIngName.trim(), defaultUnit: newIngUnit.trim() || 'unit' });
+    const trimmed = newIngName.trim();
+    if (!trimmed) return;
+    let ingredientId = newIngId;
+    if (!ingredientId) {
+      const exact = localIngredients.find(
+        (i) => i.name.toLowerCase() === trimmed.toLowerCase()
+      );
+      if (exact) {
+        ingredientId = exact.id;
+      } else {
+        ingredientId = newId();
+        const ing: Ingredient = { id: ingredientId, name: trimmed, defaultUnit: newIngUnit };
+        addIngredient(ing);
+        setLocalIngredients((prev) => [...prev, ing]);
+      }
     }
     setIngredients([...ingredients, {
       ingredientId,
       quantity: parseFloat(newIngQty) || 1,
-      unit: newIngUnit.trim() || 'unit',
+      unit: newIngUnit,
     }]);
-    setNewIngName(''); setNewIngQty(''); setNewIngUnit('');
+    setNewIngId(''); setNewIngName(''); setNewIngQty(''); setNewIngUnit('g');
   }
 
   function removeIngredient(index: number) {
@@ -174,7 +238,8 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
   function removeStep(index: number) { setSteps(steps.filter((_, i) => i !== index)); }
 
   function handleSave() {
-    if (!name.trim()) { Alert.alert('Required', 'Recipe name is required.'); return; }
+    if (!name.trim()) { setNameError(true); scrollRef.current?.scrollTo({ y: 0, animated: true }); return; }
+    setNameError(false);
     const now = new Date().toISOString();
     const saved: Recipe = {
       id: recipe?.id ?? newId(),
@@ -208,7 +273,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
   }
 
   const ingName = (ri: RecipeIngredient) =>
-    allIngredients.find((i) => i.id === ri.ingredientId)?.name ?? 'Unknown';
+    localIngredients.find((i) => i.id === ri.ingredientId)?.name ?? 'Unknown';
 
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -223,26 +288,61 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.flex} contentContainerStyle={styles.formContent}>
+      <ScrollView ref={scrollRef} style={styles.flex} contentContainerStyle={styles.formContent}>
 
         {/* Photo */}
         <Text style={styles.sectionLabel}>Photo</Text>
-        <View style={styles.photoRow}>
-          <TouchableOpacity style={styles.photoBtn} onPress={() => pickImage('gallery')}>
-            <Text style={styles.photoBtnText}>📷 Gallery</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.photoBtn} onPress={() => pickImage('camera')}>
-            <Text style={styles.photoBtnText}>📸 Camera</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.photoBtn} onPress={() => setShowPhotoSheet(true)}>
+          <Text style={styles.photoBtnText}>📷 Add photo</Text>
+        </TouchableOpacity>
         {photoUri && <Image source={{ uri: photoUri }} style={styles.photoPreview} />}
+        <ActionSheet
+          visible={showPhotoSheet}
+          onClose={() => setShowPhotoSheet(false)}
+          actions={[
+            { label: '📷 Choose from gallery', onPress: () => { setShowPhotoSheet(false); pickImage('gallery'); } },
+            { label: '📸 Take a photo', onPress: () => { setShowPhotoSheet(false); pickImage('camera'); } },
+          ]}
+        />
 
         {/* Basic info */}
         <Text style={styles.sectionLabel}>Name *</Text>
-        <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Recipe name" />
+        <TextInput
+          style={[styles.input, nameError && styles.inputError]}
+          value={name}
+          onChangeText={(v) => { setName(v); if (v.trim()) setNameError(false); }}
+          placeholder="Recipe name"
+        />
+        {nameError && <Text style={styles.errorText}>Name is required</Text>}
 
         <Text style={styles.sectionLabel}>Origin</Text>
-        <TextInput style={styles.input} value={origin} onChangeText={setOrigin} placeholder="e.g. Italian, Mexican..." />
+        <TouchableOpacity style={[styles.input, styles.selectField]} onPress={() => setShowOriginModal(true)}>
+          <Text style={{ color: origin ? '#000' : '#aaa', fontSize: 15 }}>{origin || 'Select origin...'}</Text>
+        </TouchableOpacity>
+        {showCustomOriginInput && (
+          <View style={styles.ingAddRow}>
+            <TextInput
+              style={[styles.input, { flex: 1, marginBottom: 0 }]}
+              value={customOriginText}
+              onChangeText={setCustomOriginText}
+              placeholder="Custom origin name"
+              autoFocus
+            />
+            <TouchableOpacity style={styles.ingAddBtn} onPress={handleCustomOriginConfirm}>
+              <Text style={styles.ingAddBtnText}>✓</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        <SelectModal
+          visible={showOriginModal}
+          title="Select origin"
+          options={mergedOrigins.map((o) => ({ label: o, value: o }))}
+          selectedValue={origin}
+          onSelect={handleOriginSelect}
+          onClose={() => setShowOriginModal(false)}
+          addNewLabel="+ Otro (personalizado)"
+          onAddNew={() => handleOriginSelect('__custom__')}
+        />
 
         <Text style={styles.sectionLabel}>Meal type</Text>
         <View style={styles.chipRow}>
@@ -317,12 +417,42 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
           </View>
         ))}
         <View style={styles.ingAddRow}>
-          <TextInput style={[styles.input, styles.ingInputName]} value={newIngName} onChangeText={setNewIngName} placeholder="Ingredient" />
-          <TextInput style={[styles.input, styles.ingInputQty]} value={newIngQty} onChangeText={setNewIngQty} placeholder="Qty" keyboardType="decimal-pad" />
-          <TextInput style={[styles.input, styles.ingInputUnit]} value={newIngUnit} onChangeText={setNewIngUnit} placeholder="Unit" />
+          <View style={{ flex: 3 }}>
+            <TextInput
+              style={[styles.input, { marginBottom: 0 }]}
+              value={newIngName}
+              onChangeText={(v) => { setNewIngName(v); setNewIngId(''); }}
+              placeholder="Ingredient..."
+            />
+            {suggestedIng && (
+              <TouchableOpacity
+                style={styles.suggestion}
+                onPress={() => { setNewIngName(suggestedIng.name); setNewIngId(suggestedIng.id); }}
+              >
+                <Text style={styles.suggestionText}>{suggestedIng.name}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <TextInput
+            style={[styles.input, styles.ingInputQty]}
+            value={newIngQty}
+            onChangeText={setNewIngQty}
+            placeholder="Qty"
+            keyboardType="decimal-pad"
+            onFocus={() => {
+              if (suggestedIng) { setNewIngName(suggestedIng.name); setNewIngId(suggestedIng.id); }
+            }}
+          />
           <TouchableOpacity style={styles.ingAddBtn} onPress={addIngredientRow}>
             <Text style={styles.ingAddBtnText}>+</Text>
           </TouchableOpacity>
+        </View>
+        <View style={styles.chipRow}>
+          {UNITS.map((u) => (
+            <Pressable key={u} style={[styles.chip, newIngUnit === u && styles.chipActive]} onPress={() => setNewIngUnit(u)}>
+              <Text style={[styles.chipText, newIngUnit === u && styles.chipTextActive]}>{u}</Text>
+            </Pressable>
+          ))}
         </View>
 
         {/* Steps */}
@@ -446,7 +576,7 @@ const styles = StyleSheet.create({
   listContent: { paddingHorizontal: 16, paddingBottom: 16 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 60 },
   emptyText: { color: '#aaa', fontSize: 16 },
-  card: { backgroundColor: '#fff', borderRadius: 12, marginBottom: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#eee', elevation: 2, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
+  card: { backgroundColor: '#fff', borderRadius: 12, marginBottom: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#eee', elevation: 2, boxShadow: '0px 2px 4px rgba(0,0,0,0.06)' } as any,
   cardImage: { width: '100%', height: 140, resizeMode: 'cover' },
   cardBody: { padding: 12 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
@@ -472,6 +602,11 @@ const styles = StyleSheet.create({
   sectionLabel: { fontSize: 13, fontWeight: '600', color: '#555', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 20, marginBottom: 8 },
   inputLabel: { fontSize: 12, color: '#888', marginBottom: 4 },
   input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 10, fontSize: 15, backgroundColor: '#fafafa', marginBottom: 8 },
+  selectField: { justifyContent: 'center' },
+  inputError: { borderColor: '#e53935' },
+  errorText: { color: '#e53935', fontSize: 12, marginTop: -4, marginBottom: 8 },
+  suggestion: { backgroundColor: '#f0e8ff', borderRadius: 6, paddingHorizontal: 10, paddingVertical: 6, marginTop: 2 },
+  suggestionText: { color: '#6200ee', fontSize: 13 },
 
   // Chips
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
@@ -487,7 +622,7 @@ const styles = StyleSheet.create({
   // Ingredients
   ingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
   ingText: { fontSize: 14, color: '#333', flex: 1 },
-  ingAddRow: { flexDirection: 'row', gap: 6, alignItems: 'center', marginTop: 8 },
+  ingAddRow: { flexDirection: 'row', gap: 10, alignItems: 'center', marginTop: 8, marginBottom: 8 },
   ingInputName: { flex: 3, marginBottom: 0 },
   ingInputQty: { flex: 1.5, marginBottom: 0 },
   ingInputUnit: { flex: 1.5, marginBottom: 0 },
