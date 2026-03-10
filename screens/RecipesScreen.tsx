@@ -26,6 +26,87 @@ function newId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
+function parseTxtRecipe(content: string, existingIngredients: Ingredient[]): { recipe: Recipe; newIngredients: Ingredient[] } {
+  const lines = content.split('\n').map((l) => l.trim());
+  const fields: Record<string, string> = {};
+  const ingredientLines: string[] = [];
+  const stepLines: string[] = [];
+  let section: 'fields' | 'ingredients' | 'steps' = 'fields';
+
+  for (const line of lines) {
+    if (line.startsWith('ingredientes:')) { section = 'ingredients'; continue; }
+    if (line.startsWith('pasos:')) { section = 'steps'; continue; }
+    if (section === 'fields' && line.includes(':')) {
+      const idx = line.indexOf(':');
+      fields[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+    } else if (section === 'ingredients' && line.startsWith('-')) {
+      ingredientLines.push(line.slice(1).trim());
+    } else if (section === 'steps' && /^\d+\)/.test(line)) {
+      stepLines.push(line.replace(/^\d+\)\s*/, '').trim());
+    }
+  }
+
+  const mealTypeMap: Record<string, MealType> = {
+    almuerzo: 'lunch', comida: 'lunch', desayuno: 'breakfast',
+    merienda: 'snack', cena: 'dinner',
+  };
+  const difficultyMap: Record<string, Difficulty> = {
+    facil: 'easy', fácil: 'easy', media: 'medium', medio: 'medium', dificil: 'hard', difícil: 'hard',
+  };
+
+  const prepTime = parseInt(fields['tiempo_preparacion_min']) || 0;
+  const totalTime = parseInt(fields['tiempo_total_min']) || 0;
+
+  const newIngredients: Ingredient[] = [];
+  const recipeIngredients: RecipeIngredient[] = [];
+
+  for (const line of ingredientLines) {
+    const parts = line.split('|').map((p) => p.trim());
+    const ingName = parts[0];
+    if (!ingName) continue;
+    const qty = parseFloat(parts[1]) || 1;
+    const unit = parts[2] || 'ud';
+    const existing = [...existingIngredients, ...newIngredients].find(
+      (i) => i.name.toLowerCase() === ingName.toLowerCase()
+    );
+    let ingredientId: string;
+    if (existing) {
+      ingredientId = existing.id;
+    } else {
+      ingredientId = newId();
+      newIngredients.push({ id: ingredientId, name: ingName, defaultUnit: unit });
+    }
+    recipeIngredients.push({ ingredientId, quantity: qty, unit });
+  }
+
+  const capitalize = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+  const now = new Date().toISOString();
+
+  const recipe: Recipe = {
+    id: newId(),
+    name: fields['titulo'] || '',
+    mealType: mealTypeMap[fields['tipo']?.toLowerCase()] ?? 'lunch',
+    origin: capitalize(fields['origen'] || ''),
+    difficulty: difficultyMap[fields['dificultad']?.toLowerCase()] ?? 'easy',
+    prepTime,
+    cookTime: Math.max(0, totalTime - prepTime),
+    servings: parseInt(fields['raciones']) || 1,
+    ingredients: recipeIngredients,
+    steps: stepLines,
+    caloriesPerServing: parseInt(fields['calorias_por_racion']) || 0,
+    proteinG: parseFloat(fields['proteinas_g']) || 0,
+    fatG: parseFloat(fields['grasas_g']) || 0,
+    carbsG: parseFloat(fields['carbohidratos_g']) || 0,
+    costEur: parseFloat(fields['coste_aproximado_por_racion']) || 0,
+    photoUri: fields['foto'] || null,
+    isFavorite: fields['favorito'] === '1',
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  return { recipe, newIngredients };
+}
+
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'snack', 'dinner'];
 const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard'];
 const UNITS = ['g', 'ud', 'ml', 'tsp', 'tbsp'];
@@ -51,13 +132,17 @@ type ListViewProps = {
   onAdd: () => void;
   onSelect: (recipe: Recipe) => void;
   onToggleFavorite: (recipe: Recipe) => void;
+  onImport: () => void;
 };
 
-function ListView({ recipes, onAdd, onSelect, onToggleFavorite }: ListViewProps) {
+function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: ListViewProps) {
   return (
     <View style={styles.flex}>
       <TouchableOpacity style={styles.addButton} onPress={onAdd}>
         <Text style={styles.addButtonText}>+ Add Recipe</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.importButton} onPress={onImport}>
+        <Text style={styles.importButtonText}>📂 Import from .txt</Text>
       </TouchableOpacity>
 
       {recipes.length === 0 ? (
@@ -500,6 +585,7 @@ export default function RecipesScreen() {
   const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
   const [view, setView] = useState<'list' | 'form'>('list');
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const loadData = useCallback(async () => {
     setRecipes(await getRecipes());
@@ -509,7 +595,8 @@ export default function RecipesScreen() {
   useEffect(() => { loadData(); }, [loadData]);
 
   async function handleSave(recipe: Recipe) {
-    if (editingRecipe) {
+    const existsInStorage = recipes.some((r) => r.id === editingRecipe?.id);
+    if (editingRecipe && existsInStorage) {
       await updateRecipe(recipe);
     } else {
       await addRecipe(recipe);
@@ -529,6 +616,21 @@ export default function RecipesScreen() {
   async function handleToggleFavorite(recipe: Recipe) {
     await updateRecipe({ ...recipe, isFavorite: !recipe.isFavorite });
     await loadData();
+  }
+
+  async function handleFileImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const content = await file.text();
+    const currentIngredients = await getIngredients();
+    const { recipe, newIngredients } = parseTxtRecipe(content, currentIngredients);
+    for (const ing of newIngredients) {
+      await addIngredient(ing);
+    }
+    await loadData();
+    setEditingRecipe(recipe);
+    setView('form');
+    e.target.value = '';
   }
 
   function openAdd() {
@@ -554,12 +656,23 @@ export default function RecipesScreen() {
   }
 
   return (
-    <ListView
-      recipes={recipes}
-      onAdd={openAdd}
-      onSelect={openEdit}
-      onToggleFavorite={handleToggleFavorite}
-    />
+    <>
+      {/* Hidden file input for web .txt import */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".txt"
+        style={{ display: 'none' } as any}
+        onChange={handleFileImport as any}
+      />
+      <ListView
+        recipes={recipes}
+        onAdd={openAdd}
+        onSelect={openEdit}
+        onToggleFavorite={handleToggleFavorite}
+        onImport={() => fileInputRef.current?.click()}
+      />
+    </>
   );
 }
 
@@ -571,8 +684,10 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
 
   // List
-  addButton: { margin: 16, backgroundColor: PURPLE, borderRadius: 10, padding: 14, alignItems: 'center' },
+  addButton: { margin: 16, marginBottom: 8, backgroundColor: PURPLE, borderRadius: 10, padding: 14, alignItems: 'center' },
   addButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: PURPLE, borderRadius: 10, padding: 14, alignItems: 'center' },
+  importButtonText: { color: PURPLE, fontSize: 15, fontWeight: '600' },
   listContent: { paddingHorizontal: 16, paddingBottom: 16 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 60 },
   emptyText: { color: '#aaa', fontSize: 16 },
