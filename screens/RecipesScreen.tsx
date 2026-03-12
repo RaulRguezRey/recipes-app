@@ -180,6 +180,8 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
   const [searchQuery, setSearchQuery] = useState('');
   const [activeMeal, setActiveMeal] = useState<MealType | null>(null);
   const [activeOrigin, setActiveOrigin] = useState<string | null>(null);
+  const [showMealModal, setShowMealModal] = useState(false);
+  const [showOriginModal, setShowOriginModal] = useState(false);
 
   const origins = [...new Set(recipes.map((r) => r.origin).filter(Boolean))].sort() as string[];
 
@@ -189,6 +191,15 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
     if (activeOrigin && r.origin !== activeOrigin) return false;
     return true;
   });
+
+  const mealOptions = [
+    { label: 'Todos', value: '' },
+    ...MEAL_TYPES.map((t) => ({ label: MEAL_LABEL[t], value: t })),
+  ];
+  const originOptions = [
+    { label: 'Todos', value: '' },
+    ...origins.map((o) => ({ label: o, value: o })),
+  ];
 
   return (
     <View style={styles.flex}>
@@ -203,37 +214,42 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
         />
       </View>
 
-      {/* Meal type filters */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-        {MEAL_TYPES.map((t) => (
-          <TouchableOpacity
-            key={t}
-            style={[styles.filterChip, activeMeal === t && styles.filterChipActive]}
-            onPress={() => setActiveMeal(activeMeal === t ? null : t)}
-          >
-            <Text style={[styles.filterChipText, activeMeal === t && styles.filterChipTextActive]}>
-              {MEAL_LABEL[t]}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {/* Filter dropdowns */}
+      <View style={styles.filterBar}>
+        <TouchableOpacity
+          style={[styles.filterDropdown, activeMeal && styles.filterDropdownActive]}
+          onPress={() => setShowMealModal(true)}
+        >
+          <Text style={[styles.filterDropdownText, activeMeal && styles.filterDropdownTextActive]} numberOfLines={1}>
+            {activeMeal ? MEAL_LABEL[activeMeal] : 'Tipo de comida ▾'}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.filterDropdown, activeOrigin && styles.filterDropdownActive]}
+          onPress={() => setShowOriginModal(true)}
+        >
+          <Text style={[styles.filterDropdownText, activeOrigin && styles.filterDropdownTextActive]} numberOfLines={1}>
+            {activeOrigin ?? 'Origen ▾'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* Origin filters */}
-      {origins.length > 0 && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-          {origins.map((o) => (
-            <TouchableOpacity
-              key={o}
-              style={[styles.filterChip, activeOrigin === o && styles.filterChipActive]}
-              onPress={() => setActiveOrigin(activeOrigin === o ? null : o)}
-            >
-              <Text style={[styles.filterChipText, activeOrigin === o && styles.filterChipTextActive]}>
-                {o}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      )}
+      <SelectModal
+        visible={showMealModal}
+        title="Tipo de comida"
+        options={mealOptions}
+        selectedValue={activeMeal ?? ''}
+        onSelect={(v) => { setActiveMeal(v === '' ? null : v as MealType); setShowMealModal(false); }}
+        onClose={() => setShowMealModal(false)}
+      />
+      <SelectModal
+        visible={showOriginModal}
+        title="Origen"
+        options={originOptions}
+        selectedValue={activeOrigin ?? ''}
+        onSelect={(v) => { setActiveOrigin(v === '' ? null : v); setShowOriginModal(false); }}
+        onClose={() => setShowOriginModal(false)}
+      />
 
       {Platform.OS === 'web' && (
         <TouchableOpacity style={styles.importButton} onPress={onImport}>
@@ -795,11 +811,11 @@ const styles = StyleSheet.create({
   searchInput: { backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 15, color: C.textPrimary },
   importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: C.primary, borderRadius: 10, padding: 14, alignItems: 'center' },
   importButtonText: { color: C.primary, fontSize: 15, fontWeight: '600' },
-  filterRow: { paddingHorizontal: 16, paddingBottom: 8, gap: 8 },
-  filterChip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: C.border, backgroundColor: C.bgSurface },
-  filterChipActive: { backgroundColor: C.primary, borderColor: C.primary },
-  filterChipText: { fontSize: 13, color: C.textSecondary },
-  filterChipTextActive: { color: '#fff', fontWeight: '600' },
+  filterBar: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 10, gap: 10 },
+  filterDropdown: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: C.bgSurface },
+  filterDropdownActive: { borderColor: C.primary, backgroundColor: C.primary },
+  filterDropdownText: { fontSize: 13, color: C.textSecondary },
+  filterDropdownTextActive: { color: '#fff', fontWeight: '600' },
   listContent: { paddingHorizontal: 16, paddingBottom: 100 },
   fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center', elevation: 6, boxShadow: '0px 4px 8px rgba(0,0,0,0.2)' } as any,
   fabText: { color: '#fff', fontSize: 30, lineHeight: 34, fontWeight: '300' },
