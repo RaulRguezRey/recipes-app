@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx expo install @react-native-async-storage/async-storage expo-image-picker)"
+      "Bash(npx expo install @react-native-async-storage/async-storage expo-image-picker)",
+      "Bash(python scripts/export_seed.py)",
+      "Bash(npx expo:*)",
+      "Bash(eas --version)"
     ]
   }
 }

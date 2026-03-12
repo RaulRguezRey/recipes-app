@@ -25,6 +25,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5f07217e-2703-435b-9124-646e8b218cac"
+      }
+    },
+    "owner": "raulrguezrey8",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5f07217e-2703-435b-9124-646e8b218cac"
     }
   }
 }

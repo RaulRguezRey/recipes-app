@@ -24,3 +24,14 @@ export async function loadSeedIfNeeded(): Promise<void> {
 
   await AsyncStorage.setItem(SEED_FLAG, '1');
 }
+
+/**
+ * Clears the seed flag and reloads seed data, overwriting existing recipes/ingredients.
+ * Use for development / data reset only.
+ */
+export async function resetAndReloadSeed(): Promise<void> {
+  await AsyncStorage.removeItem(SEED_FLAG);
+  await AsyncStorage.setItem('@recipes', JSON.stringify(seedData.recipes));
+  await AsyncStorage.setItem('@ingredients', JSON.stringify(seedData.ingredients));
+  await AsyncStorage.setItem(SEED_FLAG, '1');
+}

@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '../lib/supabase';
 import {
   Ingredient,
   MealPlanEntry,
@@ -6,8 +6,6 @@ import {
   ShoppingList,
   ShoppingListItem,
 } from '../types/Recipe';
-
-const LISTS_KEY = '@shoppingLists';
 
 function newId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -44,7 +42,6 @@ export function generateShoppingList(
   const ingredientMap: Record<string, Ingredient> = {};
   for (const i of allIngredients) ingredientMap[i.id] = i;
 
-  // Accumulator: key = `${ingredientId}|${unit}`
   type Acc = {
     ingredientId: string;
     name: string;
@@ -101,7 +98,6 @@ export function generateShoppingList(
     isChecked: false,
   }));
 
-  // Sort: online first, then by name
   items.sort((a, b) => {
     if (a.isOnline !== b.isOnline) return a.isOnline ? -1 : 1;
     return a.name.localeCompare(b.name);
@@ -117,32 +113,35 @@ export function generateShoppingList(
 
 // ─── Persistence ──────────────────────────────────────────────────────────────
 
-async function getAllLists(): Promise<ShoppingList[]> {
-  const json = await AsyncStorage.getItem(LISTS_KEY);
-  return json ? JSON.parse(json) : [];
-}
-
-async function saveAllLists(lists: ShoppingList[]): Promise<void> {
-  await AsyncStorage.setItem(LISTS_KEY, JSON.stringify(lists));
+function rowToList(row: any): ShoppingList {
+  return {
+    id: row.id,
+    mealPlanId: row.meal_plan_id,
+    createdAt: row.created_at,
+    items: row.items ?? [],
+  };
 }
 
 export async function getShoppingListForPlan(planId: string): Promise<ShoppingList | null> {
-  const lists = await getAllLists();
-  // Return the most recent list for this plan
-  const planLists = lists.filter((l) => l.mealPlanId === planId);
-  if (planLists.length === 0) return null;
-  return planLists.sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  const { data, error } = await supabase
+    .from('shopping_lists')
+    .select('*')
+    .eq('meal_plan_id', planId)
+    .order('created_at', { ascending: false })
+    .limit(1);
+  if (error) throw error;
+  if (!data || data.length === 0) return null;
+  return rowToList(data[0]);
 }
 
 export async function saveShoppingList(list: ShoppingList): Promise<void> {
-  const lists = await getAllLists();
-  const index = lists.findIndex((l) => l.id === list.id);
-  if (index !== -1) {
-    lists[index] = list;
-  } else {
-    lists.push(list);
-  }
-  await saveAllLists(lists);
+  const { error } = await supabase.from('shopping_lists').upsert({
+    id: list.id,
+    meal_plan_id: list.mealPlanId,
+    created_at: list.createdAt,
+    items: list.items,
+  });
+  if (error) throw error;
 }
 
 export async function updateShoppingListItem(
@@ -150,11 +149,20 @@ export async function updateShoppingListItem(
   itemId: string,
   changes: Partial<ShoppingListItem>
 ): Promise<void> {
-  const lists = await getAllLists();
-  const listIndex = lists.findIndex((l) => l.id === listId);
-  if (listIndex === -1) return;
-  const itemIndex = lists[listIndex].items.findIndex((i) => i.id === itemId);
-  if (itemIndex === -1) return;
-  lists[listIndex].items[itemIndex] = { ...lists[listIndex].items[itemIndex], ...changes };
-  await saveAllLists(lists);
+  const { data, error } = await supabase
+    .from('shopping_lists')
+    .select('items')
+    .eq('id', listId)
+    .single();
+  if (error || !data) return;
+
+  const items = (data.items as ShoppingListItem[]).map((item) =>
+    item.id === itemId ? { ...item, ...changes } : item
+  );
+
+  const { error: updateError } = await supabase
+    .from('shopping_lists')
+    .update({ items })
+    .eq('id', listId);
+  if (updateError) throw updateError;
 }

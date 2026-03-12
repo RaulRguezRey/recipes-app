@@ -1,79 +1,94 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '../lib/supabase';
 import { MealPlan, MealPlanEntry } from '../types/Recipe';
 
-const PLANS_KEY = '@mealPlans';
-const ENTRIES_KEY = '@mealPlanEntries';
+// ── Mappers ──────────────────────────────────────────────────────────────────
 
-// ─── MealPlans ────────────────────────────────────────────────────────────────
-
-export async function getMealPlans(): Promise<MealPlan[]> {
-  const json = await AsyncStorage.getItem(PLANS_KEY);
-  return json ? JSON.parse(json) : [];
+function rowToPlan(row: any): MealPlan {
+  return {
+    id: row.id,
+    title: row.title,
+    weekStart: row.week_start,
+    createdAt: row.created_at,
+  };
 }
 
-async function savePlans(plans: MealPlan[]): Promise<void> {
-  await AsyncStorage.setItem(PLANS_KEY, JSON.stringify(plans));
+function rowToEntry(row: any): MealPlanEntry {
+  return {
+    id: row.id,
+    mealPlanId: row.meal_plan_id,
+    dayOfWeek: row.day_of_week,
+    mealType: row.meal_type,
+    recipeId: row.recipe_id,
+    servings: row.servings,
+  };
+}
+
+// ── MealPlans ─────────────────────────────────────────────────────────────────
+
+export async function getMealPlans(): Promise<MealPlan[]> {
+  const { data, error } = await supabase
+    .from('meal_plans')
+    .select('*')
+    .order('week_start', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(rowToPlan);
 }
 
 export async function saveMealPlan(plan: MealPlan): Promise<void> {
-  const plans = await getMealPlans();
-  const index = plans.findIndex((p) => p.id === plan.id);
-  if (index !== -1) {
-    plans[index] = plan;
-  } else {
-    plans.push(plan);
-  }
-  await savePlans(plans);
+  const { error } = await supabase.from('meal_plans').upsert({
+    id: plan.id,
+    title: plan.title,
+    week_start: plan.weekStart,
+    created_at: plan.createdAt,
+  });
+  if (error) throw error;
 }
 
 export async function deleteMealPlan(id: string): Promise<void> {
-  const plans = await getMealPlans();
-  await savePlans(plans.filter((p) => p.id !== id));
-  // Also delete all entries for this plan
-  const entries = await getAllEntries();
-  await saveAllEntries(entries.filter((e) => e.mealPlanId !== id));
+  // ON DELETE CASCADE removes entries and shopping lists automatically
+  const { error } = await supabase.from('meal_plans').delete().eq('id', id);
+  if (error) throw error;
 }
 
-// ─── MealPlanEntries ──────────────────────────────────────────────────────────
-
-async function getAllEntries(): Promise<MealPlanEntry[]> {
-  const json = await AsyncStorage.getItem(ENTRIES_KEY);
-  return json ? JSON.parse(json) : [];
-}
-
-async function saveAllEntries(entries: MealPlanEntry[]): Promise<void> {
-  await AsyncStorage.setItem(ENTRIES_KEY, JSON.stringify(entries));
-}
+// ── MealPlanEntries ───────────────────────────────────────────────────────────
 
 export async function getEntriesForPlan(planId: string): Promise<MealPlanEntry[]> {
-  const entries = await getAllEntries();
-  return entries.filter((e) => e.mealPlanId === planId);
+  const { data, error } = await supabase
+    .from('meal_plan_entries')
+    .select('*')
+    .eq('meal_plan_id', planId);
+  if (error) throw error;
+  return (data ?? []).map(rowToEntry);
 }
 
 export async function saveEntry(entry: MealPlanEntry): Promise<void> {
-  const entries = await getAllEntries();
-  const index = entries.findIndex((e) => e.id === entry.id);
-  if (index !== -1) {
-    entries[index] = entry;
-  } else {
-    entries.push(entry);
-  }
-  await saveAllEntries(entries);
+  const { error } = await supabase.from('meal_plan_entries').upsert({
+    id: entry.id,
+    meal_plan_id: entry.mealPlanId,
+    day_of_week: entry.dayOfWeek,
+    meal_type: entry.mealType,
+    recipe_id: entry.recipeId,
+    servings: entry.servings,
+  });
+  if (error) throw error;
 }
 
 export async function deleteEntry(id: string): Promise<void> {
-  const entries = await getAllEntries();
-  await saveAllEntries(entries.filter((e) => e.id !== id));
+  const { error } = await supabase.from('meal_plan_entries').delete().eq('id', id);
+  if (error) throw error;
 }
 
-// ─── History helpers ──────────────────────────────────────────────────────────
+// ── History ───────────────────────────────────────────────────────────────────
 
 /**
  * Returns a map of recipeId → ISO weekStart string of the last plan it was used in.
  */
 export async function getRecipeLastUsedMap(): Promise<Record<string, string>> {
-  const plans = await getMealPlans();
-  const entries = await getAllEntries();
+  const [plans, { data: entriesData, error }] = await Promise.all([
+    getMealPlans(),
+    supabase.from('meal_plan_entries').select('meal_plan_id, recipe_id'),
+  ]);
+  if (error) throw error;
 
   const planWeekMap: Record<string, string> = {};
   for (const p of plans) {
@@ -81,12 +96,12 @@ export async function getRecipeLastUsedMap(): Promise<Record<string, string>> {
   }
 
   const result: Record<string, string> = {};
-  for (const entry of entries) {
-    const weekStart = planWeekMap[entry.mealPlanId];
+  for (const entry of (entriesData ?? [])) {
+    const weekStart = planWeekMap[entry.meal_plan_id];
     if (!weekStart) continue;
-    const prev = result[entry.recipeId];
+    const prev = result[entry.recipe_id];
     if (!prev || weekStart > prev) {
-      result[entry.recipeId] = weekStart;
+      result[entry.recipe_id] = weekStart;
     }
   }
   return result;

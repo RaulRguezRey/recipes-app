@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { resetAndReloadSeed } from '../storage/seedLoader';
 
 type SettingRowProps = {
   label: string;
@@ -37,6 +38,24 @@ type Props = {
 };
 
 export default function SettingsScreen({ onOpenIngredients }: Props) {
+  function handleReloadSeed() {
+    Alert.alert(
+      'Reload seed data',
+      'This will overwrite all recipes and ingredients with the bundled seed data. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reload',
+          style: 'destructive',
+          onPress: async () => {
+            await resetAndReloadSeed();
+            Alert.alert('Done', 'Seed data reloaded. Restart the app to see changes.');
+          },
+        },
+      ]
+    );
+  }
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
 
@@ -68,6 +87,7 @@ export default function SettingsScreen({ onOpenIngredients }: Props) {
       <Section title="Data">
         <SettingRow label="Export data" />
         <SettingRow label="Import recipes" />
+        <SettingRow label="Reload seed data" onPress={handleReloadSeed} />
         <SettingRow label="Reset / Clear all data" />
       </Section>
 

@@ -1,6 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
-import { loadSeedIfNeeded } from './storage/seedLoader';
+import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import RecipesScreen from './screens/RecipesScreen';
@@ -24,8 +23,6 @@ const TABS: { name: Tab; icon: string }[] = [
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('Recipes');
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
-
-  useEffect(() => { loadSeedIfNeeded(); }, []);
 
   function handleGenerateList(planId: string) {
     setActivePlanId(planId);
