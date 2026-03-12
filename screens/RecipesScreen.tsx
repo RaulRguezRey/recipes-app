@@ -178,10 +178,17 @@ type ListViewProps = {
 
 function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: ListViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeMeal, setActiveMeal] = useState<MealType | null>(null);
+  const [activeOrigin, setActiveOrigin] = useState<string | null>(null);
 
-  const filtered = searchQuery.trim()
-    ? recipes.filter((r) => r.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : recipes;
+  const origins = [...new Set(recipes.map((r) => r.origin).filter(Boolean))].sort() as string[];
+
+  const filtered = recipes.filter((r) => {
+    if (searchQuery.trim() && !r.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (activeMeal && r.mealType !== activeMeal) return false;
+    if (activeOrigin && r.origin !== activeOrigin) return false;
+    return true;
+  });
 
   return (
     <View style={styles.flex}>
@@ -195,6 +202,39 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
           clearButtonMode="while-editing"
         />
       </View>
+
+      {/* Meal type filters */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
+        {MEAL_TYPES.map((t) => (
+          <TouchableOpacity
+            key={t}
+            style={[styles.filterChip, activeMeal === t && styles.filterChipActive]}
+            onPress={() => setActiveMeal(activeMeal === t ? null : t)}
+          >
+            <Text style={[styles.filterChipText, activeMeal === t && styles.filterChipTextActive]}>
+              {MEAL_LABEL[t]}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      {/* Origin filters */}
+      {origins.length > 0 && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
+          {origins.map((o) => (
+            <TouchableOpacity
+              key={o}
+              style={[styles.filterChip, activeOrigin === o && styles.filterChipActive]}
+              onPress={() => setActiveOrigin(activeOrigin === o ? null : o)}
+            >
+              <Text style={[styles.filterChipText, activeOrigin === o && styles.filterChipTextActive]}>
+                {o}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
+
       {Platform.OS === 'web' && (
         <TouchableOpacity style={styles.importButton} onPress={onImport}>
           <Text style={styles.importButtonText}>📂 Import from .txt</Text>
@@ -755,12 +795,17 @@ const styles = StyleSheet.create({
   searchInput: { backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 15, color: C.textPrimary },
   importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: C.primary, borderRadius: 10, padding: 14, alignItems: 'center' },
   importButtonText: { color: C.primary, fontSize: 15, fontWeight: '600' },
+  filterRow: { paddingHorizontal: 16, paddingBottom: 8, gap: 8 },
+  filterChip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: C.border, backgroundColor: C.bgSurface },
+  filterChipActive: { backgroundColor: C.primary, borderColor: C.primary },
+  filterChipText: { fontSize: 13, color: C.textSecondary },
+  filterChipTextActive: { color: '#fff', fontWeight: '600' },
   listContent: { paddingHorizontal: 16, paddingBottom: 100 },
   fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center', elevation: 6, boxShadow: '0px 4px 8px rgba(0,0,0,0.2)' } as any,
   fabText: { color: '#fff', fontSize: 30, lineHeight: 34, fontWeight: '300' },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 60 },
   emptyText: { color: C.textMuted, fontSize: 16 },
-  card: { backgroundColor: C.bgSurface, borderRadius: 12, marginBottom: 12, overflow: 'hidden', borderWidth: 1, borderColor: C.border, elevation: 2, boxShadow: '0px 2px 4px rgba(0,0,0,0.06)' } as any,
+  card: { backgroundColor: C.bgCard, borderRadius: 12, marginBottom: 12, overflow: 'hidden', borderWidth: 1, borderColor: C.border, elevation: 2, boxShadow: '0px 2px 4px rgba(0,0,0,0.06)' } as any,
   cardImage: { width: '100%', height: 140, resizeMode: 'cover' },
   cardBody: { padding: 12 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },

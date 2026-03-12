@@ -7,6 +7,7 @@ export const C = {
   // ── Backgrounds ───────────────────────────────────────────────────────────
   bgPage:        '#F5EDE0', // warm beige     (screen backgrounds)
   bgSurface:     '#FFFBF4', // cream          (cards, modals, tab bar)
+  bgCard:        '#F0E2C8', // warm amber     (recipe cards)
   bgInput:       '#FDF7EF', // pale cream     (text inputs)
 
   // ── Borders & dividers ────────────────────────────────────────────────────
