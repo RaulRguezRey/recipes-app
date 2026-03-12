@@ -33,7 +33,7 @@
     },
     "owner": "raulrguezrey8",
     "runtimeVersion": {
-      "policy": "appVersion"
+      "policy": "sdkVersion"
     },
     "updates": {
       "url": "https://u.expo.dev/5f07217e-2703-435b-9124-646e8b218cac"

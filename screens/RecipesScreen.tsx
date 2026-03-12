@@ -126,6 +126,46 @@ const MEAL_LABEL: Record<MealType, string> = {
   dinner: '🌙 Dinner',
 };
 
+// ─── Recipe Card ──────────────────────────────────────────────────────────────
+
+type RecipeCardProps = {
+  item: Recipe;
+  onSelect: (recipe: Recipe) => void;
+  onToggleFavorite: (recipe: Recipe) => void;
+};
+
+function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
+  const [imageError, setImageError] = useState(false);
+  const showImage = item.photoUri && !imageError;
+
+  return (
+    <TouchableOpacity style={styles.card} onPress={() => onSelect(item)}>
+      {showImage && (
+        <Image
+          source={{ uri: item.photoUri! }}
+          style={styles.cardImage}
+          onError={() => setImageError(true)}
+        />
+      )}
+      <View style={styles.cardBody}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
+          <TouchableOpacity onPress={() => onToggleFavorite(item)}>
+            <Text style={styles.star}>{item.isFavorite ? '⭐' : '☆'}</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.cardMeta}>
+          <Text style={styles.tag}>{MEAL_LABEL[item.mealType]}</Text>
+          <Text style={styles.tag}>{DIFFICULTY_LABEL[item.difficulty]}</Text>
+        </View>
+        <Text style={styles.cardSub}>
+          ⏱ {item.prepTime + item.cookTime} min · {item.servings} servings · {item.caloriesPerServing} kcal
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
 // ─── Recipe List ──────────────────────────────────────────────────────────────
 
 type ListViewProps = {
@@ -137,50 +177,50 @@ type ListViewProps = {
 };
 
 function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: ListViewProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filtered = searchQuery.trim()
+    ? recipes.filter((r) => r.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    : recipes;
+
   return (
     <View style={styles.flex}>
-      <TouchableOpacity style={styles.addButton} onPress={onAdd}>
-        <Text style={styles.addButtonText}>+ Add Recipe</Text>
-      </TouchableOpacity>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Buscar receta..."
+          placeholderTextColor="#aaa"
+          clearButtonMode="while-editing"
+        />
+      </View>
       {Platform.OS === 'web' && (
         <TouchableOpacity style={styles.importButton} onPress={onImport}>
           <Text style={styles.importButtonText}>📂 Import from .txt</Text>
         </TouchableOpacity>
       )}
 
-      {recipes.length === 0 ? (
+      {filtered.length === 0 ? (
         <View style={styles.empty}>
-          <Text style={styles.emptyText}>No recipes yet. Add your first one!</Text>
+          <Text style={styles.emptyText}>
+            {searchQuery.trim() ? 'No hay recetas con ese nombre.' : 'No recipes yet. Add your first one!'}
+          </Text>
         </View>
       ) : (
         <FlatList
-          data={recipes}
+          data={filtered}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.card} onPress={() => onSelect(item)}>
-              {item.photoUri && (
-                <Image source={{ uri: item.photoUri }} style={styles.cardImage} />
-              )}
-              <View style={styles.cardBody}>
-                <View style={styles.cardHeader}>
-                  <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
-                  <TouchableOpacity onPress={() => onToggleFavorite(item)}>
-                    <Text style={styles.star}>{item.isFavorite ? '⭐' : '☆'}</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.cardMeta}>
-                  <Text style={styles.tag}>{MEAL_LABEL[item.mealType]}</Text>
-                  <Text style={styles.tag}>{DIFFICULTY_LABEL[item.difficulty]}</Text>
-                </View>
-                <Text style={styles.cardSub}>
-                  ⏱ {item.prepTime + item.cookTime} min · {item.servings} servings · {item.caloriesPerServing} kcal
-                </Text>
-              </View>
-            </TouchableOpacity>
+            <RecipeCard item={item} onSelect={onSelect} onToggleFavorite={onToggleFavorite} />
           )}
         />
       )}
+
+      <TouchableOpacity style={styles.fab} onPress={onAdd}>
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -711,11 +751,13 @@ const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: C.bgPage },
 
   // List
-  addButton: { margin: 16, marginBottom: 8, backgroundColor: C.primary, borderRadius: 10, padding: 14, alignItems: 'center' },
-  addButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  searchContainer: { paddingHorizontal: 16, paddingVertical: 10 },
+  searchInput: { backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 15, color: C.textPrimary },
   importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: C.primary, borderRadius: 10, padding: 14, alignItems: 'center' },
   importButtonText: { color: C.primary, fontSize: 15, fontWeight: '600' },
-  listContent: { paddingHorizontal: 16, paddingBottom: 16 },
+  listContent: { paddingHorizontal: 16, paddingBottom: 100 },
+  fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center', elevation: 6, boxShadow: '0px 4px 8px rgba(0,0,0,0.2)' } as any,
+  fabText: { color: '#fff', fontSize: 30, lineHeight: 34, fontWeight: '300' },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 60 },
   emptyText: { color: C.textMuted, fontSize: 16 },
   card: { backgroundColor: C.bgSurface, borderRadius: 12, marginBottom: 12, overflow: 'hidden', borderWidth: 1, borderColor: C.border, elevation: 2, boxShadow: '0px 2px 4px rgba(0,0,0,0.06)' } as any,
