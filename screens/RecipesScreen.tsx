@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 import ActionSheet from '../components/ActionSheet';
+import { C, FONT } from '../constants/theme';
 import SelectModal from '../components/SelectModal';
 import { addIngredient, addOrigin, addRecipe, deleteRecipe, getIngredients, getOrigins, getRecipes, updateRecipe } from '../storage/recipeStorage';
 import { Difficulty, Ingredient, MealType, Recipe, RecipeIngredient } from '../types/Recipe';
@@ -706,56 +707,54 @@ export default function RecipesScreen() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const PURPLE = '#6200ee';
-
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
+  flex: { flex: 1, backgroundColor: C.bgPage },
 
   // List
-  addButton: { margin: 16, marginBottom: 8, backgroundColor: PURPLE, borderRadius: 10, padding: 14, alignItems: 'center' },
+  addButton: { margin: 16, marginBottom: 8, backgroundColor: C.primary, borderRadius: 10, padding: 14, alignItems: 'center' },
   addButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: PURPLE, borderRadius: 10, padding: 14, alignItems: 'center' },
-  importButtonText: { color: PURPLE, fontSize: 15, fontWeight: '600' },
+  importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: C.primary, borderRadius: 10, padding: 14, alignItems: 'center' },
+  importButtonText: { color: C.primary, fontSize: 15, fontWeight: '600' },
   listContent: { paddingHorizontal: 16, paddingBottom: 16 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 60 },
-  emptyText: { color: '#aaa', fontSize: 16 },
-  card: { backgroundColor: '#fff', borderRadius: 12, marginBottom: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#eee', elevation: 2, boxShadow: '0px 2px 4px rgba(0,0,0,0.06)' } as any,
+  emptyText: { color: C.textMuted, fontSize: 16 },
+  card: { backgroundColor: C.bgSurface, borderRadius: 12, marginBottom: 12, overflow: 'hidden', borderWidth: 1, borderColor: C.border, elevation: 2, boxShadow: '0px 2px 4px rgba(0,0,0,0.06)' } as any,
   cardImage: { width: '100%', height: 140, resizeMode: 'cover' },
   cardBody: { padding: 12 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  cardName: { fontSize: 17, fontWeight: '600', flex: 1 },
+  cardName: { fontSize: 17, fontWeight: '600', flex: 1, fontFamily: FONT.serif, color: C.textPrimary },
   star: { fontSize: 20, marginLeft: 8 },
   cardMeta: { flexDirection: 'row', gap: 8, marginBottom: 4 },
-  tag: { fontSize: 12, color: '#555', backgroundColor: '#f0f0f0', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
-  cardSub: { fontSize: 12, color: '#888', marginTop: 4 },
+  tag: { fontSize: 12, color: C.textSecondary, backgroundColor: C.bgPage, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
+  cardSub: { fontSize: 12, color: C.textMuted, marginTop: 4 },
 
   // Form header
-  formHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#eee' },
-  formTitle: { fontSize: 17, fontWeight: '700' },
-  formCancel: { color: PURPLE, fontSize: 15 },
-  formContent: { padding: 16 },
+  formHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: C.border, backgroundColor: C.bgSurface },
+  formTitle: { fontSize: 17, fontWeight: '700', fontFamily: FONT.serif, color: C.textPrimary },
+  formCancel: { color: C.primary, fontSize: 15 },
+  formContent: { padding: 16, backgroundColor: C.bgPage },
 
   // Photo
   photoRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
-  photoBtn: { flex: 1, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10, alignItems: 'center' },
-  photoBtnText: { fontSize: 14, color: '#444' },
+  photoBtn: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: 8, padding: 10, alignItems: 'center', backgroundColor: C.bgInput },
+  photoBtnText: { fontSize: 14, color: C.textSecondary },
   photoPreview: { width: '100%', height: 180, borderRadius: 10, marginBottom: 16, resizeMode: 'cover' },
 
   // Labels & inputs
-  sectionLabel: { fontSize: 13, fontWeight: '600', color: '#555', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 20, marginBottom: 8 },
-  inputLabel: { fontSize: 12, color: '#888', marginBottom: 4 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 10, fontSize: 15, backgroundColor: '#fafafa', marginBottom: 8 },
+  sectionLabel: { fontSize: 13, fontWeight: '600', color: C.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 20, marginBottom: 8 },
+  inputLabel: { fontSize: 12, color: C.textMuted, marginBottom: 4 },
+  input: { borderWidth: 1, borderColor: C.border, borderRadius: 8, padding: 10, fontSize: 15, backgroundColor: C.bgInput, marginBottom: 8, color: C.textPrimary },
   selectField: { justifyContent: 'center' },
-  inputError: { borderColor: '#e53935' },
-  errorText: { color: '#e53935', fontSize: 12, marginTop: -4, marginBottom: 8 },
-  suggestion: { backgroundColor: '#f0e8ff', borderRadius: 6, paddingHorizontal: 10, paddingVertical: 6, marginTop: 2 },
-  suggestionText: { color: '#6200ee', fontSize: 13 },
+  inputError: { borderColor: C.danger },
+  errorText: { color: C.danger, fontSize: 12, marginTop: -4, marginBottom: 8 },
+  suggestion: { backgroundColor: C.bgPage, borderRadius: 6, paddingHorizontal: 10, paddingVertical: 6, marginTop: 2, borderWidth: 1, borderColor: C.border },
+  suggestionText: { color: C.primary, fontSize: 13 },
 
   // Chips
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: '#ccc', backgroundColor: '#f5f5f5' },
-  chipActive: { backgroundColor: PURPLE, borderColor: PURPLE },
-  chipText: { fontSize: 13, color: '#444' },
+  chip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: C.borderStrong, backgroundColor: C.bgSurface },
+  chipActive: { backgroundColor: C.primary, borderColor: C.primary },
+  chipText: { fontSize: 13, color: C.textSecondary },
   chipTextActive: { color: '#fff', fontWeight: '600' },
 
   // Row layouts
@@ -763,26 +762,26 @@ const styles = StyleSheet.create({
   row2: { flexDirection: 'row', gap: 8 },
 
   // Ingredients
-  ingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  ingText: { fontSize: 14, color: '#333', flex: 1 },
+  ingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: C.border },
+  ingText: { fontSize: 14, color: C.textPrimary, flex: 1 },
   ingAddRow: { flexDirection: 'row', gap: 10, alignItems: 'center', marginTop: 8, marginBottom: 8 },
   ingInputName: { flex: 3, marginBottom: 0 },
   ingInputQty: { flex: 1.5, marginBottom: 0 },
   ingInputUnit: { flex: 1.5, marginBottom: 0 },
-  ingAddBtn: { backgroundColor: PURPLE, borderRadius: 8, paddingHorizontal: 14, paddingVertical: 10 },
+  ingAddBtn: { backgroundColor: C.primary, borderRadius: 8, paddingHorizontal: 14, paddingVertical: 10 },
   ingAddBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  removeBtn: { color: '#e53935', fontSize: 16, paddingHorizontal: 8 },
+  removeBtn: { color: C.danger, fontSize: 16, paddingHorizontal: 8 },
 
   // Steps
   stepRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 6 },
-  stepNum: { fontSize: 15, color: PURPLE, fontWeight: '700', marginTop: 11 },
+  stepNum: { fontSize: 15, color: C.primary, fontWeight: '700', marginTop: 11, fontFamily: FONT.serif },
   stepInput: { flex: 1, marginBottom: 0 },
   addStepBtn: { marginTop: 4, marginBottom: 8 },
-  addStepBtnText: { color: PURPLE, fontSize: 15, fontWeight: '600' },
+  addStepBtnText: { color: C.primary, fontSize: 15, fontWeight: '600' },
 
   // Buttons
-  saveButton: { backgroundColor: PURPLE, borderRadius: 10, padding: 16, alignItems: 'center', marginTop: 24 },
+  saveButton: { backgroundColor: C.primary, borderRadius: 10, padding: 16, alignItems: 'center', marginTop: 24 },
   saveButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  deleteButton: { borderWidth: 1, borderColor: '#e53935', borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 12 },
-  deleteButtonText: { color: '#e53935', fontSize: 15, fontWeight: '600' },
+  deleteButton: { borderWidth: 1, borderColor: C.danger, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 12 },
+  deleteButtonText: { color: C.danger, fontSize: 15, fontWeight: '600' },
 });

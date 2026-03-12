@@ -1,5 +1,6 @@
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { resetAndReloadSeed } from '../storage/seedLoader';
+import { C, FONT } from '../constants/theme';
 
 type SettingRowProps = {
   label: string;
@@ -103,7 +104,7 @@ export default function SettingsScreen({ onOpenIngredients }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f7',
+    backgroundColor: C.bgPage,
   },
   content: {
     paddingVertical: 24,
@@ -115,16 +116,18 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6b6b6b',
+    color: C.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 8,
     marginLeft: 4,
   },
   sectionBody: {
-    backgroundColor: '#fff',
+    backgroundColor: C.bgSurface,
     borderRadius: 12,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: C.border,
   },
   row: {
     flexDirection: 'row',
@@ -133,11 +136,11 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: C.border,
   },
   rowLabel: {
     fontSize: 16,
-    color: '#1c1c1e',
+    color: C.textPrimary,
   },
   rowRight: {
     flexDirection: 'row',
@@ -146,11 +149,11 @@ const styles = StyleSheet.create({
   },
   rowValue: {
     fontSize: 16,
-    color: '#8e8e93',
+    color: C.textSecondary,
   },
   chevron: {
     fontSize: 18,
-    color: '#c7c7cc',
+    color: C.borderStrong,
     marginLeft: 2,
   },
 });

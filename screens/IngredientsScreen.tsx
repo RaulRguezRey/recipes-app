@@ -17,8 +17,9 @@ import {
   updateIngredient,
 } from '../storage/recipeStorage';
 import { Ingredient } from '../types/Recipe';
+import { C, FONT } from '../constants/theme';
 
-const PURPLE = '#6200ee';
+const PURPLE = C.primary;
 
 const CATEGORY_OPTIONS = [
   'Lácteos', 'Verduras', 'Frutas', 'Carnes', 'Pescados',
@@ -275,43 +276,43 @@ export default function IngredientsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  container: { flex: 1, backgroundColor: C.bgPage },
 
-  searchBar: { flexDirection: 'row', padding: 12, gap: 8, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#eee' },
-  searchInput: { flex: 1, borderWidth: 1, borderColor: '#ddd', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, fontSize: 14 },
+  searchBar: { flexDirection: 'row', padding: 12, gap: 8, backgroundColor: C.bgSurface, borderBottomWidth: 1, borderBottomColor: C.border },
+  searchInput: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, fontSize: 14, backgroundColor: C.bgInput, color: C.textPrimary },
   addBtn: { backgroundColor: PURPLE, borderRadius: 10, paddingHorizontal: 14, justifyContent: 'center' },
   addBtnText: { color: '#fff', fontWeight: '600', fontSize: 14 },
 
   list: { padding: 12, gap: 8 },
-  emptyText: { color: '#aaa', textAlign: 'center', marginTop: 40 },
+  emptyText: { color: C.textMuted, textAlign: 'center', marginTop: 40 },
 
-  row: { backgroundColor: '#fff', borderRadius: 10, padding: 14, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#eee' },
+  row: { backgroundColor: C.bgSurface, borderRadius: 10, padding: 14, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: C.border },
   rowLeft: { flex: 1 },
-  rowName: { fontSize: 15, fontWeight: '600', color: '#222' },
-  rowCat: { fontSize: 12, color: '#888', marginTop: 2 },
+  rowName: { fontSize: 15, fontWeight: '600', color: C.textPrimary, fontFamily: FONT.serif },
+  rowCat: { fontSize: 12, color: C.textMuted, marginTop: 2 },
   rowRight: {},
-  badgeOnline: { backgroundColor: '#e8f5e9', color: '#388e3c', fontSize: 11, fontWeight: '600', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
-  badgeStore: { backgroundColor: '#e3f2fd', color: '#1976d2', fontSize: 11, fontWeight: '600', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
+  badgeOnline: { backgroundColor: C.successBg, color: C.success, fontSize: 11, fontWeight: '600', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
+  badgeStore: { backgroundColor: C.infoBg, color: C.info, fontSize: 11, fontWeight: '600', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
 
   // Form Modal
   formOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
-  formCard: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '90%', padding: 20 },
-  formTitle: { fontSize: 18, fontWeight: '700', marginBottom: 16 },
-  label: { fontSize: 13, color: '#555', marginBottom: 4, marginTop: 12 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: '#222', backgroundColor: '#fafafa' },
+  formCard: { backgroundColor: C.bgSurface, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '90%', padding: 20 },
+  formTitle: { fontSize: 18, fontWeight: '700', marginBottom: 16, fontFamily: FONT.serif, color: C.textPrimary },
+  label: { fontSize: 13, color: C.textSecondary, marginBottom: 4, marginTop: 12 },
+  input: { borderWidth: 1, borderColor: C.border, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: C.textPrimary, backgroundColor: C.bgInput },
   switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
   saveBtn: { marginTop: 20, backgroundColor: PURPLE, borderRadius: 10, padding: 14, alignItems: 'center' },
   saveBtnDisabled: { opacity: 0.5 },
   saveBtnText: { color: '#fff', fontWeight: '600', fontSize: 15 },
   deleteBtn: { marginTop: 10, padding: 12, alignItems: 'center' },
-  deleteBtnText: { color: '#e53935', fontSize: 14 },
+  deleteBtnText: { color: C.danger, fontSize: 14 },
   cancelBtn: { padding: 12, alignItems: 'center', marginBottom: 8 },
-  cancelBtnText: { color: '#888', fontSize: 14 },
+  cancelBtnText: { color: C.textMuted, fontSize: 14 },
 
   // Pickers
   pickerOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
-  pickerCard: { backgroundColor: '#fff', borderRadius: 14, width: '80%', overflow: 'hidden' },
-  pickerRow: { paddingVertical: 14, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  pickerText: { fontSize: 15, color: '#333' },
+  pickerCard: { backgroundColor: C.bgSurface, borderRadius: 14, width: '80%', overflow: 'hidden' },
+  pickerRow: { paddingVertical: 14, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: C.border },
+  pickerText: { fontSize: 15, color: C.textPrimary },
   pickerTextActive: { color: PURPLE, fontWeight: '700' },
 });

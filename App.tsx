@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { C } from './constants/theme';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import RecipesScreen from './screens/RecipesScreen';
 import PlanningScreen from './screens/PlanningScreen';
@@ -82,13 +83,13 @@ export default function App() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: C.bgPage,
   },
   tabBar: {
     flexDirection: 'row',
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    backgroundColor: '#fff',
+    borderTopColor: C.border,
+    backgroundColor: C.bgSurface,
     height: 64,
   },
   tab: {
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 3,
     borderRadius: 2,
-    backgroundColor: '#6200ee',
+    backgroundColor: C.primary,
   },
   tabIcon: {
     fontSize: 20,
@@ -111,10 +112,10 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 10,
     marginTop: 2,
-    color: '#888',
+    color: C.textMuted,
   },
   tabLabelActive: {
-    color: '#6200ee',
+    color: C.primary,
     fontWeight: 'bold',
   },
 });

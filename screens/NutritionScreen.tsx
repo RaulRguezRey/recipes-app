@@ -3,8 +3,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { getRecipes } from '../storage/recipeStorage';
 import { getEntriesForPlan, getMealPlans } from '../storage/mealPlanStorage';
 import { MealPlan, MealPlanEntry, Recipe } from '../types/Recipe';
-
-const PURPLE = '#6200ee';
+import { C, FONT } from '../constants/theme';
 
 const DAY_LABELS: Record<string, string> = {
   monday: 'Lunes', tuesday: 'Martes', wednesday: 'Miércoles',
@@ -201,37 +200,37 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  container: { flex: 1, backgroundColor: C.bgPage },
   content: { padding: 12, gap: 12, paddingBottom: 32 },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
-  emptyText: { color: '#aaa', fontSize: 15, textAlign: 'center' },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, backgroundColor: C.bgPage },
+  emptyText: { color: C.textMuted, fontSize: 15, textAlign: 'center' },
 
   planTabs: { marginBottom: 8 },
-  planTab: { paddingVertical: 8, paddingHorizontal: 14, marginRight: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd' },
-  planTabActive: { backgroundColor: PURPLE, borderColor: PURPLE },
-  planTabText: { fontSize: 12, color: '#888' },
+  planTab: { paddingVertical: 8, paddingHorizontal: 14, marginRight: 8, borderRadius: 20, backgroundColor: C.bgSurface, borderWidth: 1, borderColor: C.border },
+  planTabActive: { backgroundColor: C.primary, borderColor: C.primary },
+  planTabText: { fontSize: 12, color: C.textMuted },
   planTabTextActive: { color: '#fff', fontWeight: '700' },
 
-  card: { backgroundColor: '#fff', borderRadius: 14, padding: 16, borderWidth: 1, borderColor: '#eee' },
-  cardTitle: { fontSize: 16, fontWeight: '700', color: '#222', marginBottom: 14 },
+  card: { backgroundColor: C.bgSurface, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: C.border },
+  cardTitle: { fontSize: 16, fontWeight: '700', color: C.textPrimary, marginBottom: 14, fontFamily: FONT.serif },
   macroRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14 },
   macroItem: { alignItems: 'center', flex: 1 },
-  macroLabel: { fontSize: 11, color: '#888', marginBottom: 4 },
+  macroLabel: { fontSize: 11, color: C.textMuted, marginBottom: 4 },
   macroValue: { fontSize: 18, fontWeight: '700' },
-  costRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: '#eee', paddingTop: 12 },
-  costLabel: { fontSize: 14, color: '#555' },
-  costValue: { fontSize: 18, fontWeight: '700', color: PURPLE },
+  costRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: C.border, paddingTop: 12 },
+  costLabel: { fontSize: 14, color: C.textSecondary },
+  costValue: { fontSize: 18, fontWeight: '700', color: C.primary },
 
-  dayCard: { backgroundColor: '#fff', borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#eee' },
+  dayCard: { backgroundColor: C.bgSurface, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: C.border },
   dayHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14 },
-  dayLabel: { fontSize: 15, fontWeight: '700', color: '#222' },
+  dayLabel: { fontSize: 15, fontWeight: '700', color: C.textPrimary, fontFamily: FONT.serif },
   dayHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  dayKcal: { fontSize: 13, color: '#e53935', fontWeight: '600' },
-  dayCost: { fontSize: 13, color: PURPLE, fontWeight: '600' },
-  dayChevron: { fontSize: 11, color: '#aaa', marginLeft: 4 },
-  dayDetail: { borderTopWidth: 1, borderTopColor: '#f0f0f0', padding: 12, gap: 8 },
+  dayKcal: { fontSize: 13, color: '#B8312F', fontWeight: '600' },
+  dayCost: { fontSize: 13, color: C.primary, fontWeight: '600' },
+  dayChevron: { fontSize: 11, color: C.textMuted, marginLeft: 4 },
+  dayDetail: { borderTopWidth: 1, borderTopColor: C.border, padding: 12, gap: 8 },
   dayRecipeRow: {},
-  dayRecipeName: { fontSize: 14, fontWeight: '600', color: '#333' },
-  dayRecipeMacros: { fontSize: 12, color: '#888', marginTop: 2 },
-  dayEmpty: { padding: 12, color: '#aaa', fontSize: 13 },
+  dayRecipeName: { fontSize: 14, fontWeight: '600', color: C.textPrimary },
+  dayRecipeMacros: { fontSize: 12, color: C.textMuted, marginTop: 2 },
+  dayEmpty: { padding: 12, color: C.textMuted, fontSize: 13 },
 });

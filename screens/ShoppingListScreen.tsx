@@ -16,8 +16,7 @@ import {
   updateShoppingListItem,
 } from '../storage/shoppingListStorage';
 import { ShoppingList, ShoppingListItem } from '../types/Recipe';
-
-const PURPLE = '#6200ee';
+import { C } from '../constants/theme';
 
 function formatQty(qty: number, unit: string): string {
   if (Number.isInteger(qty)) return `${qty} ${unit}`;
@@ -203,36 +202,36 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
-  emptyText: { color: '#aaa', fontSize: 15, textAlign: 'center', marginBottom: 24 },
-  generateBtn: { backgroundColor: PURPLE, borderRadius: 10, padding: 14, paddingHorizontal: 28 },
+  container: { flex: 1, backgroundColor: C.bgPage },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, backgroundColor: C.bgPage },
+  emptyText: { color: C.textMuted, fontSize: 15, textAlign: 'center', marginBottom: 24 },
+  generateBtn: { backgroundColor: C.primary, borderRadius: 10, padding: 14, paddingHorizontal: 28 },
   generateBtnText: { color: '#fff', fontSize: 15, fontWeight: '600' },
 
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: '#fff', paddingHorizontal: 16, paddingVertical: 10,
-    borderBottomWidth: 1, borderBottomColor: '#eee',
+    backgroundColor: C.bgSurface, paddingHorizontal: 16, paddingVertical: 10,
+    borderBottomWidth: 1, borderBottomColor: C.border,
   },
-  headerProgress: { fontSize: 14, color: '#888' },
-  headerRegen: { fontSize: 14, color: PURPLE, fontWeight: '600' },
+  headerProgress: { fontSize: 14, color: C.textSecondary },
+  headerRegen: { fontSize: 14, color: C.primary, fontWeight: '600' },
 
   scroll: { padding: 12, gap: 12 },
-  block: { backgroundColor: '#fff', borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#eee', marginBottom: 12 },
-  blockTitle: { fontSize: 13, fontWeight: '700', color: PURPLE, backgroundColor: '#f0ebff', padding: 12 },
+  block: { backgroundColor: C.bgSurface, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: C.border, marginBottom: 12 },
+  blockTitle: { fontSize: 13, fontWeight: '700', color: C.primary, backgroundColor: C.bgPage, padding: 12 },
 
-  categoryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, backgroundColor: '#fafafa', borderTopWidth: 1, borderTopColor: '#eee' },
-  categoryLabel: { fontSize: 13, fontWeight: '600', color: '#555', textTransform: 'uppercase' },
-  categoryChevron: { fontSize: 11, color: '#aaa' },
+  categoryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, backgroundColor: C.bgInput, borderTopWidth: 1, borderTopColor: C.border },
+  categoryLabel: { fontSize: 13, fontWeight: '600', color: C.textSecondary, textTransform: 'uppercase' },
+  categoryChevron: { fontSize: 11, color: C.textMuted },
 
-  itemRow: { flexDirection: 'row', alignItems: 'flex-start', padding: 12, borderTopWidth: 1, borderTopColor: '#f0f0f0' },
-  checkbox: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: '#ccc', alignItems: 'center', justifyContent: 'center', marginRight: 12, marginTop: 1 },
-  checkboxChecked: { backgroundColor: PURPLE, borderColor: PURPLE },
+  itemRow: { flexDirection: 'row', alignItems: 'flex-start', padding: 12, borderTopWidth: 1, borderTopColor: C.border },
+  checkbox: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: C.borderStrong, alignItems: 'center', justifyContent: 'center', marginRight: 12, marginTop: 1 },
+  checkboxChecked: { backgroundColor: C.primary, borderColor: C.primary },
   checkmark: { color: '#fff', fontSize: 13, fontWeight: '700' },
   itemContent: { flex: 1 },
-  itemName: { fontSize: 15, fontWeight: '600', color: '#222' },
-  itemNameChecked: { textDecorationLine: 'line-through', color: '#aaa' },
-  itemQty: { fontSize: 13, color: '#666', marginTop: 2 },
-  itemOrigins: { fontSize: 11, color: '#aaa', marginTop: 2 },
-  itemUrl: { fontSize: 12, color: PURPLE, marginTop: 4, fontWeight: '600' },
+  itemName: { fontSize: 15, fontWeight: '600', color: C.textPrimary },
+  itemNameChecked: { textDecorationLine: 'line-through', color: C.textMuted },
+  itemQty: { fontSize: 13, color: C.textSecondary, marginTop: 2 },
+  itemOrigins: { fontSize: 11, color: C.textMuted, marginTop: 2 },
+  itemUrl: { fontSize: 12, color: C.primary, marginTop: 4, fontWeight: '600' },
 });
