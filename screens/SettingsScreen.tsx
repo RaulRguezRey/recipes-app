@@ -1,19 +1,20 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type SettingRowProps = {
   label: string;
   value?: string;
+  onPress?: () => void;
 };
 
-function SettingRow({ label, value }: SettingRowProps) {
+function SettingRow({ label, value, onPress }: SettingRowProps) {
   return (
-    <View style={styles.row}>
+    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={onPress ? 0.6 : 1}>
       <Text style={styles.rowLabel}>{label}</Text>
       <View style={styles.rowRight}>
         {value && <Text style={styles.rowValue}>{value}</Text>}
         <Text style={styles.chevron}>›</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -31,7 +32,11 @@ function Section({ title, children }: SectionProps) {
   );
 }
 
-export default function SettingsScreen() {
+type Props = {
+  onOpenIngredients: () => void;
+};
+
+export default function SettingsScreen({ onOpenIngredients }: Props) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
 
@@ -54,6 +59,10 @@ export default function SettingsScreen() {
       <Section title="Notifications">
         <SettingRow label="Weekly planning reminder" />
         <SettingRow label="Shopping list reminder" />
+      </Section>
+
+      <Section title="Catalogue">
+        <SettingRow label="Ingredient catalogue" onPress={onOpenIngredients} />
       </Section>
 
       <Section title="Data">

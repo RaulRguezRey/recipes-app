@@ -141,9 +141,11 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
       <TouchableOpacity style={styles.addButton} onPress={onAdd}>
         <Text style={styles.addButtonText}>+ Add Recipe</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.importButton} onPress={onImport}>
-        <Text style={styles.importButtonText}>📂 Import from .txt</Text>
-      </TouchableOpacity>
+      {Platform.OS === 'web' && (
+        <TouchableOpacity style={styles.importButton} onPress={onImport}>
+          <Text style={styles.importButtonText}>📂 Import from .txt</Text>
+        </TouchableOpacity>
+      )}
 
       {recipes.length === 0 ? (
         <View style={styles.empty}>
@@ -209,6 +211,8 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
   const [cost, setCost] = useState(recipe?.costEur.toString() ?? '');
   const [photoUri, setPhotoUri] = useState<string | null>(recipe?.photoUri ?? null);
   const [isFavorite, setIsFavorite] = useState(recipe?.isFavorite ?? false);
+  const [sourceUrl, setSourceUrl] = useState(recipe?.sourceUrl ?? '');
+  const [notes, setNotes] = useState(recipe?.notes ?? '');
 
   const [ingredients, setIngredients] = useState<RecipeIngredient[]>(
     recipe?.ingredients ?? []
@@ -344,6 +348,8 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
       costEur: parseFloat(cost) || 0,
       photoUri,
       isFavorite,
+      sourceUrl: sourceUrl.trim() || null,
+      notes: notes.trim() || null,
       createdAt: recipe?.createdAt ?? now,
       updatedAt: now,
     };
@@ -561,6 +567,26 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
           <Text style={styles.addStepBtnText}>+ Add step</Text>
         </TouchableOpacity>
 
+        {/* Source URL & Notes */}
+        <Text style={styles.sectionLabel}>Additional info</Text>
+        <Text style={styles.inputLabel}>Source URL</Text>
+        <TextInput
+          style={styles.input}
+          value={sourceUrl}
+          onChangeText={setSourceUrl}
+          placeholder="https://…"
+          keyboardType="url"
+          autoCapitalize="none"
+        />
+        <Text style={styles.inputLabel}>Notes</Text>
+        <TextInput
+          style={[styles.input, { minHeight: 80, textAlignVertical: 'top' }]}
+          value={notes}
+          onChangeText={setNotes}
+          placeholder="Personal notes about this recipe…"
+          multiline
+        />
+
         {/* Save */}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>{isEdit ? 'Save changes' : 'Save recipe'}</Text>
@@ -658,13 +684,15 @@ export default function RecipesScreen() {
   return (
     <>
       {/* Hidden file input for web .txt import */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".txt"
-        style={{ display: 'none' } as any}
-        onChange={handleFileImport as any}
-      />
+      {Platform.OS === 'web' && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".txt"
+          style={{ display: 'none' } as any}
+          onChange={handleFileImport as any}
+        />
+      )}
       <ListView
         recipes={recipes}
         onAdd={openAdd}

@@ -53,6 +53,23 @@ export async function addIngredient(ingredient: Ingredient): Promise<void> {
   }
 }
 
+export async function updateIngredient(updated: Ingredient): Promise<void> {
+  const ingredients = await getIngredients();
+  const index = ingredients.findIndex((i) => i.id === updated.id);
+  if (index !== -1) {
+    ingredients[index] = updated;
+    await AsyncStorage.setItem(INGREDIENTS_KEY, JSON.stringify(ingredients));
+  }
+}
+
+export async function deleteIngredient(id: string): Promise<void> {
+  const ingredients = await getIngredients();
+  await AsyncStorage.setItem(
+    INGREDIENTS_KEY,
+    JSON.stringify(ingredients.filter((i) => i.id !== id))
+  );
+}
+
 // ─── Origins ──────────────────────────────────────────────────────────────────
 
 const ORIGINS_KEY = '@origins';

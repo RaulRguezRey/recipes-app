@@ -1,0 +1,3266 @@
+{
+  "recipes": [
+    {
+      "id": "1",
+      "name": "Guisantes con jamon y huevo a la plancha",
+      "mealType": "dinner",
+      "origin": "española",
+      "difficulty": "easy",
+      "prepTime": 10,
+      "cookTime": 10,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "40",
+          "quantity": 300.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "45",
+          "quantity": 4.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "46",
+          "quantity": 150.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "41",
+          "quantity": 10.0,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Para hacer esta receta, comenzamos cortando la cebolla y [picándola en brunoise con la técnica que os enseñé hace unos meses](https://www.directoalpaladar.com/curso-de-cocina/cortes-basicos-de-la-cebolla-en-juliana-en-aros-y-en-brunoise). **Ponemos la cebolla a fuego lento en una sartén con dos cucharadas de aceite de oliva**. Mientras la cebolla se pocha, vamos cociendo los guisantes.",
+        "**Si usáis guisantes frescos**, será necesario tenerlos unos 8 minutos para que estén perfectos, verdes verdes y llenos de sabor. Si usáis congelados, serán necesarios unos 12 minutos de cocción y si utilizáis guisantes en conserva, ya los tenéis listos para los siguientes pasos.",
+        "Cuando la cebolla está transparente y comience a sudar, agregamos el jamón serrano muy picado -se agradecen los trocitos de tocino que aportan mucha jugosidad- y se rehogan con la cebolla. Se añade también una **puntita de harina y un cucharón del agua de la cocción de los guisantes**.",
+        "**Se liga un poco esa salsa de cebolla, jamón y harina y se agregan los guisantes bien escurridos**. Se mezcla el conjunto hasta que forma un cuerpo uniforme y se decora con una hojita de salvia o con otro brote aromático y se lleva a la mesa inmediatamente."
+      ],
+      "caloriesPerServing": 200,
+      "proteinG": 10.0,
+      "fatG": 9.0,
+      "carbsG": 17.0,
+      "costEur": 1.4,
+      "photoUri": "https://i.blogs.es/5ab210/guisantes/650_1200.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-legumbres-y-verduras/mejor-receta-guisantes-jamon-para-cena-ligera",
+      "notes": null,
+      "createdAt": "2026-02-09T19:07:29Z",
+      "updatedAt": "2026-03-12T15:47:22.350593Z"
+    },
+    {
+      "id": "2",
+      "name": "Chili con carne",
+      "mealType": "lunch",
+      "origin": "mexicana",
+      "difficulty": "medium",
+      "prepTime": 0,
+      "cookTime": 66,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "23",
+          "quantity": 100.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 30.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 4.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "28",
+          "quantity": 2.0,
+          "unit": "tbsp"
+        },
+        {
+          "ingredientId": "38",
+          "quantity": 0.5,
+          "unit": "tsp"
+        },
+        {
+          "ingredientId": "95",
+          "quantity": 500.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "98",
+          "quantity": 400.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "66",
+          "quantity": 1.0,
+          "unit": "tbsp"
+        },
+        {
+          "ingredientId": "104",
+          "quantity": 1.0,
+          "unit": "tbsp"
+        },
+        {
+          "ingredientId": "15",
+          "quantity": 300.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "11",
+          "quantity": 1.0,
+          "unit": "tsp"
+        },
+        {
+          "ingredientId": "5",
+          "quantity": 300.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "27",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "63",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Para **hacer esta receta con Thermomix**, pelamos la cebolla y la ponemos en el vaso, triturándola con dos o tres golpes de turbo. Bajamos los restos que han quedado en las paredes hacia el interior del vaso, añadimos el aceite y programamos 8 min/100º/velocidad 1. Añadimos los ajos, la guindilla y el comino y mezclamos 5 seg/vel 4. Incorporamos la carne picada y cocinamos 8 min/100º/vel 1y 1/2.",
+        "Añadimos el tomate, las hierbas, el caldo y el azúcar y programamos 45 min/100º/vel cuchara. Incorporamos las alubias escurridas y cocinamos 5 min/100º/vel cuchara, **vigilando para que no se deshagan demasiado**. Espolvoreamos de cilantro fresco picado y servimos con los totopos.",
+        "Para **hacer esta receta sin Thermomix**, pelamos la cebolla, la picamos menuda y la ponemos en una cazuela con aceite caliente para dorarla. Cuando esté transparente, añadimos los ajos picados, la guindilla y el comino y le damos unas vueltas. Incorporamos la carne picada, removemos y lo dejamos hacer hasta que se haya evaporado todo el líquido de la carne.",
+        "Añadimos el tomate, las hierbas, el caldo y el azúcar, removemos y lo dejamos hacer con la cazuela destapada durante media hora o **hasta que el caldo se haya evaporado prácticamente**. Incorporamos las alubias escurridas, lo dejamos cocer unos pocos minutos todo junto y servimos espolvoreado de cilantro picante y acompañado de los totopos."
+      ],
+      "caloriesPerServing": 616,
+      "proteinG": 22.0,
+      "fatG": 19.5,
+      "carbsG": 88.0,
+      "costEur": 3.0,
+      "photoUri": "https://i.blogs.es/689e38/chili_carne/650_1200.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-carnes-y-aves/chili-receta-mexicana-con-y-sin-thermomix",
+      "notes": null,
+      "createdAt": "2026-02-09T19:07:29Z",
+      "updatedAt": "2026-03-12T15:47:22.350853Z"
+    },
+    {
+      "id": "3",
+      "name": "Lentejas estofadas sin grasas",
+      "mealType": "lunch",
+      "origin": "española",
+      "difficulty": "easy",
+      "prepTime": 20,
+      "cookTime": 45,
+      "servings": 6,
+      "ingredients": [
+        {
+          "ingredientId": "54",
+          "quantity": 350.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "49",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 3.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "81",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "82",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "2",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "77",
+          "quantity": 1.0,
+          "unit": "tbsp"
+        }
+      ],
+      "steps": [
+        "Pelamos y lavamos todas las verduras y, en el caso de los pimientos, despepitamos. Las introducimos en una olla a presión junto con las lentejas (sin remojar), el pimentón y la hoja de laurel. Añadimos suficiente agua, caldo de verduras o mezcla de ambos **para cubrir los ingredientes** y cerramos la olla, colocando la válvula en la posición 2.",
+        "En el momento en que empiece a salir el vapor, bajamos la intensidad del fuego (medio alto) y contamos 15 minutos. Apagamos el fuego y **dejamos que el vapor salga lentamente**. Cuando esto ocurra, abrimos la olla y retiramos las verduras. Al estar enteras, esto resultará fácil.",
+        "Si preparáis las lentejas **en una olla tradicional**, el procedimiento es el mismo a excepción del tiempo de cocción que será mayor: 50 minutos y con la tapadera puesta. Esto permite comprobar el punto en cualquier momento.",
+        "**Trituramos las verduras con un poco de líquido** de la cocción con una batidora de brazo. Podemos pasar el puré resultante por un colador o devolverlo tal cual a la olla. Salpimentamos al gusto, damos un último hervor para homogeneizar y servimos."
+      ],
+      "caloriesPerServing": 280,
+      "proteinG": 15.0,
+      "fatG": 6.0,
+      "carbsG": 45.0,
+      "costEur": 1.5,
+      "photoUri": "https://i.blogs.es/83a182/lentejas-sin-grasa-pero-con-sabor-y-super-cremosas/650_1200.jpg",
+      "isFavorite": true,
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-legumbres-y-verduras/lentejas-grasas-mucho-sabor-super-cremosas-trucos-receta",
+      "notes": null,
+      "createdAt": "2026-02-09T19:07:29Z",
+      "updatedAt": "2026-03-12T15:47:22.351020Z"
+    },
+    {
+      "id": "4",
+      "name": "Wraps de Moni",
+      "mealType": "dinner",
+      "origin": "mexicana",
+      "difficulty": "easy",
+      "prepTime": 10,
+      "cookTime": 10,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "45",
+          "quantity": 4.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "98",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "3",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "62",
+          "quantity": 8.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "106",
+          "quantity": 8.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Primero se corta la cebolla finita y se pone a pochar. Cuando esta pochada, se añaden los huevos y se hacen unos huevos revueltos.",
+        "Se extiende una de las tortillas de trigo y se le hace un corte desde el centro hasta el contorno. Dividiendo el circulo en 4 sectores, repartimos en cada uno el tomate, los huevos, el queso y el aguacate, y cerramos todo.",
+        "Volvemos a la sarten para dorar el resultado."
+      ],
+      "caloriesPerServing": 525,
+      "proteinG": 24.5,
+      "fatG": 27.5,
+      "carbsG": 49.0,
+      "costEur": 1.7,
+      "photoUri": null,
+      "isFavorite": false,
+      "sourceUrl": null,
+      "notes": null,
+      "createdAt": "2026-02-09T19:07:29Z",
+      "updatedAt": "2026-03-12T15:47:22.351170Z"
+    },
+    {
+      "id": "5",
+      "name": "Pollo al curry con arroz",
+      "mealType": "lunch",
+      "origin": "india",
+      "difficulty": "medium",
+      "prepTime": 30,
+      "cookTime": 45,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "29",
+          "quantity": 800.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 4.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "81",
+          "quantity": 0.5,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "31",
+          "quantity": 3.0,
+          "unit": "tsp"
+        },
+        {
+          "ingredientId": "102",
+          "quantity": 300.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "51",
+          "quantity": 400.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "47",
+          "quantity": 30.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "58",
+          "quantity": 40.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "9",
+          "quantity": 240.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "18",
+          "quantity": 10.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "7",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "2",
+          "quantity": 500.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Cortamos en paisana fina (cubitos pequeños) los dientes de ajo, la cebolla y el pimiento rojo para tener la *mise en place* lista. También **troceamos los contramuslos en trozos de bocado** si no estuvieran ya cortados.",
+        "Sazonamos el pollo y lo marcamos en una cacerola ancha y baja a fuego fuerte con la mantequilla (o aceite si se prefiere). Doramos ligeramente para sellar la carne y retiramos reservando.",
+        "En la misma cazuela y a fuego suave sofreímos el ajo, la cebolla, el pimiento rojo y el jengibre fresco rallado durante unos **15-20 minutos** hasta que quede bien pochado. Añadimos el **curry molido y removemos un par de minutos** para que las especias se tuesten ligeramente.",
+        "Agregamos los líquidos: **el tomate triturado y la leche de coco**. Mezclamos bien y dejamos cocinar a fuego medio con un hervor suave para que la salsa reduzca y se integren los sabores. En este momento podemos **poner en marcha la cocción del arroz**.",
+        "En otra cazuela ancha añadimos el arroz basmati con el cardamomo, el anís estrellado, la sal y el agua. Cocemos durante **18 minutos a fuego medio** hasta que el agua se haya absorbido casi por completo. Reservamos tapado.",
+        "Cuando la salsa de curry haya reducido y tenga una textura cremosa (unos **20 minutos**), **incorporamos el pollo reservado** y dejamos cocinar otros **5-8 minutos** para que termine de hacerse y se impregne bien de la salsa.",
+        "Probamos de sal y **servimos caliente acompañado del arroz basmati especiado**."
+      ],
+      "caloriesPerServing": 650,
+      "proteinG": 40.0,
+      "fatG": 22.0,
+      "carbsG": 66.0,
+      "costEur": 3.0,
+      "photoUri": "https://i.blogs.es/d980b2/arroz_curry-min/650_1200.jpg",
+      "isFavorite": false,
+      "sourceUrl": null,
+      "notes": "Variante del curry clásico donde se usa tomate triturado junto con leche de coco para aportar más profundidad de sabor.",
+      "createdAt": "2026-02-09T19:07:29Z",
+      "updatedAt": "2026-03-12T15:47:22.351325Z"
+    },
+    {
+      "id": "6",
+      "name": "Crema especiada de calabaza y zanahoria",
+      "mealType": "dinner",
+      "origin": "española",
+      "difficulty": "easy",
+      "prepTime": 20,
+      "cookTime": 5,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "1",
+          "quantity": 15.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "25",
+          "quantity": 200.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "28",
+          "quantity": 5.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "14",
+          "quantity": 600.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "73",
+          "quantity": 150.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 100.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "17",
+          "quantity": 600.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "110",
+          "quantity": 20.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "83",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "27",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "En una cazuela de fondo grueso calentaremos el [aceite de oliva](http://www.directoalpaladar.com/ingredientes-y-alimentos/estos-nueve-aceites-de-oliva-espanoles-estan-entre-los-diez-mejores-del-mundo) y le añadiremos la cebolleta picada, el diente de ajo picado y la guindilla. **Sofreímos dos minutos**. Añadimos entonces el comino y el cilantro machacados en un mortero, y dejamos cocinar otros dos minutos más.",
+        "Cocinamos hasta que la cebolleta esté blanda, entonces añadimos la calabaza en dados, la patata también picada y la zanahoria en rodajas. Sofreímos durante cinco minutos y agregamos el caldo vegetal, **dejando cocinar todo durante 25 minutos** o hasta que las verduras estén blandas. Salpimentamos.",
+        "Pasamos la mezcla al vaso de una batidora o a un robot de cocina y **trituramos todo bien** hasta que no queden tropezones.",
+        "Para servir la crema, **tostamos ligeramente las semillas de calabaza en una sartén durante dos minutos**. Reservamos. Repartimos la crema en cuatro boles, y le hacemos en la superficie una espiral a cada ración con una cucharadita de [yogur griego](http://lifestyle.trendencias.com/recetas/helado-de-yogur-griego-con-lima-y-cardamomo), colocamos unas semillas de calabaza y espolvoreamos con un poco de cilantro fresco. Servimos rápidamente.",
+        "##Con qué acompañar la crema especiada de calabaza y zanahoria",
+        "Esta **crema especiada de calabaza y zanahoria** es ideal para una cena reconfortante y al mismo tiempo ligera. También podéis hacerla cociendo directamente las hortalizas sin sofreírlas, pero a mí personalmente me parece que tiene la crema un sabor más agradable de la manera que os la he presentado en combinación con las especias.",
+        "En Directo al paladar | [Crema de queso manchego con tapenade y tomates cherry. Receta](http://www.directoalpaladar.com/recetas-de-aperitivos/vasitos-de-crema-de-queso-manchego-con-tapenade-y-tomates-cherry-receta) En Directo al paladar | [Crema de coliflor con tostas de Gruyere. Receta](http://www.directoalpaladar.com/recetas-de-sopas-y-cremas/crema-de-coliflor-con-tostas-de-gruyere-receta)"
+      ],
+      "caloriesPerServing": 160,
+      "proteinG": 3.0,
+      "fatG": 5.0,
+      "carbsG": 25.0,
+      "costEur": 1.0,
+      "photoUri": "https://i.blogs.es/6c1674/crema-calabaza-zanahoria-190916-0001-2/650_1200.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-sopas-y-cremas/crema-especiada-de-calabaza-y-zanahoria-receta-ligera-para-comenzar-el-otono",
+      "notes": null,
+      "createdAt": "2026-02-09T19:07:29Z",
+      "updatedAt": "2026-03-12T15:47:22.351478Z"
+    },
+    {
+      "id": "7",
+      "name": "Pasta boloñesa",
+      "mealType": "lunch",
+      "origin": "italiana",
+      "difficulty": "easy",
+      "prepTime": 20,
+      "cookTime": 60,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "71",
+          "quantity": 320.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "19",
+          "quantity": 500.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "8",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "101",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "99",
+          "quantity": 2.0,
+          "unit": "tbsp"
+        },
+        {
+          "ingredientId": "107",
+          "quantity": 100.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "2",
+          "quantity": 200.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 20.0,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Comenzamos picando en trozos muy pequeños las zanahorias, el apio y el diente de ajo. La [cebolla también la cortamos en brunoise muy fino](https://www.directoalpaladar.com/curso-de-cocina/cortes-basicos-de-la-cebolla-en-juliana-en-aros-y-en-brunoise), de forma que **todas las hortalizas tengan así un tamaño similar al de la carne, para que no destaquen sobre ella**. Las pochamos con aceite de oliva durante diez minutos a fuego lento. Añadimos la carne picada. Cuando la carne picada haya cambiado de color, agregamos el vino blanco y dejamos que se evapore mientras removemos.",
+        "Después **agregamos el tomate picado en trozos un vaso de agua y el concentrado de tomate**, dejando que todo se cocine durante unos veinte minutos más. Aunque ya aparente estar hecho, la tradición para hacer una buena salsa boloñesa exige una larga cocción. Por eso nosotros vamos a dejar que nuestra boloñesa se cocine a fuego lento durante al menos 1 hora y media más, totalizando dos horas.",
+        "Para que no se quede seca la salsa en tan larga cocción, podemos ir añadiendo agua, caldo o vino cuando veamos que se está secando mucho. Incluso hay recetas clásicas que añaden un poco de leche. Recordad que el objetivo es conseguir una **salsa espesa de carne y hortalizas estofadas, ligadas ligeramente por un poco de tomate** y no preparar una salsa de tomate con tropezones.",
+        "Otra cosa importante es que al contrario de nuestra costumbre habitual, la **salsa boloñesa no se sirve habitualmente con espaguetis** sino con otras variedades de pasta corta rayada como los *rigatoni* -mirad nuestra receta de [rigatoni con salsa boloñesa](https://www.directoalpaladar.com/recetas-de-pasta/rigatoni-salsa-bolonesa-receta-clasica-pasta-italiana) -, o de pasta larga y ancha como los *fetuccini* o los papardelle que son los idóneos para acompañar esta salsa. Además, esta salsa si os sobra es perfecta para hacer empanadas de carne o pasteles de carne cubiertos de puré de patata."
+      ],
+      "caloriesPerServing": 530,
+      "proteinG": 27.0,
+      "fatG": 15.0,
+      "carbsG": 56.0,
+      "costEur": 2.4,
+      "photoUri": "https://i.blogs.es/de63fc/bolonesa_aumen/650_1200.jpg",
+      "isFavorite": true,
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-pasta/la-receta-de-la-salsa-bolonesa-autentica",
+      "notes": null,
+      "createdAt": "2026-02-09T19:18:00Z",
+      "updatedAt": "2026-03-12T15:47:22.351624Z"
+    },
+    {
+      "id": "8",
+      "name": "Lasaña de ternera clásica al horno",
+      "mealType": "lunch",
+      "origin": "italiana",
+      "difficulty": "medium",
+      "prepTime": 35,
+      "cookTime": 75,
+      "servings": 6,
+      "ingredients": [
+        {
+          "ingredientId": "84",
+          "quantity": 18.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "20",
+          "quantity": 600.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "8",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "102",
+          "quantity": 800.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "99",
+          "quantity": 30.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "107",
+          "quantity": 100.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "2",
+          "quantity": 200.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 30.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 5.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 2.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "50",
+          "quantity": 500.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "58",
+          "quantity": 50.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "41",
+          "quantity": 50.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "64",
+          "quantity": 1.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "87",
+          "quantity": 250.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "88",
+          "quantity": 80.0,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Picamos muy fino la cebolla, zanahoria, apio y ajo. En una cazuela amplia añadimos el aceite de oliva y pochamos las verduras a fuego medio durante 10 minutos hasta que estén tiernas.",
+        "Incorporamos la carne picada de ternera y la cocinamos hasta que pierda el color rosado. Añadimos el vino blanco y dejamos evaporar el alcohol durante 3-4 minutos.",
+        "Agregamos el tomate triturado, el tomate concentrado y el agua. Salpimentamos y cocinamos a fuego suave durante 45 minutos, removiendo ocasionalmente hasta obtener una salsa espesa y concentrada.",
+        "Mientras tanto, preparamos la bechamel: derretimos la mantequilla en un cazo, añadimos la harina y cocinamos 2 minutos removiendo. Incorporamos la leche caliente poco a poco sin dejar de remover hasta espesar. Añadimos sal y nuez moscada. Reservamos.",
+        "Cocemos las placas de lasaña en abundante agua con sal según indique el fabricante si son tradicionales. Escurrimos y reservamos sobre un paño limpio.",
+        "Montamos la lasaña en una fuente apta para horno: base fina de bechamel, capa de placas, capa de carne, un poco de bechamel y mozzarella. Repetimos el proceso hasta terminar con una capa de placas cubierta con bechamel y el parmesano rallado.",
+        "Horneamos en horno precalentado a 180 ºC durante 25-30 minutos hasta que esté dorada y burbujeante. Dejamos reposar 10 minutos antes de servir para que se asiente y sea más fácil de cortar."
+      ],
+      "caloriesPerServing": 720,
+      "proteinG": 42.0,
+      "fatG": 38.0,
+      "carbsG": 55.0,
+      "costEur": 3.2,
+      "photoUri": "https://i.blogs.es/de63fc/bolonesa_aumen/650_1200.jpg",
+      "isFavorite": true,
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-pasta/la-receta-de-la-salsa-bolonesa-autentica",
+      "notes": "Receta elaborada a partir de la salsa boloñesa tradicional del archivo 000009 :contentReference[oaicite:0]{index=0}, adaptada y simplificada para montaje en lasaña clásica al horno.",
+      "createdAt": "2026-02-16T12:14:42Z",
+      "updatedAt": "2026-03-12T15:47:22.351783Z"
+    },
+    {
+      "id": "9",
+      "name": "Cocido madrileño tradicional",
+      "mealType": "lunch",
+      "origin": "española",
+      "difficulty": "medium",
+      "prepTime": 30,
+      "cookTime": 150,
+      "servings": 6,
+      "ingredients": [
+        {
+          "ingredientId": "36",
+          "quantity": 500.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "61",
+          "quantity": 500.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "70",
+          "quantity": 200.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "97",
+          "quantity": 150.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "43",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "42",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "26",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "60",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "75",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "73",
+          "quantity": 400.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 200.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "90",
+          "quantity": 400.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "35",
+          "quantity": 120.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "77",
+          "quantity": 1.0,
+          "unit": "tsp"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 20.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 10.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "2",
+          "quantity": 3000.0,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "La noche anterior ponemos los garbanzos en remojo con abundante agua templada y 10 g de sal durante 12 horas.",
+        "En una olla grande añadimos el agua y llevamos a ebullición. Incorporamos los garbanzos escurridos dentro de una malla junto con el morcillo, panceta, tocino, huesos y pollo. Cocemos a fuego medio durante 90 minutos, espumando al inicio.",
+        "Añadimos las zanahorias y las patatas enteras y peladas. Cocemos 30 minutos más.",
+        "Incorporamos el chorizo y la morcilla y cocemos 20 minutos adicionales.",
+        "Retiramos parte del caldo y cocemos los fideos durante 3-4 minutos para servir la sopa (primer vuelco).",
+        "Cocemos el repollo aparte 15 minutos en agua con sal. Lo escurrimos y lo rehogamos con ajo laminado, aceite de oliva y pimentón.",
+        "Servimos en tres vuelcos: primero la sopa de fideos, segundo los garbanzos con verduras y repollo, y tercero las carnes troceadas."
+      ],
+      "caloriesPerServing": 820,
+      "proteinG": 55.0,
+      "fatG": 45.0,
+      "carbsG": 55.0,
+      "costEur": 4.5,
+      "photoUri": "https://www.recetasderechupete.com/wp-content/uploads/2015/02/cocido-madrileno.jpg",
+      "isFavorite": true,
+      "sourceUrl": "https://www.recetasderechupete.com/cocido-madrileno-receta-tradicional/1406/",
+      "notes": "Se puede servir en tres vuelcos tradicionales: primero la sopa, después los garbanzos con verduras y por último las carnes. Mejora de un día para otro.",
+      "createdAt": "2026-02-16T12:19:45Z",
+      "updatedAt": "2026-03-12T15:47:22.351940Z"
+    },
+    {
+      "id": "10",
+      "name": "Alubias blancas estofadas con verduras",
+      "mealType": "lunch",
+      "origin": "española",
+      "difficulty": "easy",
+      "prepTime": 15,
+      "cookTime": 75,
+      "servings": 6,
+      "ingredients": [
+        {
+          "ingredientId": "4",
+          "quantity": 500.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "82",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "85",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 3.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "100",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "49",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "77",
+          "quantity": 1.0,
+          "unit": "tbsp"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 20.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "2",
+          "quantity": 1500.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Ponemos las alubias en remojo con abundante agua durante 10-12 horas. Pasado ese tiempo, escurrimos y reservamos.",
+        "En una olla grande añadimos las alubias junto con la cebolla, el puerro, el pimiento, las zanahorias y los ajos enteros. Incorporamos el laurel y cubrimos con el agua.",
+        "Llevamos a ebullición y, cuando empiece a hervir, bajamos el fuego y cocinamos a fuego medio-suave durante 70-80 minutos, retirando la espuma si fuera necesario.",
+        "En una sartén aparte calentamos el aceite de oliva y añadimos el pimentón fuera del fuego para que no se queme. Incorporamos el tomate rallado y cocinamos 5 minutos.",
+        "Retiramos las verduras enteras de la olla (cebolla, puerro, zanahoria y pimiento), las trituramos con un poco del caldo de cocción hasta obtener una crema fina y la devolvemos al guiso.",
+        "Añadimos el sofrito de tomate y pimentón, salpimentamos al gusto y cocinamos todo junto 10 minutos más para que espese y se integren los sabores.",
+        "Dejamos reposar 10 minutos antes de servir para que el guiso tome cuerpo."
+      ],
+      "caloriesPerServing": 320,
+      "proteinG": 18.0,
+      "fatG": 5.0,
+      "carbsG": 48.0,
+      "costEur": 1.4,
+      "photoUri": "https://imag.bonviveur.com/alubias-blancas-con-verduras.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/alubias-blancas-con-verduras",
+      "notes": "Receta saludable sin embutidos ni carnes. Las verduras trituradas aportan cremosidad natural sin necesidad de añadir grasa.",
+      "createdAt": "2026-02-16T12:35:14Z",
+      "updatedAt": "2026-03-12T15:47:22.352078Z"
+    },
+    {
+      "id": "11",
+      "name": "Guiso tradicional de patatas con costillas",
+      "mealType": "lunch",
+      "origin": "española",
+      "difficulty": "easy",
+      "prepTime": 20,
+      "cookTime": 55,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "30",
+          "quantity": 800.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "73",
+          "quantity": 900.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "82",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 3.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "100",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "77",
+          "quantity": 1.0,
+          "unit": "tbsp"
+        },
+        {
+          "ingredientId": "49",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 30.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "15",
+          "quantity": 900.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Salpimentamos las costillas. En una cazuela amplia calentamos el aceite y las doramos a fuego medio-alto hasta que estén bien selladas. Retiramos y reservamos.",
+        "En la misma cazuela sofreímos la cebolla, el pimiento y los ajos picados durante 8-10 minutos hasta que estén blandos.",
+        "Añadimos el tomate rallado y cocinamos 5 minutos más hasta que pierda el agua.",
+        "Incorporamos el pimentón fuera del fuego para que no se queme y removemos rápidamente.",
+        "Volvemos a introducir las costillas, añadimos el laurel y cubrimos con el caldo. Cocinamos a fuego medio 25 minutos.",
+        "Pelamos y chascamos las patatas (rompiéndolas al final del corte para que suelten almidón). Las añadimos al guiso y cocinamos 20-25 minutos más hasta que estén tiernas.",
+        "Rectificamos de sal y dejamos reposar 5-10 minutos antes de servir para que la salsa espese ligeramente."
+      ],
+      "caloriesPerServing": 620,
+      "proteinG": 32.0,
+      "fatG": 35.0,
+      "carbsG": 45.0,
+      "costEur": 2.8,
+      "photoUri": "https://imag.bonviveur.com/patatas-con-costillas.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/patatas-con-costillas",
+      "notes": "Guiso casero contundente ideal para días fríos. Mejor de un día para otro, cuando el reposo potencia el sabor y espesa la salsa.",
+      "createdAt": "2026-02-16T12:35:14Z",
+      "updatedAt": "2026-03-12T15:47:22.352219Z"
+    },
+    {
+      "id": "12",
+      "name": "Estofado tradicional de ternera al vino tinto",
+      "mealType": "lunch",
+      "origin": "española",
+      "difficulty": "medium",
+      "prepTime": 25,
+      "cookTime": 95,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "96",
+          "quantity": 1000.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "85",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 3.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "108",
+          "quantity": 500.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "15",
+          "quantity": 400.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "99",
+          "quantity": 1.0,
+          "unit": "tbsp"
+        },
+        {
+          "ingredientId": "49",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "105",
+          "quantity": 1.0,
+          "unit": "tsp"
+        },
+        {
+          "ingredientId": "41",
+          "quantity": 20.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 40.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Secamos bien la ternera y la cortamos en dados grandes. Salpimentamos y enharinamos ligeramente.",
+        "En una cazuela amplia calentamos el aceite y doramos la carne por tandas hasta que quede bien sellada por todos lados. Retiramos y reservamos.",
+        "En la misma cazuela sofreímos la cebolla, el puerro, las zanahorias y los ajos picados durante 10 minutos hasta que estén bien pochados.",
+        "Añadimos el tomate concentrado y cocinamos 2 minutos más.",
+        "Incorporamos de nuevo la carne, el laurel y el tomillo. Vertemos el vino tinto y dejamos hervir 5 minutos para evaporar el alcohol.",
+        "Añadimos el caldo hasta casi cubrir la carne. Tapamos y cocinamos a fuego muy suave durante 90 minutos, removiendo de vez en cuando.",
+        "Cuando la carne esté tierna y la salsa haya espesado, rectificamos de sal y dejamos reposar 10 minutos antes de servir."
+      ],
+      "caloriesPerServing": 540,
+      "proteinG": 42.0,
+      "fatG": 28.0,
+      "carbsG": 22.0,
+      "costEur": 3.9,
+      "photoUri": "https://imag.bonviveur.com/estofado-de-ternera-al-vino-tinto.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/estofado-de-ternera-al-vino-tinto",
+      "notes": "Guiso clásico de cocción lenta. Ideal prepararlo el día anterior, ya que el reposo intensifica el sabor y mejora la textura de la carne.",
+      "createdAt": "2026-02-16T12:35:14Z",
+      "updatedAt": "2026-03-12T15:47:22.352360Z"
+    },
+    {
+      "id": "13",
+      "name": "Carrilleras de cerdo estofadas al vino tinto",
+      "mealType": "lunch",
+      "origin": "española",
+      "difficulty": "medium",
+      "prepTime": 25,
+      "cookTime": 125,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "22",
+          "quantity": 1200.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "85",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 4.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "108",
+          "quantity": 600.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "15",
+          "quantity": 400.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "99",
+          "quantity": 1.0,
+          "unit": "tbsp"
+        },
+        {
+          "ingredientId": "49",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "105",
+          "quantity": 1.0,
+          "unit": "tsp"
+        },
+        {
+          "ingredientId": "41",
+          "quantity": 25.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 40.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Limpiamos las carrilleras retirando el exceso de grasa superficial si fuera necesario. Salpimentamos y enharinamos ligeramente.",
+        "En una cazuela amplia calentamos el aceite y doramos las carrilleras por ambos lados hasta que estén bien selladas. Retiramos y reservamos.",
+        "En la misma cazuela sofreímos la cebolla, el puerro, las zanahorias y los ajos picados durante 10-12 minutos hasta que estén bien pochados.",
+        "Añadimos el tomate concentrado y cocinamos un par de minutos más.",
+        "Incorporamos de nuevo las carrilleras, el laurel y el tomillo. Vertemos el vino tinto y dejamos hervir 8-10 minutos para evaporar el alcohol.",
+        "Añadimos el caldo hasta casi cubrir la carne. Tapamos y cocinamos a fuego muy suave durante 2 horas aproximadamente, hasta que la carne esté muy tierna.",
+        "Retiramos las carrilleras. Trituramos la salsa si se desea más fina, volvemos a introducir la carne y dejamos reducir 5-10 minutos más si fuera necesario.",
+        "Dejamos reposar 10 minutos antes de servir."
+      ],
+      "caloriesPerServing": 610,
+      "proteinG": 45.0,
+      "fatG": 38.0,
+      "carbsG": 18.0,
+      "costEur": 3.5,
+      "photoUri": "https://imag.bonviveur.com/carrilleras-de-cerdo-al-vino-tinto.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/carrilleras-de-cerdo-al-vino-tinto",
+      "notes": "Plato ideal para ocasiones especiales. Mejor de un día para otro, ya que el reposo intensifica el sabor y mejora la textura. Se puede triturar la salsa para un acabado más fino y elegante.",
+      "createdAt": "2026-02-16T12:35:14Z",
+      "updatedAt": "2026-03-12T15:47:22.352500Z"
+    },
+    {
+      "id": "14",
+      "name": "Estofado casero de cerdo con patatas",
+      "mealType": "lunch",
+      "origin": "española",
+      "difficulty": "easy",
+      "prepTime": 20,
+      "cookTime": 75,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "57",
+          "quantity": 900.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "73",
+          "quantity": 800.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "82",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 3.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "100",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "77",
+          "quantity": 1.0,
+          "unit": "tbsp"
+        },
+        {
+          "ingredientId": "49",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "107",
+          "quantity": 150.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "15",
+          "quantity": 800.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 35.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Cortamos el magro en dados medianos, salpimentamos y lo doramos en una cazuela amplia con el aceite caliente hasta que quede bien sellado. Retiramos y reservamos.",
+        "En la misma cazuela sofreímos la cebolla, el pimiento, la zanahoria y los ajos picados durante 8-10 minutos hasta que estén bien pochados.",
+        "Añadimos el tomate rallado y cocinamos 5 minutos más hasta que reduzca.",
+        "Incorporamos el pimentón fuera del fuego para evitar que se queme y removemos rápidamente.",
+        "Volvemos a introducir la carne, añadimos el laurel y vertemos el vino blanco. Dejamos hervir 3-4 minutos para evaporar el alcohol.",
+        "Añadimos el caldo caliente y cocinamos tapado a fuego medio-suave durante 35 minutos.",
+        "Pelamos y chascamos las patatas. Las incorporamos al guiso y cocinamos 20-25 minutos más hasta que estén tiernas y la salsa haya espesado.",
+        "Rectificamos de sal, dejamos reposar 5-10 minutos y servimos caliente."
+      ],
+      "caloriesPerServing": 670,
+      "proteinG": 38.0,
+      "fatG": 36.0,
+      "carbsG": 48.0,
+      "costEur": 2.6,
+      "photoUri": "https://imag.bonviveur.com/estofado-de-cerdo-con-patatas.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/estofado-de-cerdo-con-patatas",
+      "notes": "Guiso tradicional económico y muy sabroso. Chascar la patata es clave para que el estofado espese de forma natural sin necesidad de añadir harina.",
+      "createdAt": "2026-02-16T12:35:14Z",
+      "updatedAt": "2026-03-12T15:47:22.352641Z"
+    },
+    {
+      "id": "15",
+      "name": "Albóndigas caseras en salsa tradicional",
+      "mealType": "lunch",
+      "origin": "española",
+      "difficulty": "medium",
+      "prepTime": 30,
+      "cookTime": 40,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "21",
+          "quantity": 800.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "45",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "69",
+          "quantity": 40.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "50",
+          "quantity": 60.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 3.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "76",
+          "quantity": 10.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "41",
+          "quantity": 40.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "107",
+          "quantity": 150.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "15",
+          "quantity": 500.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "102",
+          "quantity": 200.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 50.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Mezclamos la carne picada con el huevo, el pan rallado previamente humedecido en la leche, un ajo picado y el perejil. Salpimentamos y amasamos hasta integrar.",
+        "Formamos las albóndigas del mismo tamaño, las pasamos ligeramente por harina y retiramos el exceso.",
+        "En una sartén amplia calentamos la mitad del aceite y doramos las albóndigas por tandas hasta que estén selladas. Reservamos.",
+        "En la misma cazuela añadimos el resto del aceite y sofreímos la cebolla, la zanahoria y los ajos picados durante 8-10 minutos.",
+        "Incorporamos el tomate triturado y cocinamos 5 minutos más.",
+        "Añadimos el vino blanco y dejamos evaporar el alcohol durante 3-4 minutos.",
+        "Incorporamos el caldo caliente y devolvemos las albóndigas a la cazuela. Cocinamos a fuego medio-suave durante 20-25 minutos hasta que la salsa espese.",
+        "Rectificamos de sal y dejamos reposar 5 minutos antes de servir."
+      ],
+      "caloriesPerServing": 590,
+      "proteinG": 38.0,
+      "fatG": 34.0,
+      "carbsG": 28.0,
+      "costEur": 2.5,
+      "photoUri": "https://imag.bonviveur.com/albondigas-en-salsa-caseras.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/albondigas-en-salsa",
+      "notes": "Receta tradicional perfecta para acompañar con arroz blanco o patatas fritas. La salsa se puede triturar para un acabado más fino.",
+      "createdAt": "2026-02-16T12:35:14Z",
+      "updatedAt": "2026-03-12T15:47:22.352789Z"
+    },
+    {
+      "id": "16",
+      "name": "Potaje tradicional de garbanzos con espinacas",
+      "mealType": "lunch",
+      "origin": "española",
+      "difficulty": "easy",
+      "prepTime": 20,
+      "cookTime": 70,
+      "servings": 6,
+      "ingredients": [
+        {
+          "ingredientId": "36",
+          "quantity": 500.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "34",
+          "quantity": 300.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 4.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "100",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "77",
+          "quantity": 1.0,
+          "unit": "tbsp"
+        },
+        {
+          "ingredientId": "28",
+          "quantity": 1.0,
+          "unit": "tsp"
+        },
+        {
+          "ingredientId": "49",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "68",
+          "quantity": 40.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 30.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "2",
+          "quantity": 1500.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Ponemos los garbanzos en remojo durante 10-12 horas. Escurrimos antes de usar.",
+        "En una olla grande incorporamos los garbanzos, el laurel y cubrimos con agua. Cocinamos a fuego medio durante 60 minutos aproximadamente hasta que estén tiernos (o 25 minutos en olla rápida).",
+        "En una sartén aparte calentamos el aceite y sofreímos la cebolla y dos ajos picados durante 8 minutos.",
+        "Añadimos el tomate rallado y cocinamos 5 minutos más. Incorporamos el pimentón y el comino fuera del fuego para evitar que se quemen.",
+        "Freímos el pan con los otros dos ajos y lo trituramos con un poco de caldo de cocción hasta obtener un majado espeso.",
+        "Incorporamos el sofrito y el majado a la olla de los garbanzos. Añadimos las espinacas troceadas y cocinamos 10-15 minutos más hasta que estén tiernas.",
+        "Rectificamos de sal y dejamos reposar 10 minutos antes de servir."
+      ],
+      "caloriesPerServing": 380,
+      "proteinG": 17.0,
+      "fatG": 9.0,
+      "carbsG": 55.0,
+      "costEur": 1.6,
+      "photoUri": "https://imag.bonviveur.com/potaje-de-garbanzos-con-espinacas.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/potaje-de-garbanzos-con-espinacas",
+      "notes": "Potaje clásico de Cuaresma. Se puede añadir huevo duro picado al servir. Mejora tras unas horas de reposo.",
+      "createdAt": "2026-02-16T12:35:14Z",
+      "updatedAt": "2026-03-12T15:47:22.352926Z"
+    },
+    {
+      "id": "17",
+      "name": "Wrap saludable de atún y verduras frescas",
+      "mealType": "dinner",
+      "origin": "internacional",
+      "difficulty": "easy",
+      "prepTime": 10,
+      "cookTime": 5,
+      "servings": 2,
+      "ingredients": [
+        {
+          "ingredientId": "106",
+          "quantity": 4.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "10",
+          "quantity": 240.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "111",
+          "quantity": 120.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "55",
+          "quantity": 0.5,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "53",
+          "quantity": 100.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "98",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "24",
+          "quantity": 0.5,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "59",
+          "quantity": 80.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 10.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Escurrimos bien el atún y lo colocamos en un bol. Añadimos el yogur, el zumo de medio limón, el aceite, sal y pimienta. Mezclamos hasta obtener una crema homogénea.",
+        "Lavamos y cortamos la lechuga en tiras finas. Cortamos el tomate en dados pequeños y la cebolla en juliana fina.",
+        "Calentamos ligeramente las tortillas en una sartén durante 20-30 segundos por cada lado para que sean más manejables.",
+        "Extendemos una capa de la mezcla de atún en el centro de cada tortilla.",
+        "Añadimos encima la lechuga, el tomate, la cebolla y el maíz.",
+        "Cerramos doblando los laterales hacia dentro y enrollamos firmemente.",
+        "Podemos marcar el wrap en la sartén 1-2 minutos por cada lado para que quede ligeramente crujiente.",
+        "Servimos inmediatamente o envolvemos en papel para llevar."
+      ],
+      "caloriesPerServing": 480,
+      "proteinG": 32.0,
+      "fatG": 18.0,
+      "carbsG": 45.0,
+      "costEur": 1.8,
+      "photoUri": "https://imag.bonviveur.com/wrap-de-atun.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/wrap-de-atun",
+      "notes": "Ideal para una cena rápida o para llevar. Se puede sustituir el yogur por mayonesa ligera o añadir aguacate para una versión más cremosa.",
+      "createdAt": "2026-02-16T12:50:41Z",
+      "updatedAt": "2026-03-12T15:47:22.353062Z"
+    },
+    {
+      "id": "18",
+      "name": "Sopa casera de verduras tradicional",
+      "mealType": "dinner",
+      "origin": "española",
+      "difficulty": "easy",
+      "prepTime": 15,
+      "cookTime": 25,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "85",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "13",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "73",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "48",
+          "quantity": 150.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "100",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "8",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 20.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "17",
+          "quantity": 1200.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Lavamos y troceamos todas las verduras en dados pequeños para que la cocción sea uniforme.",
+        "En una olla grande calentamos el aceite y sofreímos la cebolla, el puerro y el apio durante 5-7 minutos hasta que estén tiernos.",
+        "Añadimos la zanahoria, el calabacín, las judías verdes y la patata. Rehogamos 3 minutos más.",
+        "Incorporamos el tomate rallado y cocinamos 2 minutos adicionales.",
+        "Vertemos el caldo caliente hasta cubrir las verduras y llevamos a ebullición.",
+        "Bajamos el fuego y cocinamos a fuego medio durante 20-25 minutos hasta que todas las verduras estén tiernas.",
+        "Rectificamos de sal y pimienta y dejamos reposar 5 minutos antes de servir."
+      ],
+      "caloriesPerServing": 180,
+      "proteinG": 6.0,
+      "fatG": 6.0,
+      "carbsG": 24.0,
+      "costEur": 1.2,
+      "photoUri": "https://imag.bonviveur.com/sopa-de-verduras-casera.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/sopa-de-verduras",
+      "notes": "Receta ligera y reconfortante. Se puede añadir arroz, fideos finos o garbanzos cocidos para hacerla más completa.",
+      "createdAt": "2026-02-16T12:50:41Z",
+      "updatedAt": "2026-03-12T15:47:22.353214Z"
+    },
+    {
+      "id": "19",
+      "name": "Quesadillas de pavo y queso a la plancha",
+      "mealType": "dinner",
+      "origin": "mexicana",
+      "difficulty": "easy",
+      "prepTime": 10,
+      "cookTime": 10,
+      "servings": 2,
+      "ingredients": [
+        {
+          "ingredientId": "106",
+          "quantity": 4.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "74",
+          "quantity": 200.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "89",
+          "quantity": 200.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 0.5,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "81",
+          "quantity": 0.5,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 15.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "67",
+          "quantity": 1.0,
+          "unit": "tsp"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Cortamos la cebolla y el pimiento en tiras finas.",
+        "En una sartén calentamos la mitad del aceite y salteamos la cebolla y el pimiento durante 5-6 minutos hasta que estén tiernos. Salpimentamos y reservamos.",
+        "Colocamos una tortilla en la sartén a fuego medio y espolvoreamos una capa de queso rallado.",
+        "Añadimos encima el pavo troceado y las verduras salteadas. Espolvoreamos con orégano.",
+        "Cubrimos con otra capa ligera de queso y colocamos otra tortilla encima.",
+        "Cocinamos 2-3 minutos por cada lado hasta que el queso se funda y la tortilla quede dorada y crujiente.",
+        "Retiramos, cortamos en triángulos y servimos caliente."
+      ],
+      "caloriesPerServing": 520,
+      "proteinG": 38.0,
+      "fatG": 24.0,
+      "carbsG": 40.0,
+      "costEur": 2.2,
+      "photoUri": "https://imag.bonviveur.com/quesadillas-de-pavo.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/quesadillas-de-pavo",
+      "notes": "Perfectas para una cena rápida. Se pueden añadir champiñones salteados, pimiento o aguacate. Servir con guacamole o salsa de yogur.",
+      "createdAt": "2026-02-16T12:50:41Z",
+      "updatedAt": "2026-03-12T15:47:22.353349Z"
+    },
+    {
+      "id": "20",
+      "name": "Salmón al horno con verduras asadas",
+      "mealType": "dinner",
+      "origin": "mediterranea",
+      "difficulty": "easy",
+      "prepTime": 15,
+      "cookTime": 20,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "56",
+          "quantity": 800.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "13",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "81",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "24",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "112",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "103",
+          "quantity": 200.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 30.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "55",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "33",
+          "quantity": 1.0,
+          "unit": "tsp"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 1.0,
+          "unit": "ud"
+        }
+      ],
+      "steps": [
+        "Precalentamos el horno a 200°C con calor arriba y abajo.",
+        "Lavamos y cortamos las verduras en tiras o rodajas de tamaño similar para que se cocinen de manera uniforme.",
+        "Colocamos las verduras en una bandeja de horno, las aliñamos con la mitad del aceite, sal y pimienta. Horneamos 10 minutos.",
+        "Sacamos la bandeja, colocamos los lomos de salmón sobre las verduras y los rociamos con el resto del aceite y el zumo de medio limón.",
+        "Espolvoreamos con eneldo, sal y pimienta.",
+        "Horneamos 12-15 minutos más, dependiendo del grosor del salmón, hasta que esté jugoso y ligeramente rosado en el centro.",
+        "Servimos inmediatamente con unas rodajas de limón fresco."
+      ],
+      "caloriesPerServing": 480,
+      "proteinG": 40.0,
+      "fatG": 28.0,
+      "carbsG": 18.0,
+      "costEur": 4.2,
+      "photoUri": "https://imag.bonviveur.com/salmon-al-horno-con-verduras.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.bonviveur.es/recetas/salmon-al-horno-con-verduras",
+      "notes": "Receta saludable y rica en omega-3. Es importante no sobrecocinar el salmón para que quede jugoso. Se puede aromatizar con eneldo fresco o limón.",
+      "createdAt": "2026-02-16T15:06:36Z",
+      "updatedAt": "2026-03-12T15:47:22.353502Z"
+    },
+    {
+      "id": "21",
+      "name": "Tallarines a la carbonara auténtica",
+      "mealType": "lunch",
+      "origin": "italiana",
+      "difficulty": "easy",
+      "prepTime": 10,
+      "cookTime": 15,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "94",
+          "quantity": 400.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "37",
+          "quantity": 150.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "45",
+          "quantity": 3.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "109",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "86",
+          "quantity": 100.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 5.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 10.0,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Ponemos a hervir abundante agua con sal en una olla grande. Cuando hierva, añadimos los tallarines y cocemos según el tiempo indicado hasta que estén al dente.",
+        "Mientras tanto, cortamos el guanciale en tiras o dados pequeños. Lo cocinamos en una sartén amplia a fuego medio sin añadir aceite, hasta que quede dorado y crujiente. Retiramos del fuego y reservamos.",
+        "En un bol grande batimos los huevos y la yema junto con el queso Pecorino rallado y la pimienta negra hasta obtener una mezcla cremosa.",
+        "Escurrimos la pasta reservando un poco del agua de cocción. Añadimos los tallarines calientes a la sartén con el guanciale y mezclamos bien.",
+        "Retiramos la sartén del fuego y agregamos la mezcla de huevo y queso. Removemos rápidamente para que el calor residual cocine el huevo suavemente y se forme una salsa cremosa. Si es necesario, añadimos unas cucharadas del agua de cocción reservada para ajustar la textura.",
+        "Servimos inmediatamente con un poco más de queso rallado y pimienta negra al gusto."
+      ],
+      "caloriesPerServing": 620,
+      "proteinG": 28.0,
+      "fatG": 32.0,
+      "carbsG": 55.0,
+      "costEur": 2.2,
+      "photoUri": "https://upload.wikimedia.org/wikipedia/commons/3/33/Spaghetti_alla_Carbonara_%28cropped%29.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.giallozafferano.it/ricetta/Spaghetti-alla-Carbonara.html",
+      "notes": "Receta tradicional italiana sin nata. La cremosidad se consigue únicamente con huevo y queso, emulsionados con el calor de la pasta.",
+      "createdAt": "2026-02-19T20:22:54Z",
+      "updatedAt": "2026-03-12T15:47:22.353638Z"
+    },
+    {
+      "id": "22",
+      "name": "Pasta a la amatriciana tradicional",
+      "mealType": "lunch",
+      "origin": "italiana",
+      "difficulty": "easy",
+      "prepTime": 10,
+      "cookTime": 20,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "72",
+          "quantity": 400.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "37",
+          "quantity": 150.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "102",
+          "quantity": 800.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "86",
+          "quantity": 80.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 20.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "39",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 10.0,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Ponemos abundante agua con sal a hervir en una olla grande. Cuando hierva, añadimos la pasta y cocemos hasta que esté al dente.",
+        "Mientras tanto, cortamos el guanciale en tiras. Lo doramos en una sartén amplia a fuego medio sin añadir apenas aceite, dejando que suelte su grasa y quede crujiente.",
+        "Añadimos la guindilla desmenuzada y el tomate triturado a la sartén. Cocinamos a fuego medio durante 10-15 minutos hasta que la salsa reduzca y se concentre.",
+        "Escurrimos la pasta reservando un poco de agua de cocción. Incorporamos la pasta a la sartén y mezclamos bien para que se impregne de la salsa. Si es necesario, añadimos un poco del agua reservada para ligar.",
+        "Retiramos del fuego y añadimos la mitad del queso rallado, mezclando bien.",
+        "Servimos inmediatamente con el resto del Pecorino espolvoreado por encima."
+      ],
+      "caloriesPerServing": 590,
+      "proteinG": 24.0,
+      "fatG": 26.0,
+      "carbsG": 60.0,
+      "costEur": 2.5,
+      "photoUri": "https://upload.wikimedia.org/wikipedia/commons/9/90/Amatriciana.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.giallozafferano.it/ricetta/Bucatini-all-Amatriciana.html",
+      "notes": "Receta tradicional del Lacio, originaria de Amatrice. No lleva cebolla ni ajo en su versión auténtica. El toque picante es opcional.",
+      "createdAt": "2026-02-19T20:22:54Z",
+      "updatedAt": "2026-03-12T15:47:22.353766Z"
+    },
+    {
+      "id": "23",
+      "name": "Rigatoni alla zozzona tradicional",
+      "mealType": "lunch",
+      "origin": "italiana",
+      "difficulty": "medium",
+      "prepTime": 15,
+      "cookTime": 20,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "91",
+          "quantity": 400.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "37",
+          "quantity": 120.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "93",
+          "quantity": 300.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "102",
+          "quantity": 400.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "45",
+          "quantity": 3.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "86",
+          "quantity": 100.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 15.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "78",
+          "quantity": 5.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 10.0,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Ponemos abundante agua con sal a hervir y cocemos los rigatoni hasta que estén al dente.",
+        "Cortamos el guanciale en tiras y lo doramos en una sartén amplia a fuego medio hasta que quede crujiente y suelte su grasa.",
+        "Retiramos la piel de la salchicha y la desmenuzamos. La añadimos a la sartén y la cocinamos hasta que esté bien dorada.",
+        "Incorporamos el tomate triturado y cocinamos 10-12 minutos hasta que la salsa reduzca ligeramente.",
+        "En un bol batimos los huevos con el Pecorino rallado y abundante pimienta negra.",
+        "Escurrimos la pasta reservando un poco de agua de cocción. Mezclamos los rigatoni con la salsa de carne fuera del fuego.",
+        "Añadimos la mezcla de huevo y queso removiendo rápidamente para que el calor residual cree una salsa cremosa. Si es necesario, agregamos un poco de agua de cocción para ajustar la textura.",
+        "Servimos inmediatamente con más Pecorino y pimienta negra al gusto."
+      ],
+      "caloriesPerServing": 780,
+      "proteinG": 38.0,
+      "fatG": 42.0,
+      "carbsG": 65.0,
+      "costEur": 3.5,
+      "photoUri": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Rigatoni_alla_zozzona.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.giallozafferano.it/ricetta/Pasta-alla-zozzona.html",
+      "notes": "Plato típico romano que combina carbonara y amatriciana. Salsa intensa y muy cremosa sin nata. Tradicionalmente se elabora con guanciale y salchicha fresca italiana.",
+      "createdAt": "2026-02-19T20:22:54Z",
+      "updatedAt": "2026-03-12T15:47:22.353895Z"
+    },
+    {
+      "id": "24",
+      "name": "Orecchiette alla pugliese (con brócoli)",
+      "mealType": "lunch",
+      "origin": "italiana",
+      "difficulty": "easy",
+      "prepTime": 15,
+      "cookTime": 15,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "65",
+          "quantity": 400.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "12",
+          "quantity": 500.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "6",
+          "quantity": 4.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "39",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 40.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 10.0,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Lavamos el brócoli y lo cortamos en ramilletes pequeños. Pelamos y laminamos los ajos.",
+        "Ponemos abundante agua con sal a hervir. Cuando rompa el hervor, añadimos el brócoli y cocemos durante 3-4 minutos.",
+        "Incorporamos las orecchiette en la misma olla y cocemos todo junto hasta que la pasta esté al dente.",
+        "Mientras tanto, en una sartén amplia calentamos el aceite de oliva y doramos suavemente los ajos junto con la guindilla.",
+        "Añadimos las anchoas y las deshacemos con una cuchara hasta que se integren en el aceite aromatizado.",
+        "Escurrimos la pasta y el brócoli reservando un poco de agua de cocción. Añadimos todo a la sartén y salteamos un par de minutos, incorporando un poco del agua reservada para ligar la salsa.",
+        "Servimos inmediatamente con un chorrito extra de aceite de oliva si se desea."
+      ],
+      "caloriesPerServing": 540,
+      "proteinG": 18.0,
+      "fatG": 20.0,
+      "carbsG": 72.0,
+      "costEur": 1.8,
+      "photoUri": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Orecchiette_con_cime_di_rapa.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.giallozafferano.it/ricetta/Orecchiette-con-le-cime-di-rapa.html",
+      "notes": "Receta tradicional de Puglia. La versión más auténtica se hace con cime di rapa (grelos italianos), pero puede sustituirse por brócoli si no se encuentra el ingrediente original.",
+      "createdAt": "2026-02-19T20:22:54Z",
+      "updatedAt": "2026-03-12T15:47:22.354025Z"
+    },
+    {
+      "id": "25",
+      "name": "Pisto manchego tradicional",
+      "mealType": "lunch",
+      "origin": "española",
+      "difficulty": "easy",
+      "prepTime": 20,
+      "cookTime": 30,
+      "servings": 4,
+      "ingredients": [
+        {
+          "ingredientId": "100",
+          "quantity": 800.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "82",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "81",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "13",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "23",
+          "quantity": 1.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "32",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 60.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 5.0,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "11",
+          "quantity": 5.0,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Lavamos todas las verduras. Picamos la cebolla y los ajos finamente. Cortamos los pimientos en dados pequeños y el calabacín en cubos medianos. Pelamos y trituramos el tomate.",
+        "En una sartén amplia o cazuela baja, calentamos el aceite de oliva y sofreímos la cebolla y el ajo a fuego medio durante 5 minutos hasta que estén transparentes.",
+        "Añadimos los pimientos y cocinamos 10 minutos removiendo ocasionalmente hasta que estén tiernos.",
+        "Incorporamos el calabacín y cocinamos otros 10 minutos, dejando que suelte parte de su agua.",
+        "Agregamos el tomate triturado, la sal y el azúcar para corregir la acidez. Cocinamos a fuego medio-bajo durante 20 minutos, removiendo de vez en cuando, hasta que el conjunto esté bien reducido y meloso.",
+        "Rectificamos de sal si es necesario y servimos caliente."
+      ],
+      "caloriesPerServing": 220,
+      "proteinG": 5.0,
+      "fatG": 14.0,
+      "carbsG": 18.0,
+      "costEur": 1.5,
+      "photoUri": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Pisto_manchego.jpg",
+      "isFavorite": false,
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-verduras-y-hortalizas/pisto-manchego-receta-tradicional",
+      "notes": "Receta tradicional de Castilla-La Mancha. Se puede servir solo, con huevo a la plancha o como guarnición de carnes y pescados.",
+      "createdAt": "2026-02-19T20:22:54Z",
+      "updatedAt": "2026-03-12T15:47:22.354156Z"
+    },
+    {
+      "id": "26",
+      "name": "Tostadas de tomate y aguacate",
+      "mealType": "breakfast",
+      "origin": "española",
+      "difficulty": "easy",
+      "prepTime": 10,
+      "cookTime": 0,
+      "servings": 1,
+      "ingredients": [
+        {
+          "ingredientId": "2705",
+          "quantity": 2.0,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "98",
+          "quantity": 0.5,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "3",
+          "quantity": 0.5,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "1",
+          "quantity": 10.0,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "92",
+          "quantity": 1.0,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Tostamos las rebanadas de pan previamente congeladas en la tostadora.",
+        "Cortamos en laminas el tomate y el aguacate.",
+        "Echamos AOVE en las rebanadas, continuamos con las laminas de tomate y aguacate, y después encima le echamos sal y más AOVE."
+      ],
+      "caloriesPerServing": 0,
+      "proteinG": 0.0,
+      "fatG": 0.0,
+      "carbsG": 0.0,
+      "costEur": 0.0,
+      "photoUri": null,
+      "isFavorite": false,
+      "sourceUrl": null,
+      "notes": null,
+      "createdAt": "2026-03-04T17:04:01Z",
+      "updatedAt": "2026-03-12T15:47:22.354274Z"
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "1",
+      "name": "Aceite de oliva virgen extra",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/aceite-de-oliva-virgen-extra-maestros-de-hojiblanca-5-l/R-521033469/p",
+      "purchaseStore": "carrefour"
+    },
+    {
+      "id": "2",
+      "name": "Agua",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "3",
+      "name": "Aguacate",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "4",
+      "name": "Alubias blancas secas",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/alubia-blanca-rinon-categoria-extra-de-nuestra-tierra-1-kg/R-521012684/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "5",
+      "name": "Alubias rojas",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/alubias-rojas-cocidas-classic-carrefour-400-g/R-VC4AECOMM-784128/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "6",
+      "name": "Anchoas en aceite",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/anchoas-en-aceite-de-oliva-classic-carrefour-55-g/R-521029302/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "7",
+      "name": "Anís estrellado",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/anis-en-grano-carmencita-38-g/R-521005041/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "8",
+      "name": "Apio",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "9",
+      "name": "Arroz basmati",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/arroz-basmati-sensation-carrefour-1-kg/R-VC4AECOMM-724474/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "10",
+      "name": "Atún en conserva al natural (escurrido)",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/atun-claro-al-natural-classic-carrefour-pack-de-6-latas-de-56-g/R-prod620143/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "11",
+      "name": "Azúcar",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/azucar-blanco-carrefour-classic-1-kg/R-VC4AECOMM-463155/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "12",
+      "name": "Brócoli (o cime di rapa)",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "13",
+      "name": "Calabacín",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "14",
+      "name": "Calabaza",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "15",
+      "name": "Caldo de carne",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/caldo-de-carne-classic-carrefour-sin-gluten-brik-1-l/R-664305460/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "16",
+      "name": "Caldo de pollo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/caldo-de-pollo-classic-carrefour-sin-gluten-brik-1-l/R-521005786/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "17",
+      "name": "Caldo de verduras",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/caldo-de-verduras-classic-carrefour-sin-gluten-brik-1-l/R-521005791/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "18",
+      "name": "Cardamomo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/sazonador-cardamomo-carmencita-30-g/R-712515551/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "19",
+      "name": "Carne picada",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "20",
+      "name": "Carne picada de ternera",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "21",
+      "name": "Carne picada mixta (cerdo y ternera)",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "22",
+      "name": "Carrilleras de cerdo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "23",
+      "name": "Cebolla",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "24",
+      "name": "Cebolla morada",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "25",
+      "name": "Cebolleta",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "26",
+      "name": "Chorizo fresco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "27",
+      "name": "Cilantro fresco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "28",
+      "name": "Comino molido",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/comino-molido-carrefour-classic-45-g/R-prod710282/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "29",
+      "name": "Contramuslo de pollo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "30",
+      "name": "Costillas de cerdo troceadas",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "31",
+      "name": "Curry molido",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/curry-carrefour-classic-45-g/R-prod710294/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "32",
+      "name": "Dientes de ajo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "33",
+      "name": "Eneldo seco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/eneldo-en-hoja-carrefour-extra-18-g/R-VC4AECOMM-652980/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "34",
+      "name": "Espinacas frescas",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/espinacas-en-hojas-findus-1-kg/R-714518114/phttps://www.carrefour.es/supermercado/espinacas-en-hojas-findus-1-kg/R-714518114/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "35",
+      "name": "Fideos finos",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pasta-fideo-n0-gallo-675-g/R-VC4AECOMM-556094/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "36",
+      "name": "Garbanzos secos",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/garbanzo-castellano-categoria-extra-de-nuestra-tierra-1-kg/R-521005463/phttps://www.carrefour.es/supermercado/garbanzo-castellano-categoria-extra-de-nuestra-tierra-1-kg/R-521005463/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "37",
+      "name": "Guanciale",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/guanciale-en-tiras-ferrarini-sin-gluten-100-g/R-VC4AECOMM-572358/phttps://www.carrefour.es/supermercado/guanciale-en-tiras-ferrarini-sin-gluten-100-g/R-VC4AECOMM-572358/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "38",
+      "name": "Guindilla",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "39",
+      "name": "Guindilla seca",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/cayena-guindillas-carmencita-18-g/R-521005049/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "40",
+      "name": "Guisantes",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/guisantes-muy-finos-classic-carrefour-250-g/R-758904356/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "41",
+      "name": "Harina de trigo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/harina-de-trigo-classic-carrefour-1-kg/R-VC4AECOMM-253575/phttps://www.carrefour.es/supermercado/harina-de-trigo-classic-carrefour-1-kg/R-VC4AECOMM-253575/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "42",
+      "name": "Hueso de caña",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "43",
+      "name": "Hueso de jamón",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "45",
+      "name": "Huevos",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/huevos-camperos-circulo-de-calidad-12-ud/R-prod970492/phttps://www.carrefour.es/supermercado/huevos-camperos-circulo-de-calidad-12-ud/R-prod970492/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "46",
+      "name": "Jamón serrano",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/jamon-curado-en-taquitos-carrefour-el-mercado-sin-gluten-y-sin-latosa-pack-2-unidades-de-100-g/R-VC4AECOMM-283410/phttps://www.carrefour.es/supermercado/jamon-curado-en-taquitos-carrefour-el-mercado-sin-gluten-y-sin-latosa-pack-2-unidades-de-100-g/R-VC4AECOMM-283410/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "47",
+      "name": "Jengibre fresco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "48",
+      "name": "Judías verdes",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "49",
+      "name": "Laurel",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/laurel-hoja-carrefour-classic-10-g/R-prod710298/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "50",
+      "name": "Leche",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/leche-entera-carrefour-brik-1-l/R-521006992/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "51",
+      "name": "Leche de coco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/jugo-de-coco-carrefour-400-ml/R-prod410226/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "53",
+      "name": "Lechuga",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "54",
+      "name": "Lentejas",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/lenteja-pardina-categoria-extra-de-nuestra-tierra-1-kg/R-521005433/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "55",
+      "name": "Limón",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": "NULL",
+      "purchaseStore": "NULL"
+    },
+    {
+      "id": "56",
+      "name": "Lomos de salmón fresco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "57",
+      "name": "Magro de cerdo para guisar",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "58",
+      "name": "Mantequilla",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/mantequilla-facil-de-untar-82-mg-sin-sal-carrefour-classic-250-g/R-871004960/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "59",
+      "name": "Maíz dulce",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/maiz-dulce-cidacos-pack-de-3-unidades-de-140-g/R-VC4AECOMM-553244/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "60",
+      "name": "Morcilla de cebolla",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "61",
+      "name": "Morcillo de ternera",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "62",
+      "name": "Mozzarella lonchas",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/queso-mozzarella-en-lonchas-carrefour-200-g/R-521030724/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "63",
+      "name": "Nachos fritos de maíz",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/nachos-al-natural-carrefour-200-g/R-521029351/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "64",
+      "name": "Nuez moscada",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/nuez-moscada-molida-carrefour-classic-45-g/R-prod710296/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "65",
+      "name": "Orecchiette",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pasta-orecchiette-barilla-collezione-500-g/R-prod301668/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "66",
+      "name": "Orégano fresco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "67",
+      "name": "Orégano seco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/oregano-carrefour-classic-11-g/R-prod710293/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "68",
+      "name": "Pan",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "69",
+      "name": "Pan rallado",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pan-rallado-carrefour-750-g/R-805763831/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "70",
+      "name": "Panceta fresca",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "71",
+      "name": "Pasta",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pasta-macarrones-carrefour-classic-1-kg/R-544501833/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "72",
+      "name": "Pasta (bucatini o tallarines)",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pasta-fusilli-lunghi-bucati-terre-ditalia-500-g/R-prod720341/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "73",
+      "name": "Patata",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "74",
+      "name": "Pechuga de pavo cocida en lonchas",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pechuga-de-pavo-cocida-en-finas-lonchas-carrefour-el-mercado-sin-gluten-225-g/R-VC4AECOMM-050768/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "75",
+      "name": "Pechuga de pollo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "76",
+      "name": "Perejil fresco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "77",
+      "name": "Pimentón dulce",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pimenton-dulce-de-la-vera-250-g/R-618405347/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "78",
+      "name": "Pimienta negra",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pimienta-negra-grano-carrefour-classic-180-g/R-VC4AECOMM-652991/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "81",
+      "name": "Pimiento rojo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "82",
+      "name": "Pimiento verde",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "83",
+      "name": "Pipas de calabaza",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pipas-de-calabaza-crudas-y-peladas-carrefour-sin-sal-anadida-150-g/R-prod730981/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "84",
+      "name": "Placas de lasaña secas",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/placas-para-lasana-precocidas-carrefour-classic-250-g/R-590210865/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "85",
+      "name": "Puerro",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "86",
+      "name": "Queso Pecorino Romano rallado",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/queso-rallado-pecorino-romano-dop-galbani-60-g/R-fprod1480163/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "87",
+      "name": "Queso mozzarella rallado",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/queso-mozzarella-rallado-carrefour-200-g/R-VC4AECOMM-646724/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "88",
+      "name": "Queso parmesano rallado",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/queso-rallado-parmesano-carrefour-extra-100-g/R-522714749/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "89",
+      "name": "Queso rallado (mezcla fundente)",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/queso-en-polvo-especial-pasta-carrefour-sin-gluten-150-g/R-fprod1350064/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "90",
+      "name": "Repollo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "91",
+      "name": "Rigatoni",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pasta-macarron-rigatoni-garofalo-500-g/R-842200698/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "92",
+      "name": "Sal",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/molinillo-sal-rosa-del-himalaya-carrefour-seleccion-100-g/R-fprod1260107/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "93",
+      "name": "Salchicha fresca italiana",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "94",
+      "name": "Tallarines",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/pasta-tallarines-carrefour-classic-1-kg/R-fprod1270190/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "95",
+      "name": "Ternera",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "96",
+      "name": "Ternera para guisar (aguja o morcillo)",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "97",
+      "name": "Tocino fresco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "98",
+      "name": "Tomate",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "99",
+      "name": "Tomate concentrado",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/tomate-concentrado-mutti-130-g/R-fprod1480328/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "100",
+      "name": "Tomate maduro",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "101",
+      "name": "Tomate pera",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "102",
+      "name": "Tomate triturado",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/tomate-triturado-classic-carrefour-lata-de-390-g/R-fprod1190604/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "103",
+      "name": "Tomates cherry",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/tomate-cherry-pera-250-g/R-VC4AECOMM-353669/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "104",
+      "name": "Tomillo fresco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "105",
+      "name": "Tomillo seco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/tomillo-hoja-carrefour-classic-18-g/R-prod710291/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "106",
+      "name": "Tortillas de trigo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/tortillas-de-trigo-sensation-carrefour-10-ud/R-VC4AECOMM-696577/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "107",
+      "name": "Vino blanco",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/vino-para-cocinar-blanco-seco-al-gusto-75-cl/R-702506639/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "108",
+      "name": "Vino tinto",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/vino-tinto-vega-madrono-do-vinos-de-madrid-75-cl/R-589701632/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "109",
+      "name": "Yema de huevo",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "110",
+      "name": "Yogur griego",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/yogur-griego-natural-carrefour-extra-pack-de-6-unidades-de-125-g/R-VC4AECOMM-621804/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "111",
+      "name": "Yogur natural",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": true,
+      "purchaseUrl": "https://www.carrefour.es/supermercado/yogur-natural-carrefour-pack-de-8-unidades-de-125-g/R-VC4AECOMM-441067/p",
+      "purchaseStore": null
+    },
+    {
+      "id": "112",
+      "name": "Zanahoria",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    },
+    {
+      "id": "2705",
+      "name": "Rebanada de pan",
+      "defaultUnit": "ud",
+      "category": null,
+      "isOnline": false,
+      "purchaseUrl": null,
+      "purchaseStore": null
+    }
+  ]
+}

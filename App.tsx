@@ -1,13 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { loadSeedIfNeeded } from './storage/seedLoader';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import RecipesScreen from './screens/RecipesScreen';
+import PlanningScreen from './screens/PlanningScreen';
+import ShoppingListScreen from './screens/ShoppingListScreen';
+import NutritionScreen from './screens/NutritionScreen';
+import IngredientsScreen from './screens/IngredientsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-type Screen = 'Recipes' | 'Planning' | 'Shopping List' | 'Nutrition' | 'Settings';
+type Tab = 'Recipes' | 'Planning' | 'Shopping List' | 'Nutrition' | 'Settings';
+type Screen = Tab | 'Ingredients';
 
-const TABS: { name: Screen; icon: string }[] = [
+const TABS: { name: Tab; icon: string }[] = [
   { name: 'Recipes', icon: '🍽' },
   { name: 'Planning', icon: '📅' },
   { name: 'Shopping List', icon: '🛒' },
@@ -17,16 +23,33 @@ const TABS: { name: Screen; icon: string }[] = [
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('Recipes');
+  const [activePlanId, setActivePlanId] = useState<string | null>(null);
+
+  useEffect(() => { loadSeedIfNeeded(); }, []);
+
+  function handleGenerateList(planId: string) {
+    setActivePlanId(planId);
+    setCurrentScreen('Shopping List');
+  }
 
   function renderScreen() {
-    if (currentScreen === 'Recipes') return <RecipesScreen />;
-    if (currentScreen === 'Settings') return <SettingsScreen />;
-    return (
-      <View style={styles.content}>
-        <Text style={styles.screenText}>{currentScreen}</Text>
-      </View>
-    );
+    switch (currentScreen) {
+      case 'Recipes':
+        return <RecipesScreen />;
+      case 'Planning':
+        return <PlanningScreen onGenerateList={handleGenerateList} />;
+      case 'Shopping List':
+        return <ShoppingListScreen activePlanId={activePlanId} />;
+      case 'Nutrition':
+        return <NutritionScreen activePlanId={activePlanId} />;
+      case 'Ingredients':
+        return <IngredientsScreen />;
+      case 'Settings':
+        return <SettingsScreen onOpenIngredients={() => setCurrentScreen('Ingredients')} />;
+    }
   }
+
+  const activeTab: Tab = currentScreen === 'Ingredients' ? 'Settings' : (currentScreen as Tab);
 
   return (
     <SafeAreaProvider>
@@ -38,7 +61,7 @@ export default function App() {
         {/* Tab Bar */}
         <View style={styles.tabBar}>
           {TABS.map((tab) => {
-            const active = currentScreen === tab.name;
+            const active = activeTab === tab.name;
             return (
               <TouchableOpacity
                 key={tab.name}
@@ -63,15 +86,6 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  screenText: {
-    fontSize: 24,
-    color: '#aaa',
   },
   tabBar: {
     flexDirection: 'row',
