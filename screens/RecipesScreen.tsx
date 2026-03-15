@@ -1,4 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -115,16 +116,25 @@ const UNITS = ['g', 'ud', 'ml', 'tsp', 'tbsp'];
 const PREDEFINED_ORIGINS = ['Italiana', 'Mexicana', 'Española', 'Asiática', 'Francesa', 'Americana', 'Árabe', 'India', 'Japonesa', 'Griega'];
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = {
-  easy: '🟢 Easy',
-  medium: '🟡 Medium',
-  hard: '🔴 Hard',
+  easy: 'Easy',
+  medium: 'Medium',
+  hard: 'Hard',
 };
 
 const MEAL_LABEL: Record<MealType, string> = {
-  breakfast: '☀️ Breakfast',
-  lunch: '🍱 Lunch',
-  snack: '🍎 Snack',
-  dinner: '🌙 Dinner',
+  breakfast: 'Breakfast',
+  lunch: 'Lunch',
+  snack: 'Snack',
+  dinner: 'Dinner',
+};
+
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const MEAL_ICON: Record<MealType, IoniconName> = {
+  breakfast: 'sunny-outline',
+  lunch: 'restaurant-outline',
+  snack: 'cafe-outline',
+  dinner: 'moon-outline',
 };
 
 // ─── Recipe Card ──────────────────────────────────────────────────────────────
@@ -151,17 +161,29 @@ function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
       <View style={styles.cardBody}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
-          <TouchableOpacity onPress={() => onToggleFavorite(item)}>
-            <Text style={styles.star}>{item.isFavorite ? '⭐' : '☆'}</Text>
+          <TouchableOpacity onPress={() => onToggleFavorite(item)} style={{ marginLeft: 8 }}>
+            <Ionicons
+              name={item.isFavorite ? 'star' : 'star-outline'}
+              size={20}
+              color={item.isFavorite ? '#F5A623' : C.textMuted}
+            />
           </TouchableOpacity>
         </View>
         <View style={styles.cardMeta}>
-          <Text style={styles.tag}>{MEAL_LABEL[item.mealType]}</Text>
-          <Text style={styles.tag}>{DIFFICULTY_LABEL[item.difficulty]}</Text>
+          <View style={styles.tag}>
+            <Ionicons name={MEAL_ICON[item.mealType]} size={11} color={C.textSecondary} />
+            <Text style={styles.tagText}> {MEAL_LABEL[item.mealType]}</Text>
+          </View>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>{DIFFICULTY_LABEL[item.difficulty]}</Text>
+          </View>
         </View>
-        <Text style={styles.cardSub}>
-          ⏱ {item.prepTime + item.cookTime} min · {item.servings} servings · {item.caloriesPerServing} kcal
-        </Text>
+        <View style={styles.cardSubRow}>
+          <Ionicons name="time-outline" size={12} color={C.textMuted} />
+          <Text style={styles.cardSub}>
+            {' '}{item.prepTime + item.cookTime} min · {item.servings} servings · {item.caloriesPerServing} kcal
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -254,7 +276,10 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
 
       {Platform.OS === 'web' && (
         <TouchableOpacity style={styles.importButton} onPress={onImport}>
-          <Text style={styles.importButtonText}>📂 Import from .txt</Text>
+          <View style={styles.importButtonContent}>
+            <Ionicons name="folder-open-outline" size={16} color={C.primary} />
+            <Text style={styles.importButtonText}> Import from .txt</Text>
+          </View>
         </TouchableOpacity>
       )}
 
@@ -468,12 +493,16 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {/* Header */}
       <View style={styles.formHeader}>
-        <TouchableOpacity onPress={onCancel}>
-          <Text style={styles.formCancel}>✕ Cancel</Text>
+        <TouchableOpacity onPress={onCancel} style={styles.formCancel}>
+          <Ionicons name="close" size={26} color={C.primary} />
         </TouchableOpacity>
         <Text style={styles.formTitle}>{isEdit ? 'Edit Recipe' : 'New Recipe'}</Text>
         <TouchableOpacity onPress={() => setIsFavorite(!isFavorite)}>
-          <Text style={styles.star}>{isFavorite ? '⭐' : '☆'}</Text>
+          <Ionicons
+            name={isFavorite ? 'star' : 'star-outline'}
+            size={22}
+            color={isFavorite ? '#F5A623' : C.textMuted}
+          />
         </TouchableOpacity>
       </View>
 
@@ -482,15 +511,18 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
         {/* Photo */}
         <Text style={styles.sectionLabel}>Photo</Text>
         <TouchableOpacity style={styles.photoBtn} onPress={() => setShowPhotoSheet(true)}>
-          <Text style={styles.photoBtnText}>📷 Add photo</Text>
+          <View style={styles.photoBtnContent}>
+            <Ionicons name="camera-outline" size={16} color={C.textSecondary} />
+            <Text style={styles.photoBtnText}> Add photo</Text>
+          </View>
         </TouchableOpacity>
         {photoUri && <Image source={{ uri: photoUri }} style={styles.photoPreview} />}
         <ActionSheet
           visible={showPhotoSheet}
           onClose={() => setShowPhotoSheet(false)}
           actions={[
-            { label: '📷 Choose from gallery', onPress: () => { setShowPhotoSheet(false); pickImage('gallery'); } },
-            { label: '📸 Take a photo', onPress: () => { setShowPhotoSheet(false); pickImage('camera'); } },
+            { label: 'Choose from gallery', onPress: () => { setShowPhotoSheet(false); pickImage('gallery'); } },
+            { label: 'Take a photo', onPress: () => { setShowPhotoSheet(false); pickImage('camera'); } },
           ]}
         />
 
@@ -518,7 +550,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
               autoFocus
             />
             <TouchableOpacity style={styles.ingAddBtn} onPress={handleCustomOriginConfirm}>
-              <Text style={styles.ingAddBtnText}>✓</Text>
+              <Ionicons name="checkmark" size={18} color="#fff" />
             </TouchableOpacity>
           </View>
         )}
@@ -600,8 +632,8 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
         {ingredients.map((ri, i) => (
           <View key={i} style={styles.ingRow}>
             <Text style={styles.ingText}>{ri.quantity} {ri.unit} — {ingName(ri)}</Text>
-            <TouchableOpacity onPress={() => removeIngredient(i)}>
-              <Text style={styles.removeBtn}>✕</Text>
+            <TouchableOpacity onPress={() => removeIngredient(i)} style={styles.removeBtn}>
+              <Ionicons name="close-circle-outline" size={20} color={C.danger} />
             </TouchableOpacity>
           </View>
         ))}
@@ -656,8 +688,8 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
               placeholder={`Step ${i + 1}`}
               multiline
             />
-            <TouchableOpacity onPress={() => removeStep(i)}>
-              <Text style={styles.removeBtn}>✕</Text>
+            <TouchableOpacity onPress={() => removeStep(i)} style={styles.removeBtn}>
+              <Ionicons name="close-circle-outline" size={20} color={C.danger} />
             </TouchableOpacity>
           </View>
         ))}
@@ -812,6 +844,7 @@ const styles = StyleSheet.create({
   searchContainer: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10 },
   searchInput: { backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.xl, paddingHorizontal: 18, paddingVertical: 12, fontSize: 15, color: C.textPrimary },
   importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: C.primary, borderRadius: RADIUS.pill, padding: 14, alignItems: 'center' },
+  importButtonContent: { flexDirection: 'row', alignItems: 'center' },
   importButtonText: { color: C.primary, fontSize: 15, fontWeight: '600' },
   filterBar: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 12, gap: 10 },
   filterDropdown: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.pill, paddingHorizontal: 14, paddingVertical: 10, backgroundColor: C.bgSurface },
@@ -830,18 +863,21 @@ const styles = StyleSheet.create({
   cardName: { fontSize: 17, fontWeight: '600', flex: 1, fontFamily: FONT.serif, color: C.textPrimary },
   star: { fontSize: 20, marginLeft: 8 },
   cardMeta: { flexDirection: 'row', gap: 8, marginBottom: 6 },
-  tag: { fontSize: 12, color: C.textSecondary, backgroundColor: C.bgCard, paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.pill },
-  cardSub: { fontSize: 12, color: C.textMuted, marginTop: 4 },
+  tag: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgCard, paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.pill },
+  tagText: { fontSize: 12, color: C.textSecondary },
+  cardSubRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
+  cardSub: { fontSize: 12, color: C.textMuted },
 
   // Form header
-  formHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, backgroundColor: C.bgSurface },
+  formHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, backgroundColor: C.bgSurface },
   formTitle: { fontSize: 17, fontWeight: '700', fontFamily: FONT.serif, color: C.textPrimary },
-  formCancel: { color: C.primary, fontSize: 15 },
+  formCancel: { padding: 4 },
   formContent: { padding: 20, backgroundColor: C.bgPage },
 
   // Photo
   photoRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   photoBtn: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.md, padding: 12, alignItems: 'center', backgroundColor: C.bgInput },
+  photoBtnContent: { flexDirection: 'row', alignItems: 'center' },
   photoBtnText: { fontSize: 14, color: C.textSecondary },
   photoPreview: { width: '100%', height: 200, borderRadius: RADIUS.md, marginBottom: 16, resizeMode: 'cover' },
 
@@ -875,7 +911,7 @@ const styles = StyleSheet.create({
   ingInputUnit: { flex: 1.5, marginBottom: 0 },
   ingAddBtn: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingHorizontal: 16, paddingVertical: 12 },
   ingAddBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  removeBtn: { color: C.danger, fontSize: 16, paddingHorizontal: 8 },
+  removeBtn: { paddingHorizontal: 8 },
 
   // Steps
   stepRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 8 },

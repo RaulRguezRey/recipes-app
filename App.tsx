@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { C, RADIUS, SHADOW } from './constants/theme';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -14,13 +15,14 @@ import SettingsScreen from './screens/SettingsScreen';
 
 type Tab = 'Recipes' | 'Planning' | 'Shopping List' | 'Nutrition' | 'Settings';
 type Screen = Tab | 'Ingredients';
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
-const TABS: { name: Tab; icon: string }[] = [
-  { name: 'Recipes', icon: '🍽' },
-  { name: 'Planning', icon: '📅' },
-  { name: 'Shopping List', icon: '🛒' },
-  { name: 'Nutrition', icon: '🥗' },
-  { name: 'Settings', icon: '⚙️' },
+const TABS: { name: Tab; icon: IoniconName; iconActive: IoniconName }[] = [
+  { name: 'Recipes',       icon: 'restaurant-outline', iconActive: 'restaurant' },
+  { name: 'Planning',      icon: 'calendar-outline',   iconActive: 'calendar' },
+  { name: 'Shopping List', icon: 'cart-outline',        iconActive: 'cart' },
+  { name: 'Nutrition',     icon: 'nutrition-outline',  iconActive: 'nutrition' },
+  { name: 'Settings',      icon: 'settings-outline',   iconActive: 'settings' },
 ];
 
 function LoadingScreen() {
@@ -76,10 +78,11 @@ function MainTabs() {
               style={[styles.tab, active && styles.tabActive]}
               onPress={() => setCurrentScreen(tab.name)}
             >
-              <Text style={styles.tabIcon}>{tab.icon}</Text>
-              <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
-                {tab.name}
-              </Text>
+              <Ionicons
+                name={active ? tab.iconActive : tab.icon}
+                size={24}
+                color={active ? '#fff' : C.textMuted}
+              />
             </TouchableOpacity>
           );
         })}
@@ -113,9 +116,9 @@ const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
     backgroundColor: C.bgSurface,
-    height: 72,
+    height: 62,
     paddingHorizontal: 6,
-    paddingVertical: 8,
+    paddingVertical: 6,
     ...(SHADOW.up as any),
   },
   tab: {
@@ -123,21 +126,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: RADIUS.lg,
-    paddingVertical: 6,
   },
   tabActive: {
     backgroundColor: C.primary,
-  },
-  tabIcon: {
-    fontSize: 20,
-  },
-  tabLabel: {
-    fontSize: 10,
-    marginTop: 2,
-    color: C.textMuted,
-  },
-  tabLabelActive: {
-    color: '#fff',
-    fontWeight: '600',
   },
 });

@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -35,11 +36,13 @@ const DAYS: { key: DayOfWeek; label: string }[] = [
   { key: 'sunday', label: 'Domingo' },
 ];
 
-const MEAL_TYPES: { key: MealType; label: string; emoji: string }[] = [
-  { key: 'breakfast', label: 'Desayuno', emoji: '🌅' },
-  { key: 'lunch', label: 'Almuerzo', emoji: '🍽' },
-  { key: 'snack', label: 'Merienda', emoji: '🍎' },
-  { key: 'dinner', label: 'Cena', emoji: '🌙' },
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const MEAL_TYPES: { key: MealType; label: string; iconName: IoniconName }[] = [
+  { key: 'breakfast', label: 'Desayuno', iconName: 'sunny-outline' },
+  { key: 'lunch',     label: 'Almuerzo', iconName: 'restaurant-outline' },
+  { key: 'snack',     label: 'Merienda', iconName: 'cafe-outline' },
+  { key: 'dinner',    label: 'Cena',     iconName: 'moon-outline' },
 ];
 
 const MEAL_TYPE_LABELS: Record<MealType, string> = {
@@ -373,11 +376,14 @@ export default function PlanningScreen({ onGenerateList }: Props) {
         {DAYS.map(({ key: day, label: dayLabel }) => (
           <View key={day} style={styles.dayBlock}>
             <Text style={styles.dayLabel}>{dayLabel}</Text>
-            {MEAL_TYPES.map(({ key: mealType, emoji }) => {
+            {MEAL_TYPES.map(({ key: mealType, iconName }) => {
               const cellEntries = entriesFor(day, mealType);
               return (
                 <View key={mealType} style={styles.mealCell}>
-                  <Text style={styles.mealTypeLabel}>{emoji} {MEAL_TYPE_LABELS[mealType]}</Text>
+                  <View style={styles.mealTypeLabelRow}>
+                    <Ionicons name={iconName} size={12} color={C.textMuted} />
+                    <Text style={styles.mealTypeLabel}> {MEAL_TYPE_LABELS[mealType]}</Text>
+                  </View>
                   {cellEntries.map((entry) => {
                     const recipe = recipeMap[entry.recipeId];
                     if (!recipe) return null;
@@ -411,7 +417,10 @@ export default function PlanningScreen({ onGenerateList }: Props) {
           style={styles.generateBtn}
           onPress={() => onGenerateList(activePlan.id)}
         >
-          <Text style={styles.generateBtnText}>🛒 Generar lista de la compra</Text>
+          <View style={styles.generateBtnContent}>
+            <Ionicons name="cart-outline" size={18} color="#fff" />
+            <Text style={styles.generateBtnText}> Generar lista de la compra</Text>
+          </View>
         </TouchableOpacity>
       )}
 
@@ -460,7 +469,8 @@ const styles = StyleSheet.create({
   dayBlock: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, overflow: 'hidden', ...(SHADOW.sm as any) },
   dayLabel: { backgroundColor: C.primary, color: '#fff', fontWeight: '700', fontSize: 14, paddingVertical: 12, paddingHorizontal: 16, fontFamily: FONT.serif },
   mealCell: { padding: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
-  mealTypeLabel: { fontSize: 12, color: C.textMuted, marginBottom: 8 },
+  mealTypeLabelRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  mealTypeLabel: { fontSize: 12, color: C.textMuted },
   entryChip: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: C.bgCard, borderRadius: RADIUS.sm, paddingVertical: 8, paddingHorizontal: 12, marginBottom: 6 },
   entryName: { flex: 1, fontSize: 13, color: C.primary, fontWeight: '600' },
   entryServings: { fontSize: 12, color: C.textMuted, marginLeft: 8 },
@@ -469,6 +479,7 @@ const styles = StyleSheet.create({
 
   // Generate button
   generateBtn: { margin: 16, backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, alignItems: 'center', ...(SHADOW.sm as any) },
+  generateBtnContent: { flexDirection: 'row', alignItems: 'center' },
   generateBtnText: { color: '#fff', fontSize: 15, fontWeight: '600' },
 
   // Recipe Selector Modal

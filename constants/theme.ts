@@ -1,23 +1,23 @@
 export const C = {
   // ── Brand colours ─────────────────────────────────────────────────────────
-  primary:       '#7C5028', // walnut brown  (CTAs, active tab, buttons)
-  primaryLight:  '#A67C52', // caramel        (secondary actions)
-  primaryDark:   '#4E3018', // espresso       (pressed states)
+  primary:       '#5AC8FA', // walnut brown  (CTAs, active tab, buttons)
+  primaryLight:  '#a9e4ff', // caramel        (secondary actions)
+  primaryDark:   '#2992c2', // espresso       (pressed states)
 
   // ── Backgrounds ───────────────────────────────────────────────────────────
-  bgPage:        '#F5EDE0', // warm beige     (screen backgrounds)
-  bgSurface:     '#FFFBF4', // cream          (cards, modals, tab bar)
-  bgCard:        '#F0E2C8', // warm amber     (recipe cards)
-  bgInput:       '#FDF7EF', // pale cream     (text inputs)
+  bgPage:        '#e6e6e6', // warm beige     (screen backgrounds)
+  bgSurface:     '#f7f7f7', // cream          (cards, modals, tab bar)
+  bgCard:        '#f7f7f7', // warm amber     (recipe cards)
+  bgInput:       '#f7f7f7', // pale cream     (text inputs)
 
   // ── Borders & dividers ────────────────────────────────────────────────────
-  border:        '#DEC9A8', // tan            (hairline dividers, input borders)
-  borderStrong:  '#C4A882', // darker tan     (card outlines)
+  border:        '#c6edff', // tan            (hairline dividers, input borders)
+  borderStrong:  '#50c8ff', // darker tan     (card outlines)
 
   // ── Text ──────────────────────────────────────────────────────────────────
-  textPrimary:   '#3D2B1F', // dark espresso  (headings, primary labels)
-  textSecondary: '#7D6246', // medium brown   (secondary labels, values)
-  textMuted:     '#A89070', // khaki          (placeholders, timestamps)
+  textPrimary:   '#383838', // dark espresso  (headings, primary labels)
+  textSecondary: '#4e4e4e', // medium brown   (secondary labels, values)
+  textMuted:     '#bdbdbd', // khaki          (placeholders, timestamps)
 
   // ── Semantic ──────────────────────────────────────────────────────────────
   danger:        '#B8312F', // brick red      (delete, error)
@@ -28,9 +28,49 @@ export const C = {
 };
 
 export const FONT = {
-  // System serif (Georgia on iOS, serif fallback on Android)
-  // Use for headings and recipe names
-  serif:      'Georgia' as const,
-  // System sans-serif (San Francisco on iOS, Roboto on Android)
+  // System sans-serif (SF Pro on iOS, Roboto on Android)
+  serif:      undefined as undefined,
   sans:       undefined as undefined,
+};
+
+// ── Border radius tokens ──────────────────────────────────────────────────────
+export const RADIUS = {
+  xs:   8,
+  sm:   12,
+  md:   16,
+  lg:   20,
+  xl:   24,
+  pill: 50,
+};
+
+// ── Shadow tokens ─────────────────────────────────────────────────────────────
+export const SHADOW = {
+  sm: {
+    elevation: 2,
+    shadowColor: '#3D2B1F',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+  },
+  md: {
+    elevation: 4,
+    shadowColor: '#3D2B1F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.10,
+    shadowRadius: 10,
+  },
+  lg: {
+    elevation: 8,
+    shadowColor: '#3D2B1F',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+  },
+  up: {
+    elevation: 8,
+    shadowColor: '#3D2B1F',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.09,
+    shadowRadius: 12,
+  },
 };

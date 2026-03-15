@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Linking,
@@ -16,7 +17,7 @@ import {
   updateShoppingListItem,
 } from '../storage/shoppingListStorage';
 import { ShoppingList, ShoppingListItem } from '../types/Recipe';
-import { C } from '../constants/theme';
+import { C, RADIUS, SHADOW } from '../constants/theme';
 
 function formatQty(qty: number, unit: string): string {
   if (Number.isInteger(qty)) return `${qty} ${unit}`;
@@ -124,9 +125,14 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
           Genera la lista de la compra a partir del planning activo.
         </Text>
         <TouchableOpacity style={styles.generateBtn} onPress={handleGenerate} disabled={loading}>
-          <Text style={styles.generateBtnText}>
-            {loading ? 'Generando…' : '🛒 Generar lista'}
-          </Text>
+          {loading ? (
+            <Text style={styles.generateBtnText}>Generando…</Text>
+          ) : (
+            <View style={styles.generateBtnContent}>
+              <Ionicons name="cart-outline" size={18} color="#fff" />
+              <Text style={styles.generateBtnText}> Generar lista</Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -160,7 +166,10 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
         {/* ONLINE block */}
         {onlineItems.length > 0 && (
           <View style={styles.block}>
-            <Text style={styles.blockTitle}>🛍 COMPRA ONLINE ({onlineItems.length})</Text>
+            <View style={styles.blockTitleRow}>
+              <Ionicons name="bag-outline" size={13} color={C.primary} />
+              <Text style={styles.blockTitle}> COMPRA ONLINE ({onlineItems.length})</Text>
+            </View>
             {onlineItems.map((item) => (
               <ItemRow key={item.id} item={item} onToggle={() => toggleItem(item.id)} showUrl />
             ))}
@@ -170,7 +179,10 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
         {/* SUPERMERCADO block */}
         {offlineItems.length > 0 && (
           <View style={styles.block}>
-            <Text style={styles.blockTitle}>🏪 SUPERMERCADO ({offlineItems.length})</Text>
+            <View style={styles.blockTitleRow}>
+              <Ionicons name="storefront-outline" size={13} color={C.primary} />
+              <Text style={styles.blockTitle}> SUPERMERCADO ({offlineItems.length})</Text>
+            </View>
             {Object.entries(categoryGroups).map(([cat, items]) => (
               <View key={cat}>
                 <TouchableOpacity
@@ -203,35 +215,37 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: C.bgPage },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, backgroundColor: C.bgPage },
-  emptyText: { color: C.textMuted, fontSize: 15, textAlign: 'center', marginBottom: 24 },
-  generateBtn: { backgroundColor: C.primary, borderRadius: 10, padding: 14, paddingHorizontal: 28 },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40, backgroundColor: C.bgPage },
+  emptyText: { color: C.textMuted, fontSize: 15, textAlign: 'center', marginBottom: 28, lineHeight: 22 },
+  generateBtn: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, paddingHorizontal: 36, alignItems: 'center', ...(SHADOW.sm as any) },
+  generateBtnContent: { flexDirection: 'row', alignItems: 'center' },
   generateBtnText: { color: '#fff', fontSize: 15, fontWeight: '600' },
 
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: C.bgSurface, paddingHorizontal: 16, paddingVertical: 10,
-    borderBottomWidth: 1, borderBottomColor: C.border,
+    backgroundColor: C.bgSurface, paddingHorizontal: 20, paddingVertical: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border,
   },
-  headerProgress: { fontSize: 14, color: C.textSecondary },
+  headerProgress: { fontSize: 14, color: C.textSecondary, fontWeight: '500' },
   headerRegen: { fontSize: 14, color: C.primary, fontWeight: '600' },
 
-  scroll: { padding: 12, gap: 12 },
-  block: { backgroundColor: C.bgSurface, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: C.border, marginBottom: 12 },
-  blockTitle: { fontSize: 13, fontWeight: '700', color: C.primary, backgroundColor: C.bgPage, padding: 12 },
+  scroll: { padding: 14, gap: 14 },
+  block: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, overflow: 'hidden', marginBottom: 14, ...(SHADOW.sm as any) },
+  blockTitleRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgCard, paddingVertical: 12, paddingHorizontal: 16 },
+  blockTitle: { fontSize: 12, fontWeight: '700', color: C.primary, textTransform: 'uppercase', letterSpacing: 0.8 },
 
-  categoryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, backgroundColor: C.bgInput, borderTopWidth: 1, borderTopColor: C.border },
-  categoryLabel: { fontSize: 13, fontWeight: '600', color: C.textSecondary, textTransform: 'uppercase' },
+  categoryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 16, backgroundColor: C.bgInput, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
+  categoryLabel: { fontSize: 12, fontWeight: '700', color: C.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
   categoryChevron: { fontSize: 11, color: C.textMuted },
 
-  itemRow: { flexDirection: 'row', alignItems: 'flex-start', padding: 12, borderTopWidth: 1, borderTopColor: C.border },
-  checkbox: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: C.borderStrong, alignItems: 'center', justifyContent: 'center', marginRight: 12, marginTop: 1 },
+  itemRow: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 14, paddingHorizontal: 16, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
+  checkbox: { width: 24, height: 24, borderRadius: RADIUS.pill, borderWidth: 2, borderColor: C.borderStrong, alignItems: 'center', justifyContent: 'center', marginRight: 14, marginTop: 1 },
   checkboxChecked: { backgroundColor: C.primary, borderColor: C.primary },
   checkmark: { color: '#fff', fontSize: 13, fontWeight: '700' },
   itemContent: { flex: 1 },
   itemName: { fontSize: 15, fontWeight: '600', color: C.textPrimary },
   itemNameChecked: { textDecorationLine: 'line-through', color: C.textMuted },
-  itemQty: { fontSize: 13, color: C.textSecondary, marginTop: 2 },
-  itemOrigins: { fontSize: 11, color: C.textMuted, marginTop: 2 },
-  itemUrl: { fontSize: 12, color: C.primary, marginTop: 4, fontWeight: '600' },
+  itemQty: { fontSize: 13, color: C.textSecondary, marginTop: 3 },
+  itemOrigins: { fontSize: 11, color: C.textMuted, marginTop: 3 },
+  itemUrl: { fontSize: 12, color: C.primary, marginTop: 5, fontWeight: '600' },
 });
