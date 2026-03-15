@@ -91,10 +91,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ── Session bootstrap ──────────────────────────────────────────────────────
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      setUser(s?.user ?? null);
+    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
       if (s?.user) {
+        // Verify the session is still valid on the server (handles deleted users)
+        const { error } = await supabase.auth.getUser();
+        if (error) {
+          await supabase.auth.signOut();
+          setLoading(false);
+          return;
+        }
+        setSession(s);
+        setUser(s.user);
         Promise.all([fetchProfile(s.user.id), fetchHousehold(s.user.id)]).finally(
           () => setLoading(false),
         );
