@@ -53,7 +53,7 @@ function rowToRecipe(row: any): Recipe {
   };
 }
 
-function recipeToRow(r: Recipe) {
+function recipeToRow(r: Recipe, userId?: string) {
   return {
     id: r.id,
     name: r.name,
@@ -76,19 +76,24 @@ function recipeToRow(r: Recipe) {
     notes: r.notes ?? null,
     created_at: r.createdAt,
     updated_at: new Date().toISOString(),
+    ...(userId ? { owner_user_id: userId } : {}),
   };
 }
 
 // ── Recipes ──────────────────────────────────────────────────────────────────
 
 export async function getRecipes(): Promise<Recipe[]> {
-  const { data, error } = await supabase.from('recipes').select('*').order('name');
+  const { data, error } = await supabase
+    .from('recipes')
+    .select('*')
+    .eq('is_seed', false)
+    .order('name');
   if (error) throw error;
   return (data ?? []).map(rowToRecipe);
 }
 
-export async function addRecipe(recipe: Recipe): Promise<void> {
-  const { error } = await supabase.from('recipes').insert(recipeToRow(recipe));
+export async function addRecipe(recipe: Recipe, userId: string): Promise<void> {
+  const { error } = await supabase.from('recipes').insert(recipeToRow(recipe, userId));
   if (error) throw error;
 }
 

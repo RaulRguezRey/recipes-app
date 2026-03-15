@@ -11,10 +11,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "scheme": "recipesapp",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.raulrguezrey8.recipesapp",
+      "usesAppleSignIn": true
     },
     "android": {
+      "package": "com.raulrguezrey8.recipesapp",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -37,6 +41,10 @@
     },
     "updates": {
       "url": "https://u.expo.dev/5f07217e-2703-435b-9124-646e8b218cac"
-    }
+    },
+    "plugins": [
+      "expo-web-browser",
+      "expo-apple-authentication"
+    ]
   }
 }

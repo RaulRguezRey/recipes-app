@@ -1,8 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { C } from './constants/theme';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { C, RADIUS, SHADOW } from './constants/theme';
+import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import LoginScreen from './screens/auth/LoginScreen';
 import RecipesScreen from './screens/RecipesScreen';
 import PlanningScreen from './screens/PlanningScreen';
 import ShoppingListScreen from './screens/ShoppingListScreen';
@@ -21,9 +23,18 @@ const TABS: { name: Tab; icon: string }[] = [
   { name: 'Settings', icon: '⚙️' },
 ];
 
-export default function App() {
+function LoadingScreen() {
+  return (
+    <View style={{ flex: 1, backgroundColor: C.bgPage, alignItems: 'center', justifyContent: 'center' }}>
+      <ActivityIndicator size="large" color={C.primary} />
+    </View>
+  );
+}
+
+function MainTabs() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('Recipes');
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
 
   function handleGenerateList(planId: string) {
     setActivePlanId(planId);
@@ -50,32 +61,46 @@ export default function App() {
   const activeTab: Tab = currentScreen === 'Ingredients' ? 'Settings' : (currentScreen as Tab);
 
   return (
+    <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
+      <StatusBar style="auto" />
+
+      {renderScreen()}
+
+      {/* Tab Bar */}
+      <View style={[styles.tabBar, { paddingBottom: insets.bottom || 8 }]}>
+        {TABS.map((tab) => {
+          const active = activeTab === tab.name;
+          return (
+            <TouchableOpacity
+              key={tab.name}
+              style={[styles.tab, active && styles.tabActive]}
+              onPress={() => setCurrentScreen(tab.name)}
+            >
+              <Text style={styles.tabIcon}>{tab.icon}</Text>
+              <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
+                {tab.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </SafeAreaView>
+  );
+}
+
+function AppContent() {
+  const { session, loading } = useAuth();
+  if (loading) return <LoadingScreen />;
+  if (!session) return <LoginScreen />;
+  return <MainTabs />;
+}
+
+export default function App() {
+  return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.root}>
-        <StatusBar style="auto" />
-
-        {renderScreen()}
-
-        {/* Tab Bar */}
-        <View style={styles.tabBar}>
-          {TABS.map((tab) => {
-            const active = activeTab === tab.name;
-            return (
-              <TouchableOpacity
-                key={tab.name}
-                style={styles.tab}
-                onPress={() => setCurrentScreen(tab.name)}
-              >
-                {active && <View style={styles.activeIndicator} />}
-                <Text style={styles.tabIcon}>{tab.icon}</Text>
-                <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
-                  {tab.name}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </SafeAreaView>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
@@ -87,23 +112,20 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: C.border,
     backgroundColor: C.bgSurface,
-    height: 64,
+    height: 72,
+    paddingHorizontal: 6,
+    paddingVertical: 8,
+    ...(SHADOW.up as any),
   },
   tab: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 4,
+    borderRadius: RADIUS.lg,
+    paddingVertical: 6,
   },
-  activeIndicator: {
-    position: 'absolute',
-    top: 0,
-    width: 32,
-    height: 3,
-    borderRadius: 2,
+  tabActive: {
     backgroundColor: C.primary,
   },
   tabIcon: {
@@ -115,7 +137,7 @@ const styles = StyleSheet.create({
     color: C.textMuted,
   },
   tabLabelActive: {
-    color: C.primary,
-    fontWeight: 'bold',
+    color: '#fff',
+    fontWeight: '600',
   },
 });

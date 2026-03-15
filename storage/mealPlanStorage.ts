@@ -34,12 +34,13 @@ export async function getMealPlans(): Promise<MealPlan[]> {
   return (data ?? []).map(rowToPlan);
 }
 
-export async function saveMealPlan(plan: MealPlan): Promise<void> {
+export async function saveMealPlan(plan: MealPlan, userId: string): Promise<void> {
   const { error } = await supabase.from('meal_plans').upsert({
     id: plan.id,
     title: plan.title,
     week_start: plan.weekStart,
     created_at: plan.createdAt,
+    owner_user_id: userId,
   });
   if (error) throw error;
 }

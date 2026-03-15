@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import {
   Alert,
   FlatList,
@@ -16,7 +17,7 @@ import {
   View,
 } from 'react-native';
 import ActionSheet from '../components/ActionSheet';
-import { C, FONT } from '../constants/theme';
+import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 import SelectModal from '../components/SelectModal';
 import { addIngredient, addOrigin, addRecipe, deleteRecipe, getIngredients, getOrigins, getRecipes, updateRecipe } from '../storage/recipeStorage';
 import { Difficulty, Ingredient, MealType, Recipe, RecipeIngredient } from '../types/Recipe';
@@ -704,6 +705,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function RecipesScreen() {
+  const { user } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
   const [view, setView] = useState<'list' | 'form'>('list');
@@ -722,7 +724,7 @@ export default function RecipesScreen() {
     if (editingRecipe && existsInStorage) {
       await updateRecipe(recipe);
     } else {
-      await addRecipe(recipe);
+      await addRecipe(recipe, user!.id);
     }
     await loadData();
     setView('list');
@@ -807,55 +809,55 @@ const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: C.bgPage },
 
   // List
-  searchContainer: { paddingHorizontal: 16, paddingVertical: 10 },
-  searchInput: { backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 15, color: C.textPrimary },
-  importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: C.primary, borderRadius: 10, padding: 14, alignItems: 'center' },
+  searchContainer: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10 },
+  searchInput: { backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.xl, paddingHorizontal: 18, paddingVertical: 12, fontSize: 15, color: C.textPrimary },
+  importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: C.primary, borderRadius: RADIUS.pill, padding: 14, alignItems: 'center' },
   importButtonText: { color: C.primary, fontSize: 15, fontWeight: '600' },
-  filterBar: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 10, gap: 10 },
-  filterDropdown: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: C.bgSurface },
+  filterBar: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 12, gap: 10 },
+  filterDropdown: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.pill, paddingHorizontal: 14, paddingVertical: 10, backgroundColor: C.bgSurface },
   filterDropdownActive: { borderColor: C.primary, backgroundColor: C.primary },
-  filterDropdownText: { fontSize: 13, color: C.textSecondary },
-  filterDropdownTextActive: { color: '#fff', fontWeight: '600' },
-  listContent: { paddingHorizontal: 16, paddingBottom: 100 },
-  fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center', elevation: 6, boxShadow: '0px 4px 8px rgba(0,0,0,0.2)' } as any,
-  fabText: { color: '#fff', fontSize: 30, lineHeight: 34, fontWeight: '300' },
+  filterDropdownText: { fontSize: 13, color: C.textSecondary, textAlign: 'center' },
+  filterDropdownTextActive: { color: '#fff', fontWeight: '600', textAlign: 'center' },
+  listContent: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 100 },
+  fab: { position: 'absolute', bottom: 24, right: 24, width: 60, height: 60, borderRadius: 30, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center', ...(SHADOW.lg as any) },
+  fabText: { color: '#fff', fontSize: 32, lineHeight: 36, fontWeight: '300' },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 60 },
   emptyText: { color: C.textMuted, fontSize: 16 },
-  card: { backgroundColor: C.bgCard, borderRadius: 12, marginBottom: 12, overflow: 'hidden', borderWidth: 1, borderColor: C.border, elevation: 2, boxShadow: '0px 2px 4px rgba(0,0,0,0.06)' } as any,
-  cardImage: { width: '100%', height: 140, resizeMode: 'cover' },
-  cardBody: { padding: 12 },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
+  card: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, marginBottom: 14, overflow: 'hidden', ...(SHADOW.sm as any) },
+  cardImage: { width: '100%', height: 150, resizeMode: 'cover' },
+  cardBody: { padding: 16 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   cardName: { fontSize: 17, fontWeight: '600', flex: 1, fontFamily: FONT.serif, color: C.textPrimary },
   star: { fontSize: 20, marginLeft: 8 },
-  cardMeta: { flexDirection: 'row', gap: 8, marginBottom: 4 },
-  tag: { fontSize: 12, color: C.textSecondary, backgroundColor: C.bgPage, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
+  cardMeta: { flexDirection: 'row', gap: 8, marginBottom: 6 },
+  tag: { fontSize: 12, color: C.textSecondary, backgroundColor: C.bgCard, paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.pill },
   cardSub: { fontSize: 12, color: C.textMuted, marginTop: 4 },
 
   // Form header
-  formHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: C.border, backgroundColor: C.bgSurface },
+  formHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, backgroundColor: C.bgSurface },
   formTitle: { fontSize: 17, fontWeight: '700', fontFamily: FONT.serif, color: C.textPrimary },
   formCancel: { color: C.primary, fontSize: 15 },
-  formContent: { padding: 16, backgroundColor: C.bgPage },
+  formContent: { padding: 20, backgroundColor: C.bgPage },
 
   // Photo
   photoRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
-  photoBtn: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: 8, padding: 10, alignItems: 'center', backgroundColor: C.bgInput },
+  photoBtn: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.md, padding: 12, alignItems: 'center', backgroundColor: C.bgInput },
   photoBtnText: { fontSize: 14, color: C.textSecondary },
-  photoPreview: { width: '100%', height: 180, borderRadius: 10, marginBottom: 16, resizeMode: 'cover' },
+  photoPreview: { width: '100%', height: 200, borderRadius: RADIUS.md, marginBottom: 16, resizeMode: 'cover' },
 
   // Labels & inputs
-  sectionLabel: { fontSize: 13, fontWeight: '600', color: C.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 20, marginBottom: 8 },
-  inputLabel: { fontSize: 12, color: C.textMuted, marginBottom: 4 },
-  input: { borderWidth: 1, borderColor: C.border, borderRadius: 8, padding: 10, fontSize: 15, backgroundColor: C.bgInput, marginBottom: 8, color: C.textPrimary },
+  sectionLabel: { fontSize: 12, fontWeight: '700', color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginTop: 24, marginBottom: 10 },
+  inputLabel: { fontSize: 12, color: C.textMuted, marginBottom: 5 },
+  input: { borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.sm, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, backgroundColor: C.bgInput, marginBottom: 8, color: C.textPrimary },
   selectField: { justifyContent: 'center' },
   inputError: { borderColor: C.danger },
   errorText: { color: C.danger, fontSize: 12, marginTop: -4, marginBottom: 8 },
-  suggestion: { backgroundColor: C.bgPage, borderRadius: 6, paddingHorizontal: 10, paddingVertical: 6, marginTop: 2, borderWidth: 1, borderColor: C.border },
+  suggestion: { backgroundColor: C.bgPage, borderRadius: RADIUS.xs, paddingHorizontal: 12, paddingVertical: 8, marginTop: 2, borderWidth: 1, borderColor: C.border },
   suggestionText: { color: C.primary, fontSize: 13 },
 
   // Chips
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: C.borderStrong, backgroundColor: C.bgSurface },
+  chip: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: RADIUS.pill, borderWidth: 1, borderColor: C.borderStrong, backgroundColor: C.bgSurface },
   chipActive: { backgroundColor: C.primary, borderColor: C.primary },
   chipText: { fontSize: 13, color: C.textSecondary },
   chipTextActive: { color: '#fff', fontWeight: '600' },
@@ -865,26 +867,26 @@ const styles = StyleSheet.create({
   row2: { flexDirection: 'row', gap: 8 },
 
   // Ingredients
-  ingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: C.border },
+  ingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   ingText: { fontSize: 14, color: C.textPrimary, flex: 1 },
   ingAddRow: { flexDirection: 'row', gap: 10, alignItems: 'center', marginTop: 8, marginBottom: 8 },
   ingInputName: { flex: 3, marginBottom: 0 },
   ingInputQty: { flex: 1.5, marginBottom: 0 },
   ingInputUnit: { flex: 1.5, marginBottom: 0 },
-  ingAddBtn: { backgroundColor: C.primary, borderRadius: 8, paddingHorizontal: 14, paddingVertical: 10 },
+  ingAddBtn: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingHorizontal: 16, paddingVertical: 12 },
   ingAddBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   removeBtn: { color: C.danger, fontSize: 16, paddingHorizontal: 8 },
 
   // Steps
-  stepRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 6 },
-  stepNum: { fontSize: 15, color: C.primary, fontWeight: '700', marginTop: 11, fontFamily: FONT.serif },
+  stepRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 8 },
+  stepNum: { fontSize: 15, color: C.primary, fontWeight: '700', marginTop: 13, fontFamily: FONT.serif },
   stepInput: { flex: 1, marginBottom: 0 },
   addStepBtn: { marginTop: 4, marginBottom: 8 },
   addStepBtnText: { color: C.primary, fontSize: 15, fontWeight: '600' },
 
   // Buttons
-  saveButton: { backgroundColor: C.primary, borderRadius: 10, padding: 16, alignItems: 'center', marginTop: 24 },
-  saveButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  deleteButton: { borderWidth: 1, borderColor: C.danger, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 12 },
+  saveButton: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 18, paddingHorizontal: 28, alignItems: 'center', marginTop: 28, ...(SHADOW.sm as any) },
+  saveButtonText: { color: '#fff', fontSize: 16, fontWeight: '700', letterSpacing: 0.3 },
+  deleteButton: { borderWidth: 1, borderColor: C.danger, borderRadius: RADIUS.pill, paddingVertical: 16, paddingHorizontal: 28, alignItems: 'center', marginTop: 12 },
   deleteButtonText: { color: C.danger, fontSize: 15, fontWeight: '600' },
 });

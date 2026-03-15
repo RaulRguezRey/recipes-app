@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import {
   Alert,
   FlatList,
@@ -22,7 +23,7 @@ import {
 } from '../storage/mealPlanStorage';
 import { DayOfWeek, MealPlan, MealPlanEntry, MealType, Recipe } from '../types/Recipe';
 
-import { C, FONT } from '../constants/theme';
+import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 
 const DAYS: { key: DayOfWeek; label: string }[] = [
   { key: 'monday', label: 'Lunes' },
@@ -223,6 +224,7 @@ type Props = {
 };
 
 export default function PlanningScreen({ onGenerateList }: Props) {
+  const { user } = useAuth();
   const [plans, setPlans] = useState<MealPlan[]>([]);
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
   const [entries, setEntries] = useState<MealPlanEntry[]>([]);
@@ -269,7 +271,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
       weekStart,
       createdAt: new Date().toISOString(),
     };
-    await saveMealPlan(plan);
+    await saveMealPlan(plan, user!.id);
     setPlans((prev) => [...prev, plan]);
     await switchPlan(plan.id);
   }
@@ -437,15 +439,15 @@ export default function PlanningScreen({ onGenerateList }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: C.bgPage },
-  emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, backgroundColor: C.bgPage },
-  emptyText: { color: C.textMuted, fontSize: 16, marginBottom: 24, textAlign: 'center' },
-  newPlanBtn: { backgroundColor: C.primary, borderRadius: 10, padding: 14, paddingHorizontal: 28 },
+  emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40, backgroundColor: C.bgPage },
+  emptyText: { color: C.textMuted, fontSize: 16, marginBottom: 28, textAlign: 'center', lineHeight: 24 },
+  newPlanBtn: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, paddingHorizontal: 36, ...(SHADOW.sm as any) },
   newPlanBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 
   // Plan bar
-  planBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgSurface, borderBottomWidth: 1, borderBottomColor: C.border },
+  planBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   planTabs: { flex: 1 },
-  planTab: { paddingVertical: 12, paddingHorizontal: 16 },
+  planTab: { paddingVertical: 14, paddingHorizontal: 16 },
   planTabActive: { borderBottomWidth: 3, borderBottomColor: C.primary },
   planTabText: { color: C.textMuted, fontSize: 13 },
   planTabTextActive: { color: C.primary, fontWeight: '700' },
@@ -454,46 +456,46 @@ const styles = StyleSheet.create({
 
   // Grid
   scroll: { flex: 1 },
-  grid: { padding: 12, gap: 12 },
-  dayBlock: { backgroundColor: C.bgSurface, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: C.border },
-  dayLabel: { backgroundColor: C.primary, color: '#fff', fontWeight: '700', fontSize: 14, padding: 10, fontFamily: FONT.serif },
-  mealCell: { padding: 10, borderTopWidth: 1, borderTopColor: C.border },
-  mealTypeLabel: { fontSize: 12, color: C.textMuted, marginBottom: 6 },
-  entryChip: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: C.bgPage, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10, marginBottom: 4, borderWidth: 1, borderColor: C.border },
+  grid: { padding: 14, gap: 14 },
+  dayBlock: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, overflow: 'hidden', ...(SHADOW.sm as any) },
+  dayLabel: { backgroundColor: C.primary, color: '#fff', fontWeight: '700', fontSize: 14, paddingVertical: 12, paddingHorizontal: 16, fontFamily: FONT.serif },
+  mealCell: { padding: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
+  mealTypeLabel: { fontSize: 12, color: C.textMuted, marginBottom: 8 },
+  entryChip: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: C.bgCard, borderRadius: RADIUS.sm, paddingVertical: 8, paddingHorizontal: 12, marginBottom: 6 },
   entryName: { flex: 1, fontSize: 13, color: C.primary, fontWeight: '600' },
   entryServings: { fontSize: 12, color: C.textMuted, marginLeft: 8 },
-  addEntryBtn: { marginTop: 2 },
+  addEntryBtn: { marginTop: 4 },
   addEntryBtnText: { color: C.primaryLight, fontSize: 12, fontWeight: '600' },
 
   // Generate button
-  generateBtn: { margin: 16, backgroundColor: C.primary, borderRadius: 10, padding: 14, alignItems: 'center' },
+  generateBtn: { margin: 16, backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, alignItems: 'center', ...(SHADOW.sm as any) },
   generateBtnText: { color: '#fff', fontSize: 15, fontWeight: '600' },
 
   // Recipe Selector Modal
-  selectorOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
-  selectorCard: { backgroundColor: C.bgSurface, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '85%' },
-  selectorTitle: { fontSize: 17, fontWeight: '700', padding: 16, borderBottomWidth: 1, borderBottomColor: C.border, fontFamily: FONT.serif, color: C.textPrimary },
-  searchInput: { margin: 12, borderWidth: 1, borderColor: C.border, borderRadius: 10, padding: 10, fontSize: 14, backgroundColor: C.bgInput, color: C.textPrimary },
-  selectorRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: C.border },
+  selectorOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },
+  selectorCard: { backgroundColor: C.bgSurface, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, maxHeight: '85%' },
+  selectorTitle: { fontSize: 17, fontWeight: '700', padding: 20, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, fontFamily: FONT.serif, color: C.textPrimary },
+  searchInput: { margin: 14, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.xl, paddingHorizontal: 16, paddingVertical: 12, fontSize: 14, backgroundColor: C.bgInput, color: C.textPrimary },
+  selectorRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 20, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   selectorRowMain: { flex: 1 },
   selectorName: { fontSize: 15, fontWeight: '600', color: C.textPrimary },
   selectorMeta: { fontSize: 12, color: C.textMuted, marginTop: 2 },
   selectorLastUsed: { fontSize: 12, color: C.primary, marginLeft: 12 },
-  selectorEmpty: { textAlign: 'center', color: C.textMuted, padding: 32 },
-  selectorCancel: { padding: 16, alignItems: 'center', borderTopWidth: 1, borderTopColor: C.border },
+  selectorEmpty: { textAlign: 'center', color: C.textMuted, padding: 40 },
+  selectorCancel: { padding: 18, alignItems: 'center', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   selectorCancelText: { color: C.danger, fontWeight: '600', fontSize: 16 },
 
   // Servings Modal
-  servOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
-  servCard: { backgroundColor: C.bgSurface, borderRadius: 16, width: '80%', padding: 24 },
-  servTitle: { fontSize: 16, fontWeight: '700', marginBottom: 16, textAlign: 'center', fontFamily: FONT.serif, color: C.textPrimary },
-  servLabel: { fontSize: 14, color: C.textSecondary, marginBottom: 8, textAlign: 'center' },
-  servRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
-  servBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: C.bgPage, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.border },
-  servBtnText: { fontSize: 22, color: C.primary, fontWeight: '300' },
-  servInput: { width: 60, textAlign: 'center', fontSize: 20, fontWeight: '700', marginHorizontal: 12, borderBottomWidth: 2, borderBottomColor: C.primary, paddingVertical: 4, color: C.textPrimary },
-  servSave: { backgroundColor: C.primary, borderRadius: 10, padding: 12, alignItems: 'center', marginBottom: 10 },
+  servOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center' },
+  servCard: { backgroundColor: C.bgSurface, borderRadius: RADIUS.xl, width: '82%', padding: 28, ...(SHADOW.lg as any) },
+  servTitle: { fontSize: 16, fontWeight: '700', marginBottom: 20, textAlign: 'center', fontFamily: FONT.serif, color: C.textPrimary },
+  servLabel: { fontSize: 14, color: C.textSecondary, marginBottom: 10, textAlign: 'center' },
+  servRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
+  servBtn: { width: 44, height: 44, borderRadius: RADIUS.pill, backgroundColor: C.bgPage, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.border },
+  servBtnText: { fontSize: 24, color: C.primary, fontWeight: '300' },
+  servInput: { width: 64, textAlign: 'center', fontSize: 22, fontWeight: '700', marginHorizontal: 14, borderBottomWidth: 2, borderBottomColor: C.primary, paddingVertical: 4, color: C.textPrimary },
+  servSave: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 14, alignItems: 'center', marginBottom: 12 },
   servSaveText: { color: '#fff', fontWeight: '600', fontSize: 15 },
-  servDelete: { padding: 10, alignItems: 'center' },
+  servDelete: { paddingVertical: 10, alignItems: 'center' },
   servDeleteText: { color: C.danger, fontSize: 14 },
 });
