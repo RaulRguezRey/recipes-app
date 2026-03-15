@@ -17,7 +17,7 @@ import {
   updateIngredient,
 } from '../storage/recipeStorage';
 import { Ingredient } from '../types/Recipe';
-import { C, FONT } from '../constants/theme';
+import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 
 const PURPLE = C.primary;
 
@@ -278,41 +278,41 @@ export default function IngredientsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: C.bgPage },
 
-  searchBar: { flexDirection: 'row', padding: 12, gap: 8, backgroundColor: C.bgSurface, borderBottomWidth: 1, borderBottomColor: C.border },
-  searchInput: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, fontSize: 14, backgroundColor: C.bgInput, color: C.textPrimary },
-  addBtn: { backgroundColor: PURPLE, borderRadius: 10, paddingHorizontal: 14, justifyContent: 'center' },
+  searchBar: { flexDirection: 'row', padding: 14, gap: 10, backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
+  searchInput: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.xl, paddingHorizontal: 16, paddingVertical: 10, fontSize: 14, backgroundColor: C.bgInput, color: C.textPrimary },
+  addBtn: { backgroundColor: PURPLE, borderRadius: RADIUS.pill, paddingHorizontal: 18, justifyContent: 'center' },
   addBtnText: { color: '#fff', fontWeight: '600', fontSize: 14 },
 
-  list: { padding: 12, gap: 8 },
-  emptyText: { color: C.textMuted, textAlign: 'center', marginTop: 40 },
+  list: { padding: 14, gap: 10 },
+  emptyText: { color: C.textMuted, textAlign: 'center', marginTop: 48 },
 
-  row: { backgroundColor: C.bgSurface, borderRadius: 10, padding: 14, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: C.border },
+  row: { backgroundColor: C.bgSurface, borderRadius: RADIUS.md, paddingVertical: 16, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', ...(SHADOW.sm as any) },
   rowLeft: { flex: 1 },
   rowName: { fontSize: 15, fontWeight: '600', color: C.textPrimary, fontFamily: FONT.serif },
-  rowCat: { fontSize: 12, color: C.textMuted, marginTop: 2 },
+  rowCat: { fontSize: 12, color: C.textMuted, marginTop: 3 },
   rowRight: {},
-  badgeOnline: { backgroundColor: C.successBg, color: C.success, fontSize: 11, fontWeight: '600', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
-  badgeStore: { backgroundColor: C.infoBg, color: C.info, fontSize: 11, fontWeight: '600', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
+  badgeOnline: { backgroundColor: C.successBg, color: C.success, fontSize: 11, fontWeight: '600', paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.pill },
+  badgeStore: { backgroundColor: C.infoBg, color: C.info, fontSize: 11, fontWeight: '600', paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.pill },
 
   // Form Modal
-  formOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
-  formCard: { backgroundColor: C.bgSurface, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '90%', padding: 20 },
-  formTitle: { fontSize: 18, fontWeight: '700', marginBottom: 16, fontFamily: FONT.serif, color: C.textPrimary },
-  label: { fontSize: 13, color: C.textSecondary, marginBottom: 4, marginTop: 12 },
-  input: { borderWidth: 1, borderColor: C.border, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: C.textPrimary, backgroundColor: C.bgInput },
-  switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
-  saveBtn: { marginTop: 20, backgroundColor: PURPLE, borderRadius: 10, padding: 14, alignItems: 'center' },
+  formOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },
+  formCard: { backgroundColor: C.bgSurface, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, maxHeight: '90%', padding: 24 },
+  formTitle: { fontSize: 18, fontWeight: '700', marginBottom: 20, fontFamily: FONT.serif, color: C.textPrimary },
+  label: { fontSize: 12, color: C.textSecondary, marginBottom: 5, marginTop: 14, textTransform: 'uppercase', letterSpacing: 0.5 },
+  input: { borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.sm, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: C.textPrimary, backgroundColor: C.bgInput },
+  switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 14 },
+  saveBtn: { marginTop: 24, backgroundColor: PURPLE, borderRadius: RADIUS.pill, paddingVertical: 16, alignItems: 'center', ...(SHADOW.sm as any) },
   saveBtnDisabled: { opacity: 0.5 },
   saveBtnText: { color: '#fff', fontWeight: '600', fontSize: 15 },
-  deleteBtn: { marginTop: 10, padding: 12, alignItems: 'center' },
+  deleteBtn: { marginTop: 12, paddingVertical: 12, alignItems: 'center' },
   deleteBtnText: { color: C.danger, fontSize: 14 },
-  cancelBtn: { padding: 12, alignItems: 'center', marginBottom: 8 },
+  cancelBtn: { paddingVertical: 12, alignItems: 'center', marginBottom: 8 },
   cancelBtnText: { color: C.textMuted, fontSize: 14 },
 
   // Pickers
-  pickerOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
-  pickerCard: { backgroundColor: C.bgSurface, borderRadius: 14, width: '80%', overflow: 'hidden' },
-  pickerRow: { paddingVertical: 14, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: C.border },
+  pickerOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center' },
+  pickerCard: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, width: '80%', overflow: 'hidden', ...(SHADOW.lg as any) },
+  pickerRow: { paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   pickerText: { fontSize: 15, color: C.textPrimary },
   pickerTextActive: { color: PURPLE, fontWeight: '700' },
 });

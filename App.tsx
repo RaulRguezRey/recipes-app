@@ -2,8 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { C, RADIUS, SHADOW } from './constants/theme';
-import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { C, SHADOW } from './constants/theme';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginScreen from './screens/auth/LoginScreen';
 import RecipesScreen from './screens/RecipesScreen';
@@ -36,7 +36,6 @@ function LoadingScreen() {
 function MainTabs() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('Recipes');
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
-  const insets = useSafeAreaInsets();
 
   function handleGenerateList(planId: string) {
     setActivePlanId(planId);
@@ -63,25 +62,25 @@ function MainTabs() {
   const activeTab: Tab = currentScreen === 'Ingredients' ? 'Settings' : (currentScreen as Tab);
 
   return (
-    <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.root} edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar style="auto" />
 
       {renderScreen()}
 
       {/* Tab Bar */}
-      <View style={[styles.tabBar, { paddingBottom: insets.bottom || 8 }]}>
+      <View style={styles.tabBar}>
         {TABS.map((tab) => {
           const active = activeTab === tab.name;
           return (
             <TouchableOpacity
               key={tab.name}
-              style={[styles.tab, active && styles.tabActive]}
+              style={styles.tab}
               onPress={() => setCurrentScreen(tab.name)}
             >
               <Ionicons
                 name={active ? tab.iconActive : tab.icon}
-                size={24}
-                color={active ? '#fff' : C.textMuted}
+                size={26}
+                color={active ? C.primary : C.textMuted}
               />
             </TouchableOpacity>
           );
@@ -116,18 +115,14 @@ const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
     backgroundColor: C.bgSurface,
-    height: 62,
     paddingHorizontal: 6,
-    paddingVertical: 6,
+    paddingVertical: 10,
     ...(SHADOW.up as any),
   },
   tab: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: RADIUS.lg,
-  },
-  tabActive: {
-    backgroundColor: C.primary,
+    paddingVertical: 4,
   },
 });

@@ -1,4 +1,5 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { C, RADIUS } from '../constants/theme';
 
 type Action = { label: string; onPress: () => void };
 
@@ -19,7 +20,7 @@ export default function ActionSheet({ visible, actions, onClose }: ActionSheetPr
             </TouchableOpacity>
           ))}
           <TouchableOpacity style={styles.cancel} onPress={onClose}>
-            <Text style={styles.cancelText}>Cancel</Text>
+            <Text style={styles.cancelText}>Cancelar</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -28,10 +29,10 @@ export default function ActionSheet({ visible, actions, onClose }: ActionSheetPr
 }
 
 const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
-  sheet: { backgroundColor: '#fff', borderTopLeftRadius: 16, borderTopRightRadius: 16, paddingBottom: 28 },
-  action: { paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#f0f0f0', alignItems: 'center' },
-  actionText: { fontSize: 16, color: '#333' },
-  cancel: { paddingVertical: 16, alignItems: 'center', marginTop: 4 },
-  cancelText: { fontSize: 16, color: '#e53935', fontWeight: '600' },
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },
+  sheet: { backgroundColor: C.bgSurface, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, paddingBottom: 32 },
+  action: { paddingVertical: 18, paddingHorizontal: 24, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, alignItems: 'center' },
+  actionText: { fontSize: 16, color: C.textPrimary, fontWeight: '500' },
+  cancel: { paddingVertical: 18, alignItems: 'center', marginTop: 6 },
+  cancelText: { fontSize: 16, color: C.danger, fontWeight: '600' },
 });

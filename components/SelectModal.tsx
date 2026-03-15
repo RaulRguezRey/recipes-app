@@ -1,6 +1,5 @@
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-const PURPLE = '#6200ee';
+import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 
 export type SelectOption = { label: string; value: string };
 
@@ -55,14 +54,14 @@ export default function SelectModal({
 }
 
 const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
-  card: { backgroundColor: '#fff', borderRadius: 16, width: '85%', maxHeight: '70%', overflow: 'hidden' },
-  title: { fontSize: 16, fontWeight: '700', padding: 16, borderBottomWidth: 1, borderBottomColor: '#eee' },
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center' },
+  card: { backgroundColor: C.bgSurface, borderRadius: RADIUS.xl, width: '85%', maxHeight: '70%', overflow: 'hidden', ...(SHADOW.lg as any) },
+  title: { fontSize: 16, fontWeight: '700', paddingVertical: 18, paddingHorizontal: 20, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, fontFamily: FONT.serif, color: C.textPrimary },
   list: { flexGrow: 0 },
-  option: { paddingVertical: 14, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  optionActive: { backgroundColor: PURPLE },
-  optionText: { fontSize: 15, color: '#333' },
+  option: { paddingVertical: 15, paddingHorizontal: 20, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
+  optionActive: { backgroundColor: C.primary },
+  optionText: { fontSize: 15, color: C.textPrimary },
   optionTextActive: { color: '#fff', fontWeight: '600' },
-  addNew: { paddingVertical: 14, paddingHorizontal: 16 },
-  addNewText: { fontSize: 15, color: PURPLE, fontWeight: '600' },
+  addNew: { paddingVertical: 15, paddingHorizontal: 20 },
+  addNewText: { fontSize: 15, color: C.primary, fontWeight: '600' },
 });
