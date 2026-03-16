@@ -2,7 +2,7 @@ import { Flame, Beef, Droplets, Wheat, Sun, Utensils, Coffee, Moon, ChevronRight
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getEntriesForPlan, getMealPlans } from '../storage/mealPlanStorage';
-import { getRecipes } from '../storage/recipeStorage';
+import { getAllAccessibleRecipes } from '../storage/recipeStorage';
 import { DayOfWeek, MealPlan, MealPlanEntry, MealType, Recipe } from '../types/Recipe';
 import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 
@@ -76,7 +76,7 @@ export default function HomeScreen({ onNavigate }: Props) {
   const weekDates = getWeekDateNumbers();
 
   const load = useCallback(async () => {
-    const [allPlans, allRecipes] = await Promise.all([getMealPlans(), getRecipes()]);
+    const [allPlans, allRecipes] = await Promise.all([getMealPlans(), getAllAccessibleRecipes()]);
 
     const rMap: Record<string, Recipe> = {};
     for (const r of allRecipes) rMap[r.id] = r;

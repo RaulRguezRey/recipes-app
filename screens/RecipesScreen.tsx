@@ -10,6 +10,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  Switch,
   type ScrollView as ScrollViewType,
   StyleSheet,
   Text,
@@ -20,7 +21,7 @@ import {
 import ActionSheet from '../components/ActionSheet';
 import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 import SelectModal from '../components/SelectModal';
-import { addIngredient, addOrigin, addRecipe, deleteRecipe, getIngredients, getOrigins, getRecipes, updateRecipe } from '../storage/recipeStorage';
+import { addIngredient, addOrigin, addRecipe, deleteRecipe, getAllAccessibleRecipes, getIngredients, getOrigins, setRecipePublic, updateRecipe } from '../storage/recipeStorage';
 import { Difficulty, Ingredient, MealType, Recipe, RecipeIngredient } from '../types/Recipe';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -103,6 +104,9 @@ function parseTxtRecipe(content: string, existingIngredients: Ingredient[]): { r
     costEur: parseFloat(fields['coste_aproximado_por_racion']) || 0,
     photoUri: fields['foto'] || null,
     isFavorite: fields['favorito'] === '1',
+    isSeed: false,
+    isPublic: false,
+    ownerUserId: null,
     createdAt: now,
     updatedAt: now,
   };
@@ -156,9 +160,11 @@ type RecipeCardProps = {
   item: Recipe;
   onSelect: (recipe: Recipe) => void;
   onToggleFavorite: (recipe: Recipe) => void;
+  showShareToggle?: boolean;
+  onTogglePublic?: (recipe: Recipe) => void;
 };
 
-function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
+function RecipeCard({ item, onSelect, onToggleFavorite, showShareToggle, onTogglePublic }: RecipeCardProps) {
   const Icon = MEAL_ICON[item.mealType];
   const totalTime = item.prepTime + item.cookTime;
 
@@ -171,25 +177,32 @@ function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
           : <Icon size={28} color={C.textSecondary} strokeWidth={1.6} />
         }
         {/* Badge */}
-        {item.isFavorite && (
+        {item.isSeed && (
+          <View style={styles.cardBadgeOfficial}>
+            <Text style={styles.cardBadgeText}>OFICIAL</Text>
+          </View>
+        )}
+        {!item.isSeed && item.isFavorite && (
           <View style={styles.cardBadgeFav}>
             <Text style={styles.cardBadgeText}>FAV</Text>
           </View>
         )}
-        {!item.isFavorite && isNewRecipe(item.createdAt) && (
+        {!item.isSeed && !item.isFavorite && isNewRecipe(item.createdAt) && (
           <View style={styles.cardBadgeNew}>
             <Text style={styles.cardBadgeText}>NUEVO</Text>
           </View>
         )}
-        {/* Favorite button */}
-        <TouchableOpacity style={styles.cardHeartBtn} onPress={() => onToggleFavorite(item)}>
-          <Heart
-            size={16}
-            color={item.isFavorite ? C.accent : C.textMuted}
-            fill={item.isFavorite ? C.accent : 'none'}
-            strokeWidth={1.8}
-          />
-        </TouchableOpacity>
+        {/* Favorite button — only for non-seeds */}
+        {!item.isSeed && (
+          <TouchableOpacity style={styles.cardHeartBtn} onPress={() => onToggleFavorite(item)}>
+            <Heart
+              size={16}
+              color={item.isFavorite ? C.accent : C.textMuted}
+              fill={item.isFavorite ? C.accent : 'none'}
+              strokeWidth={1.8}
+            />
+          </TouchableOpacity>
+        )}
       </View>
       {/* Info area */}
       <View style={styles.cardBody}>
@@ -212,6 +225,18 @@ function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
             </Text>
           )}
         </View>
+        {showShareToggle && (
+          <View style={styles.cardShareRow}>
+            <Text style={styles.cardShareLabel}>Compartir</Text>
+            <Switch
+              value={item.isPublic}
+              onValueChange={() => onTogglePublic?.(item)}
+              trackColor={{ false: C.border, true: C.primaryLight }}
+              thumbColor={item.isPublic ? C.primary : C.textMuted}
+              style={{ transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }] }}
+            />
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -224,7 +249,10 @@ type ListViewProps = {
   onAdd: () => void;
   onSelect: (recipe: Recipe) => void;
   onToggleFavorite: (recipe: Recipe) => void;
+  onTogglePublic: (recipe: Recipe) => void;
   onImport: () => void;
+  activeTab: 'community' | 'mine';
+  onTabChange: (tab: 'community' | 'mine') => void;
 };
 
 const CATEGORY_PILLS: { key: MealType | null; label: string }[] = [
@@ -235,11 +263,15 @@ const CATEGORY_PILLS: { key: MealType | null; label: string }[] = [
   { key: 'snack',     label: 'Merienda' },
 ];
 
-function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: ListViewProps) {
+function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onTogglePublic, onImport, activeTab, onTabChange }: ListViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeMeal, setActiveMeal] = useState<MealType | null>(null);
 
-  const filtered = recipes.filter((r) => {
+  const tabRecipes = activeTab === 'community'
+    ? recipes.filter((r) => r.isSeed || r.isPublic)
+    : recipes.filter((r) => !r.isSeed);
+
+  const filtered = tabRecipes.filter((r) => {
     if (searchQuery.trim() && !r.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     if (activeMeal && r.mealType !== activeMeal) return false;
     return true;
@@ -247,6 +279,20 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
 
   return (
     <View style={styles.flex}>
+      {/* Tab bar */}
+      <View style={styles.tabBar}>
+        {(['community', 'mine'] as const).map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            style={[styles.tabBtn, activeTab === tab && styles.tabBtnActive]}
+            onPress={() => onTabChange(tab)}
+          >
+            <Text style={[styles.tabBtnText, activeTab === tab && styles.tabBtnTextActive]}>
+              {tab === 'community' ? 'Comunidad' : 'Mis recetas'}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
       <View style={styles.searchContainer}>
         <View style={styles.searchRow}>
           <TextInput
@@ -310,14 +356,22 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
           columnWrapperStyle={styles.gridRow}
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
-            <RecipeCard item={item} onSelect={onSelect} onToggleFavorite={onToggleFavorite} />
+            <RecipeCard
+              item={item}
+              onSelect={activeTab === 'community' && item.isSeed ? () => {} : onSelect}
+              onToggleFavorite={onToggleFavorite}
+              showShareToggle={activeTab === 'mine'}
+              onTogglePublic={onTogglePublic}
+            />
           )}
         />
       )}
 
-      <TouchableOpacity style={styles.fab} onPress={onAdd}>
-        <Plus size={28} color="#fff" strokeWidth={2} />
-      </TouchableOpacity>
+      {activeTab === 'mine' && (
+        <TouchableOpacity style={styles.fab} onPress={onAdd}>
+          <Plus size={28} color="#fff" strokeWidth={2} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -488,6 +542,9 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
       isFavorite,
       sourceUrl: sourceUrl.trim() || null,
       notes: notes.trim() || null,
+      isSeed: recipe?.isSeed ?? false,
+      isPublic: recipe?.isPublic ?? false,
+      ownerUserId: recipe?.ownerUserId ?? null,
       createdAt: recipe?.createdAt ?? now,
       updatedAt: now,
     };
@@ -758,14 +815,15 @@ export default function RecipesScreen() {
   const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
   const [view, setView] = useState<'list' | 'form'>('list');
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const [activeTab, setActiveTab] = useState<'community' | 'mine'>('community');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const loadData = useCallback(async () => {
-    setRecipes(await getRecipes());
+    setRecipes(await getAllAccessibleRecipes());
     setAllIngredients(await getIngredients());
   }, []);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => { loadData().catch(console.warn); }, [loadData]);
 
   async function handleSave(recipe: Recipe) {
     const existsInStorage = recipes.some((r) => r.id === editingRecipe?.id);
@@ -789,6 +847,12 @@ export default function RecipesScreen() {
   async function handleToggleFavorite(recipe: Recipe) {
     await updateRecipe({ ...recipe, isFavorite: !recipe.isFavorite });
     await loadData();
+  }
+
+  async function handleTogglePublic(recipe: Recipe) {
+    const newVal = !recipe.isPublic;
+    await setRecipePublic(recipe.id, newVal);
+    setRecipes((prev) => prev.map((r) => r.id === recipe.id ? { ...r, isPublic: newVal } : r));
   }
 
   async function handleFileImport(e: React.ChangeEvent<HTMLInputElement>) {
@@ -845,7 +909,10 @@ export default function RecipesScreen() {
         onAdd={openAdd}
         onSelect={openEdit}
         onToggleFavorite={handleToggleFavorite}
+        onTogglePublic={handleTogglePublic}
         onImport={() => fileInputRef.current?.click()}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
     </>
   );
@@ -874,6 +941,11 @@ const styles = StyleSheet.create({
   gridRow: { gap: 12 },
   listContent: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 100 },
   fab: { position: 'absolute', bottom: 24, right: 24, width: 60, height: 60, borderRadius: 30, backgroundColor: C.accent, alignItems: 'center', justifyContent: 'center', ...(SHADOW.fab as any) },
+  tabBar: { flexDirection: 'row', backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
+  tabBtn: { flex: 1, paddingVertical: 13, alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  tabBtnActive: { borderBottomColor: C.primary },
+  tabBtnText: { fontSize: 14, fontWeight: '600', color: C.textMuted },
+  tabBtnTextActive: { color: C.primary },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 60 },
   emptyText: { color: C.textMuted, fontSize: 16 },
   // Grid card
@@ -882,7 +954,10 @@ const styles = StyleSheet.create({
   cardBgImage: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, resizeMode: 'cover' },
   cardBadgeFav: { position: 'absolute', top: 8, right: 8, backgroundColor: C.accent, borderRadius: RADIUS.pill, paddingHorizontal: 7, paddingVertical: 3 },
   cardBadgeNew: { position: 'absolute', top: 8, right: 8, backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingHorizontal: 7, paddingVertical: 3 },
+  cardBadgeOfficial: { position: 'absolute', top: 8, left: 8, backgroundColor: C.success ?? C.primary, borderRadius: RADIUS.pill, paddingHorizontal: 7, paddingVertical: 3 },
   cardBadgeText: { fontSize: 9, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
+  cardShareRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border, paddingTop: 4 },
+  cardShareLabel: { fontSize: 11, color: C.textMuted },
   cardHeartBtn: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: RADIUS.pill, width: 28, height: 28, alignItems: 'center', justifyContent: 'center' },
   cardBody: { padding: 10 },
   cardName: { fontSize: 13, fontWeight: '600', fontFamily: FONT.serif, color: C.textPrimary, marginBottom: 4 },

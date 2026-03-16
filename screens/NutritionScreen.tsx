@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getRecipes } from '../storage/recipeStorage';
+import { getAllAccessibleRecipes } from '../storage/recipeStorage';
 import { getEntriesForPlan, getMealPlans } from '../storage/mealPlanStorage';
 import { MealPlan, MealPlanEntry, Recipe } from '../types/Recipe';
 import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
@@ -67,7 +67,7 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
 
   const load = useCallback(async () => {
-    const [allPlans, recipes] = await Promise.all([getMealPlans(), getRecipes()]);
+    const [allPlans, recipes] = await Promise.all([getMealPlans(), getAllAccessibleRecipes()]);
     setPlans(allPlans);
     const rMap: Record<string, Recipe> = {};
     for (const r of recipes) rMap[r.id] = r;

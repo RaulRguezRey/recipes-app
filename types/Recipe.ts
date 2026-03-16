@@ -37,6 +37,9 @@ export type Recipe = {
   isFavorite: boolean;
   sourceUrl?: string | null;  // URL de origen si fue importada de una web
   notes?: string | null;      // notas libres del usuario
+  isSeed: boolean;
+  isPublic: boolean;
+  ownerUserId: string | null;
   createdAt: string;
   updatedAt: string;
 };

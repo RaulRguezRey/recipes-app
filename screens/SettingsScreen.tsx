@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { getHouseholdMembers, HouseholdMember } from '../storage/householdStorage';
-import { resetAndReloadSeed } from '../storage/seedLoader';
 import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 
 // ── Reusable sub-components ───────────────────────────────────────────────────
@@ -207,26 +206,6 @@ export default function SettingsScreen({ onOpenIngredients }: Props) {
     ]);
   }
 
-  function handleReloadSeed() {
-    Alert.alert(
-      'Recargar recetas base',
-      'Añadirá las recetas de ejemplo que falten en tu cuenta. Las recetas que ya tienes no se modifican.',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Recargar',
-          onPress: async () => {
-            try {
-              await resetAndReloadSeed(user!.id);
-              Alert.alert('Listo', 'Recetas base añadidas correctamente.');
-            } catch (e: any) {
-              Alert.alert('Error', e.message);
-            }
-          },
-        },
-      ]
-    );
-  }
 
   return (
     <>
@@ -263,11 +242,6 @@ export default function SettingsScreen({ onOpenIngredients }: Props) {
         {/* Catalogue */}
         <Section title="Catálogo">
           <SettingRow label="Catálogo de ingredientes" onPress={onOpenIngredients} />
-        </Section>
-
-        {/* Data */}
-        <Section title="Datos">
-          <SettingRow label="Recargar recetas base" onPress={handleReloadSeed} />
         </Section>
 
         {/* About */}

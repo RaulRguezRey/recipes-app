@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { getIngredients, getRecipes } from '../storage/recipeStorage';
+import { getAllAccessibleRecipes, getIngredients } from '../storage/recipeStorage';
 import { getEntriesForPlan } from '../storage/mealPlanStorage';
 import {
   generateShoppingList,
@@ -79,7 +79,7 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
     try {
       const [entries, recipes, ingredients] = await Promise.all([
         getEntriesForPlan(activePlanId),
-        getRecipes(),
+        getAllAccessibleRecipes(),
         getIngredients(),
       ]);
       const newList = generateShoppingList(activePlanId, entries, recipes, ingredients);

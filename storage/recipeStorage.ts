@@ -48,6 +48,9 @@ function rowToRecipe(row: any): Recipe {
     isFavorite: row.is_favorite ?? false,
     sourceUrl: row.source_url ?? null,
     notes: row.notes ?? null,
+    isSeed: row.is_seed ?? false,
+    isPublic: row.is_public ?? false,
+    ownerUserId: row.owner_user_id ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -74,6 +77,7 @@ function recipeToRow(r: Recipe, userId?: string) {
     is_favorite: r.isFavorite,
     source_url: r.sourceUrl ?? null,
     notes: r.notes ?? null,
+    is_public: r.isPublic ?? false,
     created_at: r.createdAt,
     updated_at: new Date().toISOString(),
     ...(userId ? { owner_user_id: userId } : {}),
@@ -90,6 +94,24 @@ export async function getRecipes(): Promise<Recipe[]> {
     .order('name');
   if (error) throw error;
   return (data ?? []).map(rowToRecipe);
+}
+
+// Returns all recipes accessible to the current user (RLS filters for us)
+export async function getAllAccessibleRecipes(): Promise<Recipe[]> {
+  const { data, error } = await supabase
+    .from('recipes')
+    .select('*')
+    .order('name');
+  if (error) throw error;
+  return (data ?? []).map(rowToRecipe);
+}
+
+export async function setRecipePublic(id: string, isPublic: boolean): Promise<void> {
+  const { error } = await supabase
+    .from('recipes')
+    .update({ is_public: isPublic })
+    .eq('id', id);
+  if (error) throw error;
 }
 
 export async function addRecipe(recipe: Recipe, userId: string): Promise<void> {

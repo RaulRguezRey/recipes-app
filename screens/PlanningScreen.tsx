@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { getRecipes } from '../storage/recipeStorage';
+import { getAllAccessibleRecipes } from '../storage/recipeStorage';
 import {
   deleteMealPlan,
   deleteEntry,
@@ -265,7 +265,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
   const load = useCallback(async () => {
     const [allPlans, allRecipes, luMap] = await Promise.all([
       getMealPlans(),
-      getRecipes(),
+      getAllAccessibleRecipes(),
       getRecipeLastUsedMap(),
     ]);
     setPlans(allPlans);
