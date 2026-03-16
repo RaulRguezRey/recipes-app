@@ -234,8 +234,14 @@ export default function PlanningScreen({ onGenerateList }: Props) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [lastUsedMap, setLastUsedMap] = useState<Record<string, string>>({});
 
+  const [selectedDay, setSelectedDay] = useState<DayOfWeek>(() => {
+    const map: DayOfWeek[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    return map[new Date().getDay()];
+  });
+
   const [selectorVisible, setSelectorVisible] = useState(false);
   const [selectorTarget, setSelectorTarget] = useState<{ day: DayOfWeek; mealType: MealType } | null>(null);
+  const [replacingEntryId, setReplacingEntryId] = useState<string | null>(null);
 
   const [servingsVisible, setServingsVisible] = useState(false);
   const [editingEntry, setEditingEntry] = useState<MealPlanEntry | null>(null);
@@ -284,9 +290,22 @@ export default function PlanningScreen({ onGenerateList }: Props) {
     setSelectorVisible(true);
   }
 
+  function openSelectorForChange(entry: MealPlanEntry) {
+    setReplacingEntryId(entry.id);
+    setSelectorTarget({ day: entry.dayOfWeek, mealType: entry.mealType });
+    setSelectorVisible(true);
+  }
+
   async function handleSelectRecipe(recipe: Recipe) {
     if (!activePlanId || !selectorTarget) return;
     setSelectorVisible(false);
+
+    // If replacing an existing entry, delete it first
+    if (replacingEntryId) {
+      await deleteEntry(replacingEntryId);
+      setEntries((prev) => prev.filter((e) => e.id !== replacingEntryId));
+      setReplacingEntryId(null);
+    }
 
     const entry: MealPlanEntry = {
       id: newId(),
@@ -349,11 +368,34 @@ export default function PlanningScreen({ onGenerateList }: Props) {
 
   const editingRecipeName = editingEntry ? (recipeMap[editingEntry.recipeId]?.name ?? '') : '';
 
+  // Weekly macro totals for summary bars
+  const weekMacros = entries.reduce(
+    (acc, e) => {
+      const r = recipeMap[e.recipeId];
+      if (!r) return acc;
+      const s = e.servings;
+      return {
+        protein: acc.protein + r.proteinG * s,
+        fat:     acc.fat     + r.fatG * s,
+        carbs:   acc.carbs   + r.carbsG * s,
+      };
+    },
+    { protein: 0, fat: 0, carbs: 0 }
+  );
+
+  // Kcal for selected day
+  const dayKcal = entries
+    .filter((e) => e.dayOfWeek === selectedDay)
+    .reduce((acc, e) => {
+      const r = recipeMap[e.recipeId];
+      return r ? acc + r.caloriesPerServing * e.servings : acc;
+    }, 0);
+
   return (
     <View style={styles.container}>
       {/* Plan selector + new plan button */}
       <View style={styles.planBar}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.planTabs}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.planTabs} contentContainerStyle={{ paddingHorizontal: 8, paddingVertical: 8, gap: 8 }}>
           {plans.map((p) => (
             <TouchableOpacity
               key={p.id}
@@ -371,58 +413,121 @@ export default function PlanningScreen({ onGenerateList }: Props) {
         </TouchableOpacity>
       </View>
 
-      {/* Weekly grid */}
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.grid}>
-        {DAYS.map(({ key: day, label: dayLabel }) => (
-          <View key={day} style={styles.dayBlock}>
-            <Text style={styles.dayLabel}>{dayLabel}</Text>
-            {MEAL_TYPES.map(({ key: mealType, icon: MealIcon }) => {
-              const cellEntries = entriesFor(day, mealType);
-              return (
-                <View key={mealType} style={styles.mealCell}>
-                  <View style={styles.mealTypeLabelRow}>
-                    <MealIcon size={12} color={C.textMuted} strokeWidth={1.8} />
-                    <Text style={styles.mealTypeLabel}> {MEAL_TYPE_LABELS[mealType]}</Text>
+      {/* Day pills */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dayPillsScroll} contentContainerStyle={styles.dayPillsContent}>
+        {DAYS.map(({ key: dayKey, label: dayLabel }) => {
+          const active = selectedDay === dayKey;
+          const shortLabel = dayLabel.slice(0, 3);
+          return (
+            <TouchableOpacity
+              key={dayKey}
+              style={[styles.dayPill, active && styles.dayPillActive]}
+              onPress={() => setSelectedDay(dayKey)}
+            >
+              <Text style={[styles.dayPillText, active && styles.dayPillTextActive]}>{shortLabel}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+
+        {/* Daily kcal box */}
+        {dayKcal > 0 && (
+          <View style={styles.kcalBox}>
+            <Text style={styles.kcalBoxLabel}>Hoy</Text>
+            <Text style={styles.kcalBoxValue}>{Math.round(dayKcal)} kcal</Text>
+          </View>
+        )}
+
+        {/* Meal slots for selected day */}
+        {MEAL_TYPES.map(({ key: mealType, label: mealLabel, icon: MealIcon }) => {
+          const slotEntries = entriesFor(selectedDay, mealType);
+          const firstEntry = slotEntries[0] ?? null;
+          const recipe = firstEntry ? recipeMap[firstEntry.recipeId] : null;
+
+          return (
+            <View key={mealType} style={styles.mealSlot}>
+              <View style={styles.mealSlotHeader}>
+                <MealIcon size={15} color={C.textSecondary} strokeWidth={1.8} />
+                <Text style={styles.mealSlotLabel}>{mealLabel.toUpperCase()}</Text>
+              </View>
+
+              {recipe ? (
+                <View style={styles.mealSlotCard}>
+                  <View style={styles.mealSlotCardInfo}>
+                    <Text style={styles.mealSlotName} numberOfLines={1}>{recipe.name}</Text>
+                    {recipe.caloriesPerServing > 0 && (
+                      <Text style={styles.mealSlotKcal}>
+                        {Math.round(recipe.caloriesPerServing * (firstEntry?.servings ?? 1))} kcal · {firstEntry?.servings} rac.
+                      </Text>
+                    )}
                   </View>
-                  {cellEntries.map((entry) => {
-                    const recipe = recipeMap[entry.recipeId];
-                    if (!recipe) return null;
-                    return (
-                      <TouchableOpacity
-                        key={entry.id}
-                        style={styles.entryChip}
-                        onPress={() => openServingsModal(entry)}
-                      >
-                        <Text style={styles.entryName} numberOfLines={1}>{recipe.name}</Text>
-                        <Text style={styles.entryServings}>{entry.servings} rac.</Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                  <TouchableOpacity
-                    style={styles.addEntryBtn}
-                    onPress={() => openSelector(day, mealType)}
-                  >
-                    <Text style={styles.addEntryBtnText}>+ Añadir</Text>
-                  </TouchableOpacity>
+                  <View style={styles.mealSlotBtns}>
+                    <TouchableOpacity
+                      style={styles.mealSlotBtnSec}
+                      onPress={() => firstEntry && openServingsModal(firstEntry)}
+                    >
+                      <Text style={styles.mealSlotBtnSecText}>Raciones</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.mealSlotBtnPri}
+                      onPress={() => firstEntry && openSelectorForChange(firstEntry)}
+                    >
+                      <Text style={styles.mealSlotBtnPriText}>Cambiar</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.addSlotBtn}
+                  onPress={() => openSelector(selectedDay, mealType)}
+                >
+                  <Text style={styles.addSlotBtnText}>+ Añadir receta</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          );
+        })}
+
+        {/* Weekly summary bars */}
+        {entries.length > 0 && (
+          <View style={styles.weekSummary}>
+            <Text style={styles.weekSummaryTitle}>Resumen semanal</Text>
+            {[
+              { label: 'Proteína', value: weekMacros.protein, goal: 150, color: C.info },
+              { label: 'Grasas',   value: weekMacros.fat,     goal: 80,  color: C.warning },
+              { label: 'Carbos',   value: weekMacros.carbs,   goal: 200, color: C.primary },
+            ].map(({ label, value, goal, color }) => {
+              const pct = Math.min(1, value / goal);
+              return (
+                <View key={label} style={styles.macroBarRow}>
+                  <Text style={styles.macroBarLabel}>{label}</Text>
+                  <View style={styles.macroBarTrack}>
+                    <View style={[styles.macroBarFill, { width: `${pct * 100}%` as any, backgroundColor: color }]} />
+                  </View>
+                  <Text style={styles.macroBarVal}>{Math.round(value)}g</Text>
                 </View>
               );
             })}
           </View>
-        ))}
-      </ScrollView>
+        )}
 
-      {/* Generate shopping list button */}
-      {activePlan && entries.length > 0 && (
-        <TouchableOpacity
-          style={styles.generateBtn}
-          onPress={() => onGenerateList(activePlan.id)}
-        >
-          <View style={styles.generateBtnContent}>
-            <ShoppingCart size={18} color="#fff" strokeWidth={1.8} />
-            <Text style={styles.generateBtnText}> Generar lista de la compra</Text>
-          </View>
-        </TouchableOpacity>
-      )}
+        {/* Generate shopping list button */}
+        {activePlan && entries.length > 0 && (
+          <TouchableOpacity
+            style={styles.generateBtn}
+            onPress={() => onGenerateList(activePlan.id)}
+          >
+            <View style={styles.generateBtnContent}>
+              <ShoppingCart size={18} color="#fff" strokeWidth={1.8} />
+              <Text style={styles.generateBtnText}> Generar lista de la compra</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+
+        <View style={{ height: 20 }} />
+      </ScrollView>
 
       <RecipeSelector
         visible={selectorVisible}
@@ -431,7 +536,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
         currentWeekStart={activePlan?.weekStart ?? ''}
         currentEntries={entries}
         onSelect={handleSelectRecipe}
-        onClose={() => setSelectorVisible(false)}
+        onClose={() => { setSelectorVisible(false); setReplacingEntryId(null); }}
       />
 
       <ServingsModal
@@ -456,29 +561,57 @@ const styles = StyleSheet.create({
   // Plan bar
   planBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   planTabs: { flex: 1 },
-  planTab: { paddingVertical: 10, paddingHorizontal: 16, marginHorizontal: 4, borderRadius: RADIUS.pill, backgroundColor: C.bgSurface },
+  planTab: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: RADIUS.pill, backgroundColor: C.bgPage },
   planTabActive: { backgroundColor: C.primary, ...(SHADOW.activePill as any) },
-  planTabText: { color: C.textMuted, fontSize: 13 },
+  planTabText: { color: C.textMuted, fontSize: 12 },
   planTabTextActive: { color: '#fff', fontWeight: '700' },
   newWeekBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   newWeekBtnText: { fontSize: 22, color: C.primary, fontWeight: '300' },
 
-  // Grid
+  // Day pills
+  dayPillsScroll: { backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
+  dayPillsContent: { paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
+  dayPill: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: RADIUS.pill, backgroundColor: C.bgPage },
+  dayPillActive: { backgroundColor: C.primary, ...(SHADOW.activePill as any) },
+  dayPillText: { fontSize: 13, fontWeight: '600', color: C.textMuted },
+  dayPillTextActive: { color: '#fff' },
+
+  // Scroll content
   scroll: { flex: 1 },
-  grid: { padding: 14, gap: 14 },
-  dayBlock: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, overflow: 'hidden', ...(SHADOW.sm as any) },
-  dayLabel: { backgroundColor: C.primary, color: '#fff', fontWeight: '700', fontSize: 14, paddingVertical: 12, paddingHorizontal: 16, fontFamily: FONT.serif },
-  mealCell: { padding: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
-  mealTypeLabelRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  mealTypeLabel: { fontSize: 12, color: C.textMuted },
-  entryChip: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: C.bgCard, borderRadius: RADIUS.sm, paddingVertical: 8, paddingHorizontal: 12, marginBottom: 6 },
-  entryName: { flex: 1, fontSize: 13, color: C.primary, fontWeight: '600' },
-  entryServings: { fontSize: 12, color: C.textMuted, marginLeft: 8 },
-  addEntryBtn: { marginTop: 4 },
-  addEntryBtnText: { color: C.primary, fontSize: 12, fontWeight: '600' },
+  scrollContent: { padding: 16, gap: 14 },
+
+  // Daily kcal box
+  kcalBox: { backgroundColor: C.bgSurface, borderRadius: RADIUS.md, paddingVertical: 14, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', ...(SHADOW.sm as any) },
+  kcalBoxLabel: { fontSize: 13, color: C.textSecondary, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.4 },
+  kcalBoxValue: { fontSize: 22, fontWeight: '700', color: C.danger },
+
+  // Meal slots
+  mealSlot: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, overflow: 'hidden', ...(SHADOW.sm as any) },
+  mealSlotHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
+  mealSlotLabel: { fontSize: 11, fontWeight: '700', color: C.textSecondary, letterSpacing: 0.6 },
+  mealSlotCard: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 },
+  mealSlotCardInfo: { flex: 1 },
+  mealSlotName: { fontSize: 15, fontWeight: '600', color: C.textPrimary, fontFamily: FONT.serif },
+  mealSlotKcal: { fontSize: 12, color: C.textMuted, marginTop: 3 },
+  mealSlotBtns: { flexDirection: 'row', gap: 8 },
+  mealSlotBtnSec: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: RADIUS.sm, borderWidth: 1, borderColor: C.border },
+  mealSlotBtnSecText: { fontSize: 12, color: C.textSecondary, fontWeight: '600' },
+  mealSlotBtnPri: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: RADIUS.sm, backgroundColor: C.primary },
+  mealSlotBtnPriText: { fontSize: 12, color: '#fff', fontWeight: '600' },
+  addSlotBtn: { paddingVertical: 16, paddingHorizontal: 16, alignItems: 'center' },
+  addSlotBtnText: { color: C.primary, fontSize: 14, fontWeight: '600' },
+
+  // Weekly summary
+  weekSummary: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, padding: 20, ...(SHADOW.sm as any), gap: 12 },
+  weekSummaryTitle: { fontSize: 14, fontWeight: '700', color: C.textPrimary, fontFamily: FONT.serif, marginBottom: 4 },
+  macroBarRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  macroBarLabel: { fontSize: 12, color: C.textSecondary, width: 64 },
+  macroBarTrack: { flex: 1, height: 8, backgroundColor: C.bgPage, borderRadius: RADIUS.pill, overflow: 'hidden' },
+  macroBarFill: { height: '100%', borderRadius: RADIUS.pill },
+  macroBarVal: { fontSize: 12, color: C.textMuted, width: 44, textAlign: 'right' },
 
   // Generate button
-  generateBtn: { margin: 16, backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, alignItems: 'center', ...(SHADOW.sm as any) },
+  generateBtn: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, alignItems: 'center', ...(SHADOW.sm as any) },
   generateBtnContent: { flexDirection: 'row', alignItems: 'center' },
   generateBtnText: { color: '#fff', fontSize: 15, fontWeight: '600' },
 

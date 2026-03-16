@@ -1,11 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { Utensils, CalendarDays, ShoppingCart, BarChart2, Settings } from 'lucide-react-native';
+import { Home, Utensils, CalendarDays, BarChart2, Settings } from 'lucide-react-native';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { C, SHADOW } from './constants/theme';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginScreen from './screens/auth/LoginScreen';
+import HomeScreen from './screens/HomeScreen';
 import RecipesScreen from './screens/RecipesScreen';
 import PlanningScreen from './screens/PlanningScreen';
 import ShoppingListScreen from './screens/ShoppingListScreen';
@@ -13,16 +14,16 @@ import NutritionScreen from './screens/NutritionScreen';
 import IngredientsScreen from './screens/IngredientsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-type Tab = 'Recipes' | 'Planning' | 'Shopping List' | 'Nutrition' | 'Settings';
-type Screen = Tab | 'Ingredients';
+type Tab = 'Home' | 'Recipes' | 'Planning' | 'Nutrition' | 'Settings';
+type Screen = Tab | 'Shopping List' | 'Ingredients';
 type LucideIcon = React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
 
 const TABS: { name: Tab; lucideIcon: LucideIcon }[] = [
-  { name: 'Recipes',       lucideIcon: Utensils      },
-  { name: 'Planning',      lucideIcon: CalendarDays  },
-  { name: 'Shopping List', lucideIcon: ShoppingCart  },
-  { name: 'Nutrition',     lucideIcon: BarChart2     },
-  { name: 'Settings',      lucideIcon: Settings      },
+  { name: 'Home',      lucideIcon: Home         },
+  { name: 'Recipes',   lucideIcon: Utensils     },
+  { name: 'Planning',  lucideIcon: CalendarDays },
+  { name: 'Nutrition', lucideIcon: BarChart2    },
+  { name: 'Settings',  lucideIcon: Settings     },
 ];
 
 function LoadingScreen() {
@@ -34,7 +35,7 @@ function LoadingScreen() {
 }
 
 function MainTabs() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('Recipes');
+  const [currentScreen, setCurrentScreen] = useState<Screen>('Home');
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
 
   function handleGenerateList(planId: string) {
@@ -44,6 +45,8 @@ function MainTabs() {
 
   function renderScreen() {
     switch (currentScreen) {
+      case 'Home':
+        return <HomeScreen onNavigate={(s) => setCurrentScreen(s as Screen)} />;
       case 'Recipes':
         return <RecipesScreen />;
       case 'Planning':
@@ -59,7 +62,11 @@ function MainTabs() {
     }
   }
 
-  const activeTab: Tab = currentScreen === 'Ingredients' ? 'Settings' : (currentScreen as Tab);
+  const activeTab: Tab = (
+    currentScreen === 'Ingredients' ? 'Settings' :
+    currentScreen === 'Shopping List' ? 'Planning' :
+    currentScreen as Tab
+  );
 
   return (
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right', 'bottom']}>

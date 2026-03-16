@@ -137,6 +137,19 @@ const MEAL_ICON: Record<MealType, LucideIcon> = {
   dinner:    Moon,
 };
 
+// ─── Meal type background colors ──────────────────────────────────────────────
+
+const MEAL_BG: Record<MealType, string> = {
+  breakfast: '#FFF8F0',
+  lunch:     '#F0FFF4',
+  snack:     '#F5F0FF',
+  dinner:    '#F0F4FF',
+};
+
+function isNewRecipe(createdAt: string): boolean {
+  return Date.now() - new Date(createdAt).getTime() < 7 * 24 * 60 * 60 * 1000;
+}
+
 // ─── Recipe Card ──────────────────────────────────────────────────────────────
 
 type RecipeCardProps = {
@@ -146,44 +159,50 @@ type RecipeCardProps = {
 };
 
 function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
-  const [imageError, setImageError] = useState(false);
-  const showImage = item.photoUri && !imageError;
+  const Icon = MEAL_ICON[item.mealType];
+  const totalTime = item.prepTime + item.cookTime;
 
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onSelect(item)}>
-      {showImage && (
-        <Image
-          source={{ uri: item.photoUri! }}
-          style={styles.cardImage}
-          onError={() => setImageError(true)}
-        />
-      )}
+    <TouchableOpacity style={styles.card} onPress={() => onSelect(item)} activeOpacity={0.85}>
+      {/* Colored header area */}
+      <View style={[styles.cardBgArea, { backgroundColor: MEAL_BG[item.mealType] }]}>
+        <Icon size={28} color={C.textSecondary} strokeWidth={1.6} />
+        {/* Badge */}
+        {item.isFavorite && (
+          <View style={styles.cardBadgeFav}>
+            <Text style={styles.cardBadgeText}>FAV</Text>
+          </View>
+        )}
+        {!item.isFavorite && isNewRecipe(item.createdAt) && (
+          <View style={styles.cardBadgeNew}>
+            <Text style={styles.cardBadgeText}>NUEVO</Text>
+          </View>
+        )}
+        {/* Favorite button */}
+        <TouchableOpacity style={styles.cardHeartBtn} onPress={() => onToggleFavorite(item)}>
+          <Star
+            size={16}
+            color={item.isFavorite ? C.accent : C.textMuted}
+            fill={item.isFavorite ? C.accent : 'none'}
+            strokeWidth={1.8}
+          />
+        </TouchableOpacity>
+      </View>
+      {/* Info area */}
       <View style={styles.cardBody}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
-          <TouchableOpacity onPress={() => onToggleFavorite(item)} style={{ marginLeft: 8 }}>
-            <Star
-              size={20}
-              color={item.isFavorite ? C.accent : C.textMuted}
-              fill={item.isFavorite ? C.accent : 'none'}
-              strokeWidth={1.8}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.cardMeta}>
-          <View style={styles.tag}>
-            {(() => { const Icon = MEAL_ICON[item.mealType]; return <Icon size={11} color={C.textSecondary} strokeWidth={1.8} />; })()}
-            <Text style={styles.tagText}> {MEAL_LABEL[item.mealType]}</Text>
-          </View>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>{DIFFICULTY_LABEL[item.difficulty]}</Text>
-          </View>
-        </View>
+        <Text style={styles.cardName} numberOfLines={2}>{item.name}</Text>
         <View style={styles.cardSubRow}>
-          <Clock size={12} color={C.textMuted} strokeWidth={1.8} />
-          <Text style={styles.cardSub}>
-            {' '}{item.prepTime + item.cookTime} min · {item.servings} servings · {item.caloriesPerServing} kcal
-          </Text>
+          {totalTime > 0 && (
+            <>
+              <Clock size={11} color={C.textMuted} strokeWidth={1.8} />
+              <Text style={styles.cardSub}> {totalTime}m</Text>
+            </>
+          )}
+          {item.caloriesPerServing > 0 && (
+            <Text style={[styles.cardSub, totalTime > 0 && { marginLeft: 8 }]}>
+              🔥 {item.caloriesPerServing}
+            </Text>
+          )}
         </View>
       </View>
     </TouchableOpacity>
@@ -200,30 +219,23 @@ type ListViewProps = {
   onImport: () => void;
 };
 
+const CATEGORY_PILLS: { key: MealType | null; label: string }[] = [
+  { key: null,        label: 'Todos'    },
+  { key: 'breakfast', label: 'Desayuno' },
+  { key: 'lunch',     label: 'Almuerzo' },
+  { key: 'dinner',    label: 'Cena'     },
+  { key: 'snack',     label: 'Merienda' },
+];
+
 function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: ListViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeMeal, setActiveMeal] = useState<MealType | null>(null);
-  const [activeOrigin, setActiveOrigin] = useState<string | null>(null);
-  const [showMealModal, setShowMealModal] = useState(false);
-  const [showOriginModal, setShowOriginModal] = useState(false);
-
-  const origins = [...new Set(recipes.map((r) => r.origin).filter(Boolean))].sort() as string[];
 
   const filtered = recipes.filter((r) => {
     if (searchQuery.trim() && !r.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     if (activeMeal && r.mealType !== activeMeal) return false;
-    if (activeOrigin && r.origin !== activeOrigin) return false;
     return true;
   });
-
-  const mealOptions = [
-    { label: 'Todos', value: '' },
-    ...MEAL_TYPES.map((t) => ({ label: MEAL_LABEL[t], value: t })),
-  ];
-  const originOptions = [
-    { label: 'Todos', value: '' },
-    ...origins.map((o) => ({ label: o, value: o })),
-  ];
 
   return (
     <View style={styles.flex}>
@@ -238,42 +250,28 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
         />
       </View>
 
-      {/* Filter dropdowns */}
-      <View style={styles.filterBar}>
-        <TouchableOpacity
-          style={[styles.filterDropdown, activeMeal && styles.filterDropdownActive]}
-          onPress={() => setShowMealModal(true)}
-        >
-          <Text style={[styles.filterDropdownText, activeMeal && styles.filterDropdownTextActive]} numberOfLines={1}>
-            {activeMeal ? MEAL_LABEL[activeMeal] : 'Tipo de comida ▾'}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.filterDropdown, activeOrigin && styles.filterDropdownActive]}
-          onPress={() => setShowOriginModal(true)}
-        >
-          <Text style={[styles.filterDropdownText, activeOrigin && styles.filterDropdownTextActive]} numberOfLines={1}>
-            {activeOrigin ?? 'Origen ▾'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <SelectModal
-        visible={showMealModal}
-        title="Tipo de comida"
-        options={mealOptions}
-        selectedValue={activeMeal ?? ''}
-        onSelect={(v) => { setActiveMeal(v === '' ? null : v as MealType); setShowMealModal(false); }}
-        onClose={() => setShowMealModal(false)}
-      />
-      <SelectModal
-        visible={showOriginModal}
-        title="Origen"
-        options={originOptions}
-        selectedValue={activeOrigin ?? ''}
-        onSelect={(v) => { setActiveOrigin(v === '' ? null : v); setShowOriginModal(false); }}
-        onClose={() => setShowOriginModal(false)}
-      />
+      {/* Category filter pills */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.categoryScroll}
+        contentContainerStyle={styles.categoryScrollContent}
+      >
+        {CATEGORY_PILLS.map((p) => {
+          const active = activeMeal === p.key;
+          return (
+            <TouchableOpacity
+              key={String(p.key)}
+              style={[styles.categoryPill, active && styles.categoryPillActive]}
+              onPress={() => setActiveMeal(p.key)}
+            >
+              <Text style={[styles.categoryPillText, active && styles.categoryPillTextActive]}>
+                {p.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
 
       {Platform.OS === 'web' && (
         <TouchableOpacity style={styles.importButton} onPress={onImport}>
@@ -294,6 +292,8 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
         <FlatList
           data={filtered}
           keyExtractor={(item) => item.id}
+          numColumns={2}
+          columnWrapperStyle={styles.gridRow}
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
             <RecipeCard item={item} onSelect={onSelect} onToggleFavorite={onToggleFavorite} />
@@ -848,26 +848,28 @@ const styles = StyleSheet.create({
   importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: C.primary, borderRadius: RADIUS.pill, padding: 14, alignItems: 'center' },
   importButtonContent: { flexDirection: 'row', alignItems: 'center' },
   importButtonText: { color: C.primary, fontSize: 15, fontWeight: '600' },
-  filterBar: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 12, gap: 10 },
-  filterDropdown: { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.pill, paddingHorizontal: 14, paddingVertical: 10, backgroundColor: C.bgSurface },
-  filterDropdownActive: { borderColor: C.primary, backgroundColor: C.primary },
-  filterDropdownText: { fontSize: 13, color: C.textSecondary, textAlign: 'center' },
-  filterDropdownTextActive: { color: '#fff', fontWeight: '600', textAlign: 'center' },
+  categoryScroll: { marginBottom: 12 },
+  categoryScrollContent: { paddingHorizontal: 16, gap: 8 },
+  categoryPill: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: RADIUS.pill, backgroundColor: C.bgSurface, borderWidth: 1, borderColor: C.border },
+  categoryPillActive: { backgroundColor: C.primary, borderColor: C.primary },
+  categoryPillText: { fontSize: 13, fontWeight: '600', color: C.textMuted },
+  categoryPillTextActive: { color: '#fff' },
+  gridRow: { gap: 12 },
   listContent: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 100 },
   fab: { position: 'absolute', bottom: 24, right: 24, width: 60, height: 60, borderRadius: 30, backgroundColor: C.accent, alignItems: 'center', justifyContent: 'center', ...(SHADOW.fab as any) },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 60 },
   emptyText: { color: C.textMuted, fontSize: 16 },
-  card: { backgroundColor: C.bgSurface, borderRadius: RADIUS.xl, marginBottom: 14, overflow: 'hidden', ...(SHADOW.md as any) },
-  cardImage: { width: '100%', height: 106, resizeMode: 'cover' },
-  cardBody: { padding: 16 },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  cardName: { fontSize: 17, fontWeight: '600', flex: 1, fontFamily: FONT.serif, color: C.textPrimary },
-  star: { fontSize: 20, marginLeft: 8 },
-  cardMeta: { flexDirection: 'row', gap: 8, marginBottom: 6 },
-  tag: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgCard, paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.pill },
-  tagText: { fontSize: 12, color: C.textSecondary },
-  cardSubRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  cardSub: { fontSize: 12, color: C.textMuted },
+  // Grid card
+  card: { flex: 1, backgroundColor: C.bgSurface, borderRadius: RADIUS.xl, marginBottom: 12, overflow: 'hidden', ...(SHADOW.sm as any) },
+  cardBgArea: { height: 110, alignItems: 'center', justifyContent: 'center', position: 'relative' },
+  cardBadgeFav: { position: 'absolute', top: 8, right: 8, backgroundColor: C.accent, borderRadius: RADIUS.pill, paddingHorizontal: 7, paddingVertical: 3 },
+  cardBadgeNew: { position: 'absolute', top: 8, right: 8, backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingHorizontal: 7, paddingVertical: 3 },
+  cardBadgeText: { fontSize: 9, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
+  cardHeartBtn: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: RADIUS.pill, width: 28, height: 28, alignItems: 'center', justifyContent: 'center' },
+  cardBody: { padding: 10 },
+  cardName: { fontSize: 13, fontWeight: '600', fontFamily: FONT.serif, color: C.textPrimary, marginBottom: 4 },
+  cardSubRow: { flexDirection: 'row', alignItems: 'center' },
+  cardSub: { fontSize: 11, color: C.textMuted },
 
   // Form header
   formHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, backgroundColor: C.bgSurface },
