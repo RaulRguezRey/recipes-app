@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   link: {
-    color: C.primaryLight,
+    color: C.primary,
     fontSize: 14,
     textDecorationLine: 'underline',
   },

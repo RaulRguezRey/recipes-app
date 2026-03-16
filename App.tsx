@@ -1,9 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { Utensils, CalendarDays, ShoppingCart, BarChart2, Settings } from 'lucide-react-native';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { C, SHADOW } from './constants/theme';
-import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginScreen from './screens/auth/LoginScreen';
 import RecipesScreen from './screens/RecipesScreen';
@@ -15,14 +15,14 @@ import SettingsScreen from './screens/SettingsScreen';
 
 type Tab = 'Recipes' | 'Planning' | 'Shopping List' | 'Nutrition' | 'Settings';
 type Screen = Tab | 'Ingredients';
-type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+type LucideIcon = React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
 
-const TABS: { name: Tab; icon: IoniconName; iconActive: IoniconName }[] = [
-  { name: 'Recipes',       icon: 'restaurant-outline', iconActive: 'restaurant' },
-  { name: 'Planning',      icon: 'calendar-outline',   iconActive: 'calendar' },
-  { name: 'Shopping List', icon: 'cart-outline',        iconActive: 'cart' },
-  { name: 'Nutrition',     icon: 'nutrition-outline',  iconActive: 'nutrition' },
-  { name: 'Settings',      icon: 'settings-outline',   iconActive: 'settings' },
+const TABS: { name: Tab; lucideIcon: LucideIcon }[] = [
+  { name: 'Recipes',       lucideIcon: Utensils      },
+  { name: 'Planning',      lucideIcon: CalendarDays  },
+  { name: 'Shopping List', lucideIcon: ShoppingCart  },
+  { name: 'Nutrition',     lucideIcon: BarChart2     },
+  { name: 'Settings',      lucideIcon: Settings      },
 ];
 
 function LoadingScreen() {
@@ -36,7 +36,6 @@ function LoadingScreen() {
 function MainTabs() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('Recipes');
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
-  const insets = useSafeAreaInsets();
 
   function handleGenerateList(planId: string) {
     setActivePlanId(planId);
@@ -63,13 +62,13 @@ function MainTabs() {
   const activeTab: Tab = currentScreen === 'Ingredients' ? 'Settings' : (currentScreen as Tab);
 
   return (
-    <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
-      <StatusBar style="auto" />
+    <SafeAreaView style={styles.root} edges={['top', 'left', 'right', 'bottom']}>
+      <StatusBar style="dark" />
 
       {renderScreen()}
 
       {/* Tab Bar */}
-      <View style={[styles.tabBar, { paddingBottom: (insets.bottom || 0) + 10 }]}>
+      <View style={styles.tabBar}>
         {TABS.map((tab) => {
           const active = activeTab === tab.name;
           return (
@@ -78,10 +77,10 @@ function MainTabs() {
               style={styles.tab}
               onPress={() => setCurrentScreen(tab.name)}
             >
-              <Ionicons
-                name={active ? tab.iconActive : tab.icon}
+              <tab.lucideIcon
                 size={26}
                 color={active ? C.primary : C.textMuted}
+                strokeWidth={active ? 2.2 : 1.6}
               />
             </TouchableOpacity>
           );

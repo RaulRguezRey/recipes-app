@@ -146,10 +146,10 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Resumen semanal</Text>
         <View style={styles.macroRow}>
-          <MacroBar label="Kcal/día" value={Math.round(avgKcal)} unit="" color="#e53935" />
-          <MacroBar label="Proteína" value={weekTotals.protein} unit="g" color="#1976d2" />
-          <MacroBar label="Grasas" value={weekTotals.fat} unit="g" color="#f57c00" />
-          <MacroBar label="Carbos" value={weekTotals.carbs} unit="g" color="#388e3c" />
+          <MacroBar label="Kcal/día" value={Math.round(avgKcal)} unit="" color={C.danger} />
+          <MacroBar label="Proteína" value={weekTotals.protein} unit="g" color={C.info} />
+          <MacroBar label="Grasas" value={weekTotals.fat} unit="g" color={C.warning} />
+          <MacroBar label="Carbos" value={weekTotals.carbs} unit="g" color={C.primary} />
         </View>
         <View style={styles.costRow}>
           <Text style={styles.costLabel}>Coste estimado semanal</Text>
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
 
   planTabs: { marginBottom: 10 },
   planTab: { paddingVertical: 9, paddingHorizontal: 16, marginRight: 8, borderRadius: RADIUS.pill, backgroundColor: C.bgSurface, ...(SHADOW.sm as any) },
-  planTabActive: { backgroundColor: C.primary },
+  planTabActive: { backgroundColor: C.primary, ...(SHADOW.activePill as any) },
   planTabText: { fontSize: 12, color: C.textMuted },
   planTabTextActive: { color: '#fff', fontWeight: '700' },
 
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   dayHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 18 },
   dayLabel: { fontSize: 15, fontWeight: '700', color: C.textPrimary, fontFamily: FONT.serif },
   dayHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  dayKcal: { fontSize: 13, color: '#B8312F', fontWeight: '600' },
+  dayKcal: { fontSize: 13, color: C.danger, fontWeight: '600' },
   dayCost: { fontSize: 13, color: C.primary, fontWeight: '600' },
   dayChevron: { fontSize: 11, color: C.textMuted, marginLeft: 4 },
   dayDetail: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border, paddingVertical: 14, paddingHorizontal: 18, gap: 10 },

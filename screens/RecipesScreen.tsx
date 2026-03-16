@@ -1,5 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
-import { Ionicons } from '@expo/vector-icons';
+import { Sun, Moon, Coffee, Utensils, Star, FolderOpen, X, Camera, Check, XCircle, Plus, Clock } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -128,13 +128,13 @@ const MEAL_LABEL: Record<MealType, string> = {
   dinner: 'Dinner',
 };
 
-type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+type LucideIcon = React.ComponentType<{ size?: number; color?: string; strokeWidth?: number; fill?: string }>;
 
-const MEAL_ICON: Record<MealType, IoniconName> = {
-  breakfast: 'sunny-outline',
-  lunch: 'restaurant-outline',
-  snack: 'cafe-outline',
-  dinner: 'moon-outline',
+const MEAL_ICON: Record<MealType, LucideIcon> = {
+  breakfast: Sun,
+  lunch:     Utensils,
+  snack:     Coffee,
+  dinner:    Moon,
 };
 
 // ─── Recipe Card ──────────────────────────────────────────────────────────────
@@ -162,16 +162,17 @@ function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
         <View style={styles.cardHeader}>
           <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
           <TouchableOpacity onPress={() => onToggleFavorite(item)} style={{ marginLeft: 8 }}>
-            <Ionicons
-              name={item.isFavorite ? 'star' : 'star-outline'}
+            <Star
               size={20}
-              color={item.isFavorite ? '#F5A623' : C.textMuted}
+              color={item.isFavorite ? C.accent : C.textMuted}
+              fill={item.isFavorite ? C.accent : 'none'}
+              strokeWidth={1.8}
             />
           </TouchableOpacity>
         </View>
         <View style={styles.cardMeta}>
           <View style={styles.tag}>
-            <Ionicons name={MEAL_ICON[item.mealType]} size={11} color={C.textSecondary} />
+            {(() => { const Icon = MEAL_ICON[item.mealType]; return <Icon size={11} color={C.textSecondary} strokeWidth={1.8} />; })()}
             <Text style={styles.tagText}> {MEAL_LABEL[item.mealType]}</Text>
           </View>
           <View style={styles.tag}>
@@ -179,7 +180,7 @@ function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
           </View>
         </View>
         <View style={styles.cardSubRow}>
-          <Ionicons name="time-outline" size={12} color={C.textMuted} />
+          <Clock size={12} color={C.textMuted} strokeWidth={1.8} />
           <Text style={styles.cardSub}>
             {' '}{item.prepTime + item.cookTime} min · {item.servings} servings · {item.caloriesPerServing} kcal
           </Text>
@@ -232,7 +233,7 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholder="Buscar receta..."
-          placeholderTextColor="#aaa"
+          placeholderTextColor={C.textMuted}
           clearButtonMode="while-editing"
         />
       </View>
@@ -277,7 +278,7 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
       {Platform.OS === 'web' && (
         <TouchableOpacity style={styles.importButton} onPress={onImport}>
           <View style={styles.importButtonContent}>
-            <Ionicons name="folder-open-outline" size={16} color={C.primary} />
+            <FolderOpen size={16} color={C.primary} strokeWidth={1.8} />
             <Text style={styles.importButtonText}> Import from .txt</Text>
           </View>
         </TouchableOpacity>
@@ -301,7 +302,7 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
       )}
 
       <TouchableOpacity style={styles.fab} onPress={onAdd}>
-        <Text style={styles.fabText}>+</Text>
+        <Plus size={28} color="#fff" strokeWidth={2} />
       </TouchableOpacity>
     </View>
   );
@@ -494,14 +495,15 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
       {/* Header */}
       <View style={styles.formHeader}>
         <TouchableOpacity onPress={onCancel} style={styles.formCancel}>
-          <Ionicons name="close" size={26} color={C.primary} />
+          <X size={26} color={C.primary} strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.formTitle}>{isEdit ? 'Edit Recipe' : 'New Recipe'}</Text>
         <TouchableOpacity onPress={() => setIsFavorite(!isFavorite)}>
-          <Ionicons
-            name={isFavorite ? 'star' : 'star-outline'}
+          <Star
             size={22}
-            color={isFavorite ? '#F5A623' : C.textMuted}
+            color={isFavorite ? C.accent : C.textMuted}
+            fill={isFavorite ? C.accent : 'none'}
+            strokeWidth={1.8}
           />
         </TouchableOpacity>
       </View>
@@ -512,7 +514,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
         <Text style={styles.sectionLabel}>Photo</Text>
         <TouchableOpacity style={styles.photoBtn} onPress={() => setShowPhotoSheet(true)}>
           <View style={styles.photoBtnContent}>
-            <Ionicons name="camera-outline" size={16} color={C.textSecondary} />
+            <Camera size={16} color={C.textSecondary} strokeWidth={1.8} />
             <Text style={styles.photoBtnText}> Add photo</Text>
           </View>
         </TouchableOpacity>
@@ -538,7 +540,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
 
         <Text style={styles.sectionLabel}>Origin</Text>
         <TouchableOpacity style={[styles.input, styles.selectField]} onPress={() => setShowOriginModal(true)}>
-          <Text style={{ color: origin ? '#000' : '#aaa', fontSize: 15 }}>{origin || 'Select origin...'}</Text>
+          <Text style={{ color: origin ? C.textPrimary : C.textMuted, fontSize: 15 }}>{origin || 'Select origin...'}</Text>
         </TouchableOpacity>
         {showCustomOriginInput && (
           <View style={styles.ingAddRow}>
@@ -550,7 +552,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
               autoFocus
             />
             <TouchableOpacity style={styles.ingAddBtn} onPress={handleCustomOriginConfirm}>
-              <Ionicons name="checkmark" size={18} color="#fff" />
+              <Check size={18} color="#fff" strokeWidth={2.5} />
             </TouchableOpacity>
           </View>
         )}
@@ -633,7 +635,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
           <View key={i} style={styles.ingRow}>
             <Text style={styles.ingText}>{ri.quantity} {ri.unit} — {ingName(ri)}</Text>
             <TouchableOpacity onPress={() => removeIngredient(i)} style={styles.removeBtn}>
-              <Ionicons name="close-circle-outline" size={20} color={C.danger} />
+              <XCircle size={20} color={C.danger} strokeWidth={1.8} />
             </TouchableOpacity>
           </View>
         ))}
@@ -689,7 +691,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
               multiline
             />
             <TouchableOpacity onPress={() => removeStep(i)} style={styles.removeBtn}>
-              <Ionicons name="close-circle-outline" size={20} color={C.danger} />
+              <XCircle size={20} color={C.danger} strokeWidth={1.8} />
             </TouchableOpacity>
           </View>
         ))}
@@ -852,12 +854,11 @@ const styles = StyleSheet.create({
   filterDropdownText: { fontSize: 13, color: C.textSecondary, textAlign: 'center' },
   filterDropdownTextActive: { color: '#fff', fontWeight: '600', textAlign: 'center' },
   listContent: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 100 },
-  fab: { position: 'absolute', bottom: 24, right: 24, width: 60, height: 60, borderRadius: 30, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center', ...(SHADOW.lg as any) },
-  fabText: { color: '#fff', fontSize: 32, lineHeight: 36, fontWeight: '300' },
+  fab: { position: 'absolute', bottom: 24, right: 24, width: 60, height: 60, borderRadius: 30, backgroundColor: C.accent, alignItems: 'center', justifyContent: 'center', ...(SHADOW.fab as any) },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 60 },
   emptyText: { color: C.textMuted, fontSize: 16 },
-  card: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, marginBottom: 14, overflow: 'hidden', ...(SHADOW.sm as any) },
-  cardImage: { width: '100%', height: 150, resizeMode: 'cover' },
+  card: { backgroundColor: C.bgSurface, borderRadius: RADIUS.xl, marginBottom: 14, overflow: 'hidden', ...(SHADOW.md as any) },
+  cardImage: { width: '100%', height: 106, resizeMode: 'cover' },
   cardBody: { padding: 16 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   cardName: { fontSize: 17, fontWeight: '600', flex: 1, fontFamily: FONT.serif, color: C.textPrimary },
@@ -893,7 +894,7 @@ const styles = StyleSheet.create({
 
   // Chips
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
-  chip: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: RADIUS.pill, borderWidth: 1, borderColor: C.borderStrong, backgroundColor: C.bgSurface },
+  chip: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: RADIUS.pill, borderWidth: 1, borderColor: C.border, backgroundColor: C.bgSurface },
   chipActive: { backgroundColor: C.primary, borderColor: C.primary },
   chipText: { fontSize: 13, color: C.textSecondary },
   chipTextActive: { color: '#fff', fontWeight: '600' },

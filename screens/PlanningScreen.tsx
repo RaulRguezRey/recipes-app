@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Sun, Moon, Coffee, Utensils, ShoppingCart } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -36,13 +36,13 @@ const DAYS: { key: DayOfWeek; label: string }[] = [
   { key: 'sunday', label: 'Domingo' },
 ];
 
-type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+type LucideIcon = React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
 
-const MEAL_TYPES: { key: MealType; label: string; iconName: IoniconName }[] = [
-  { key: 'breakfast', label: 'Desayuno', iconName: 'sunny-outline' },
-  { key: 'lunch',     label: 'Almuerzo', iconName: 'restaurant-outline' },
-  { key: 'snack',     label: 'Merienda', iconName: 'cafe-outline' },
-  { key: 'dinner',    label: 'Cena',     iconName: 'moon-outline' },
+const MEAL_TYPES: { key: MealType; label: string; icon: LucideIcon }[] = [
+  { key: 'breakfast', label: 'Desayuno', icon: Sun      },
+  { key: 'lunch',     label: 'Almuerzo', icon: Utensils },
+  { key: 'snack',     label: 'Merienda', icon: Coffee   },
+  { key: 'dinner',    label: 'Cena',     icon: Moon     },
 ];
 
 const MEAL_TYPE_LABELS: Record<MealType, string> = {
@@ -376,12 +376,12 @@ export default function PlanningScreen({ onGenerateList }: Props) {
         {DAYS.map(({ key: day, label: dayLabel }) => (
           <View key={day} style={styles.dayBlock}>
             <Text style={styles.dayLabel}>{dayLabel}</Text>
-            {MEAL_TYPES.map(({ key: mealType, iconName }) => {
+            {MEAL_TYPES.map(({ key: mealType, icon: MealIcon }) => {
               const cellEntries = entriesFor(day, mealType);
               return (
                 <View key={mealType} style={styles.mealCell}>
                   <View style={styles.mealTypeLabelRow}>
-                    <Ionicons name={iconName} size={12} color={C.textMuted} />
+                    <MealIcon size={12} color={C.textMuted} strokeWidth={1.8} />
                     <Text style={styles.mealTypeLabel}> {MEAL_TYPE_LABELS[mealType]}</Text>
                   </View>
                   {cellEntries.map((entry) => {
@@ -418,7 +418,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
           onPress={() => onGenerateList(activePlan.id)}
         >
           <View style={styles.generateBtnContent}>
-            <Ionicons name="cart-outline" size={18} color="#fff" />
+            <ShoppingCart size={18} color="#fff" strokeWidth={1.8} />
             <Text style={styles.generateBtnText}> Generar lista de la compra</Text>
           </View>
         </TouchableOpacity>
@@ -456,10 +456,10 @@ const styles = StyleSheet.create({
   // Plan bar
   planBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   planTabs: { flex: 1 },
-  planTab: { paddingVertical: 14, paddingHorizontal: 16 },
-  planTabActive: { borderBottomWidth: 3, borderBottomColor: C.primary },
+  planTab: { paddingVertical: 10, paddingHorizontal: 16, marginHorizontal: 4, borderRadius: RADIUS.pill, backgroundColor: C.bgSurface },
+  planTabActive: { backgroundColor: C.primary, ...(SHADOW.activePill as any) },
   planTabText: { color: C.textMuted, fontSize: 13 },
-  planTabTextActive: { color: C.primary, fontWeight: '700' },
+  planTabTextActive: { color: '#fff', fontWeight: '700' },
   newWeekBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   newWeekBtnText: { fontSize: 22, color: C.primary, fontWeight: '300' },
 
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
   entryName: { flex: 1, fontSize: 13, color: C.primary, fontWeight: '600' },
   entryServings: { fontSize: 12, color: C.textMuted, marginLeft: 8 },
   addEntryBtn: { marginTop: 4 },
-  addEntryBtnText: { color: C.primaryLight, fontSize: 12, fontWeight: '600' },
+  addEntryBtnText: { color: C.primary, fontSize: 12, fontWeight: '600' },
 
   // Generate button
   generateBtn: { margin: 16, backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, alignItems: 'center', ...(SHADOW.sm as any) },

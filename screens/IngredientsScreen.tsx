@@ -101,7 +101,7 @@ function IngredientFormModal({ visible, ingredient, onSave, onDelete, onClose }:
 
             <Text style={styles.label}>Categoría</Text>
             <TouchableOpacity style={styles.input} onPress={() => setShowCategoryPicker(true)}>
-              <Text style={{ color: category ? '#222' : '#aaa' }}>{category || 'Seleccionar…'}</Text>
+              <Text style={{ color: category ? C.textPrimary : C.textMuted }}>{category || 'Seleccionar…'}</Text>
             </TouchableOpacity>
 
             <View style={styles.switchRow}>
@@ -126,7 +126,7 @@ function IngredientFormModal({ visible, ingredient, onSave, onDelete, onClose }:
                 />
                 <Text style={styles.label}>Tienda</Text>
                 <TouchableOpacity style={styles.input} onPress={() => setShowStorePicker(true)}>
-                  <Text style={{ color: purchaseStore ? '#222' : '#aaa' }}>{purchaseStore || 'Seleccionar…'}</Text>
+                  <Text style={{ color: purchaseStore ? C.textPrimary : C.textMuted }}>{purchaseStore || 'Seleccionar…'}</Text>
                 </TouchableOpacity>
               </>
             )}

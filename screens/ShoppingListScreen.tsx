@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { ShoppingCart, ShoppingBag, Store, Check } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Linking,
@@ -36,7 +36,7 @@ function ItemRow({ item, onToggle, showUrl }: ItemRowProps) {
   return (
     <TouchableOpacity style={styles.itemRow} onPress={onToggle} activeOpacity={0.7}>
       <View style={[styles.checkbox, item.isChecked && styles.checkboxChecked]}>
-        {item.isChecked && <Text style={styles.checkmark}>✓</Text>}
+        {item.isChecked && <Check size={14} color="#fff" strokeWidth={2.5} />}
       </View>
       <View style={styles.itemContent}>
         <Text style={[styles.itemName, item.isChecked && styles.itemNameChecked]}>
@@ -129,7 +129,7 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
             <Text style={styles.generateBtnText}>Generando…</Text>
           ) : (
             <View style={styles.generateBtnContent}>
-              <Ionicons name="cart-outline" size={18} color="#fff" />
+              <ShoppingCart size={18} color="#fff" strokeWidth={1.8} />
               <Text style={styles.generateBtnText}> Generar lista</Text>
             </View>
           )}
@@ -167,7 +167,7 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
         {onlineItems.length > 0 && (
           <View style={styles.block}>
             <View style={styles.blockTitleRow}>
-              <Ionicons name="bag-outline" size={13} color={C.primary} />
+              <ShoppingBag size={13} color={C.primary} strokeWidth={1.8} />
               <Text style={styles.blockTitle}> COMPRA ONLINE ({onlineItems.length})</Text>
             </View>
             {onlineItems.map((item) => (
@@ -180,7 +180,7 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
         {offlineItems.length > 0 && (
           <View style={styles.block}>
             <View style={styles.blockTitleRow}>
-              <Ionicons name="storefront-outline" size={13} color={C.primary} />
+              <Store size={13} color={C.primary} strokeWidth={1.8} />
               <Text style={styles.blockTitle}> SUPERMERCADO ({offlineItems.length})</Text>
             </View>
             {Object.entries(categoryGroups).map(([cat, items]) => (
@@ -241,7 +241,6 @@ const styles = StyleSheet.create({
   itemRow: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 14, paddingHorizontal: 16, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   checkbox: { width: 24, height: 24, borderRadius: RADIUS.pill, borderWidth: 2, borderColor: C.borderStrong, alignItems: 'center', justifyContent: 'center', marginRight: 14, marginTop: 1 },
   checkboxChecked: { backgroundColor: C.primary, borderColor: C.primary },
-  checkmark: { color: '#fff', fontSize: 13, fontWeight: '700' },
   itemContent: { flex: 1 },
   itemName: { fontSize: 15, fontWeight: '600', color: C.textPrimary },
   itemNameChecked: { textDecorationLine: 'line-through', color: C.textMuted },

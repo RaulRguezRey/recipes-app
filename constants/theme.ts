@@ -1,36 +1,39 @@
 export const C = {
   // ── Brand colours ─────────────────────────────────────────────────────────
-  primary:       '#5AC8FA', // walnut brown  (CTAs, active tab, buttons)
-  primaryLight:  '#a9e4ff', // caramel        (secondary actions)
-  primaryDark:   '#2992c2', // espresso       (pressed states)
+  primary:       '#40db64', // verde brillante   (CTAs, active tab, buttons)
+  primaryLight:  '#ecfdf4', // verde muy claro   (fondos cards, chips)
+  primaryDark:   '#31A64C', // verde oscuro      (pressed states, gradients)
 
   // ── Backgrounds ───────────────────────────────────────────────────────────
-  bgPage:        '#e6e6e6', // warm beige     (screen backgrounds)
-  bgSurface:     '#f7f7f7', // cream          (cards, modals, tab bar)
-  bgCard:        '#f7f7f7', // warm amber     (recipe cards)
-  bgInput:       '#f7f7f7', // pale cream     (text inputs)
+  bgPage:        '#FAFAFA', // near-white        (screen backgrounds)
+  bgSurface:     '#FFFFFF', // white             (cards, modals, tab bar)
+  bgCard:        '#ecfdf4', // tinte verde suave (tag pills, chips)
+  bgInput:       '#FFFFFF', // white             (text inputs)
 
   // ── Borders & dividers ────────────────────────────────────────────────────
-  border:        '#c6edff', // tan            (hairline dividers, input borders)
-  borderStrong:  '#50c8ff', // darker tan     (card outlines)
+  border:        '#F0F0F0', // light gray        (hairline dividers, input borders)
+  borderStrong:  '#40db64', // green             (chip outlines, checkbox border)
 
   // ── Text ──────────────────────────────────────────────────────────────────
-  textPrimary:   '#383838', // dark espresso  (headings, primary labels)
-  textSecondary: '#4e4e4e', // medium brown   (secondary labels, values)
-  textMuted:     '#bdbdbd', // khaki          (placeholders, timestamps)
+  textPrimary:   '#212121', // dark              (headings, primary labels)
+  textSecondary: '#757575', // medium gray       (secondary labels, values)
+  textMuted:     '#BDBDBD', // light gray        (placeholders, timestamps)
 
   // ── Semantic ──────────────────────────────────────────────────────────────
-  danger:        '#B8312F', // brick red      (delete, error)
-  success:       '#4E7A3A', // forest green   (online badge bg text)
-  successBg:     '#EAF2E5', // pale green     (online badge background)
-  infoBg:        '#E5EEF5', // pale blue      (store badge background)
-  info:          '#2E6490', // steel blue     (store badge text)
+  danger:        '#E53935', // red               (delete, error)
+  success:       '#40db64', // green             (online badge text)
+  successBg:     '#ecfdf4', // light green       (online badge background)
+  infoBg:        '#ECEFF1', // light blue-gray   (store badge background)
+  info:          '#546E7A', // blue-gray         (store badge text, protein)
+
+  // ── New tokens ────────────────────────────────────────────────────────────
+  accent:        '#FF7043', // orange            (FAB, favorites icon)
+  warning:       '#FFB300', // amber             (fat macro)
 };
 
 export const FONT = {
-  // System sans-serif (SF Pro on iOS, Roboto on Android)
-  serif:      undefined as undefined,
-  sans:       undefined as undefined,
+  serif: 'Georgia',         // section titles, modal titles, day labels
+  sans:  undefined as undefined,
 };
 
 // ── Border radius tokens ──────────────────────────────────────────────────────
@@ -46,31 +49,45 @@ export const RADIUS = {
 // ── Shadow tokens ─────────────────────────────────────────────────────────────
 export const SHADOW = {
   sm: {
-    elevation: 2,
-    shadowColor: '#3D2B1F',
+    elevation: 3,
+    shadowColor: '#40db64',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 6,
+    shadowOpacity: 0.10,
+    shadowRadius: 12,
   },
   md: {
-    elevation: 4,
-    shadowColor: '#3D2B1F',
+    elevation: 5,
+    shadowColor: '#40db64',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.10,
-    shadowRadius: 10,
+    shadowOpacity: 0.12,
+    shadowRadius: 18,
   },
   lg: {
     elevation: 8,
-    shadowColor: '#3D2B1F',
+    shadowColor: '#40db64',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.12,
-    shadowRadius: 16,
+    shadowRadius: 20,
   },
   up: {
+    elevation: 10,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+  },
+  fab: {
     elevation: 8,
-    shadowColor: '#3D2B1F',
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.09,
-    shadowRadius: 12,
+    shadowColor: '#FF7043',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.40,
+    shadowRadius: 20,
+  },
+  activePill: {
+    elevation: 6,
+    shadowColor: '#40db64',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.33,
+    shadowRadius: 14,
   },
 };
