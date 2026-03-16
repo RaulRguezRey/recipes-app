@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { C, SHADOW } from './constants/theme';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginScreen from './screens/auth/LoginScreen';
 import RecipesScreen from './screens/RecipesScreen';
@@ -36,6 +36,7 @@ function LoadingScreen() {
 function MainTabs() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('Recipes');
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
 
   function handleGenerateList(planId: string) {
     setActivePlanId(planId);
@@ -62,13 +63,13 @@ function MainTabs() {
   const activeTab: Tab = currentScreen === 'Ingredients' ? 'Settings' : (currentScreen as Tab);
 
   return (
-    <SafeAreaView style={styles.root} edges={['top', 'left', 'right', 'bottom']}>
+    <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
       <StatusBar style="auto" />
 
       {renderScreen()}
 
       {/* Tab Bar */}
-      <View style={styles.tabBar}>
+      <View style={[styles.tabBar, { paddingBottom: (insets.bottom || 0) + 10 }]}>
         {TABS.map((tab) => {
           const active = activeTab === tab.name;
           return (
