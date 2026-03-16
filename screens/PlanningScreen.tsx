@@ -56,6 +56,22 @@ function newId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
+const MEAL_BG: Record<MealType, string> = {
+  breakfast: '#FFF8E1',
+  lunch:     '#E8F5E9',
+  snack:     '#F3E5F5',
+  dinner:    '#FBE9E7',
+};
+
+function getDayDates(weekStart: string): number[] {
+  const monday = new Date(weekStart + 'T00:00:00');
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d.getDate();
+  });
+}
+
 function getMondayOfWeek(date: Date): string {
   const d = new Date(date);
   const day = d.getDay();
@@ -348,6 +364,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
   }
 
   const activePlan = plans.find((p) => p.id === activePlanId);
+  const dayDates = activePlan ? getDayDates(activePlan.weekStart) : DAYS.map(() => 0);
   const recipeMap: Record<string, Recipe> = {};
   for (const r of recipes) recipeMap[r.id] = r;
 
@@ -368,20 +385,17 @@ export default function PlanningScreen({ onGenerateList }: Props) {
 
   const editingRecipeName = editingEntry ? (recipeMap[editingEntry.recipeId]?.name ?? '') : '';
 
-  // Weekly macro totals for summary bars
-  const weekMacros = entries.reduce(
-    (acc, e) => {
-      const r = recipeMap[e.recipeId];
-      if (!r) return acc;
-      const s = e.servings;
-      return {
-        protein: acc.protein + r.proteinG * s,
-        fat:     acc.fat     + r.fatG * s,
-        carbs:   acc.carbs   + r.carbsG * s,
-      };
-    },
-    { protein: 0, fat: 0, carbs: 0 }
-  );
+  // Per-day kcal for weekly summary
+  const KCAL_GOAL = 2000;
+  const dayKcalValues: Record<DayOfWeek, number> = {} as Record<DayOfWeek, number>;
+  for (const { key } of DAYS) {
+    dayKcalValues[key] = entries
+      .filter((e) => e.dayOfWeek === key)
+      .reduce((acc, e) => {
+        const r = recipeMap[e.recipeId];
+        return r ? acc + r.caloriesPerServing * e.servings : acc;
+      }, 0);
+  }
 
   // Kcal for selected day
   const dayKcal = entries
@@ -415,9 +429,9 @@ export default function PlanningScreen({ onGenerateList }: Props) {
 
       {/* Day pills */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dayPillsScroll} contentContainerStyle={styles.dayPillsContent}>
-        {DAYS.map(({ key: dayKey, label: dayLabel }) => {
+        {DAYS.map(({ key: dayKey, label: dayLabel }, idx) => {
           const active = selectedDay === dayKey;
-          const shortLabel = dayLabel.slice(0, 3);
+          const shortLabel = dayLabel.slice(0, 3).toUpperCase();
           return (
             <TouchableOpacity
               key={dayKey}
@@ -425,20 +439,24 @@ export default function PlanningScreen({ onGenerateList }: Props) {
               onPress={() => setSelectedDay(dayKey)}
             >
               <Text style={[styles.dayPillText, active && styles.dayPillTextActive]}>{shortLabel}</Text>
+              {dayDates[idx] > 0 && (
+                <Text style={[styles.dayPillDate, active && styles.dayPillDateActive]}>{dayDates[idx]}</Text>
+              )}
             </TouchableOpacity>
           );
         })}
       </ScrollView>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} automaticallyAdjustContentInsets={false} contentInsetAdjustmentBehavior="never">
 
         {/* Daily kcal box */}
-        {dayKcal > 0 && (
-          <View style={styles.kcalBox}>
-            <Text style={styles.kcalBoxLabel}>Hoy</Text>
-            <Text style={styles.kcalBoxValue}>{Math.round(dayKcal)} kcal</Text>
+        <View style={styles.kcalBox}>
+          <View>
+            <Text style={styles.kcalBoxDayName}>{DAYS.find(d => d.key === selectedDay)?.label ?? ''}</Text>
+            <Text style={styles.kcalBoxLabel}>Total del día</Text>
           </View>
-        )}
+          <Text style={styles.kcalBoxValue}>{dayKcal > 0 ? `${Math.round(dayKcal)} kcal` : '— kcal'}</Text>
+        </View>
 
         {/* Meal slots for selected day */}
         {MEAL_TYPES.map(({ key: mealType, label: mealLabel, icon: MealIcon }) => {
@@ -449,32 +467,36 @@ export default function PlanningScreen({ onGenerateList }: Props) {
           return (
             <View key={mealType} style={styles.mealSlot}>
               <View style={styles.mealSlotHeader}>
-                <MealIcon size={15} color={C.textSecondary} strokeWidth={1.8} />
+                <MealIcon size={15} color={C.primary} strokeWidth={1.8} />
                 <Text style={styles.mealSlotLabel}>{mealLabel.toUpperCase()}</Text>
+                <View style={styles.mealSlotDivider} />
               </View>
 
               {recipe ? (
                 <View style={styles.mealSlotCard}>
+                  <View style={[styles.mealSlotIconBox, { backgroundColor: MEAL_BG[mealType] }]}>
+                    <MealIcon size={22} color={C.textSecondary} strokeWidth={1.6} />
+                  </View>
                   <View style={styles.mealSlotCardInfo}>
                     <Text style={styles.mealSlotName} numberOfLines={1}>{recipe.name}</Text>
                     {recipe.caloriesPerServing > 0 && (
                       <Text style={styles.mealSlotKcal}>
-                        {Math.round(recipe.caloriesPerServing * (firstEntry?.servings ?? 1))} kcal · {firstEntry?.servings} rac.
+                        🔥 {Math.round(recipe.caloriesPerServing * (firstEntry?.servings ?? 1))} kcal · {firstEntry?.servings} rac.
                       </Text>
                     )}
                   </View>
                   <View style={styles.mealSlotBtns}>
                     <TouchableOpacity
-                      style={styles.mealSlotBtnSec}
+                      style={styles.mealSlotBtnVer}
                       onPress={() => firstEntry && openServingsModal(firstEntry)}
                     >
-                      <Text style={styles.mealSlotBtnSecText}>Raciones</Text>
+                      <Text style={styles.mealSlotBtnVerText}>Ver</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.mealSlotBtnPri}
+                      style={styles.mealSlotBtnCambiar}
                       onPress={() => firstEntry && openSelectorForChange(firstEntry)}
                     >
-                      <Text style={styles.mealSlotBtnPriText}>Cambiar</Text>
+                      <Text style={styles.mealSlotBtnCambiarText}>Cambiar</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -494,20 +516,26 @@ export default function PlanningScreen({ onGenerateList }: Props) {
         {entries.length > 0 && (
           <View style={styles.weekSummary}>
             <Text style={styles.weekSummaryTitle}>Resumen semanal</Text>
-            {[
-              { label: 'Proteína', value: weekMacros.protein, goal: 150, color: C.info },
-              { label: 'Grasas',   value: weekMacros.fat,     goal: 80,  color: C.warning },
-              { label: 'Carbos',   value: weekMacros.carbs,   goal: 200, color: C.primary },
-            ].map(({ label, value, goal, color }) => {
-              const pct = Math.min(1, value / goal);
+            {DAYS.map(({ key: dayKey, label: dayLabel }) => {
+              const kcal = dayKcalValues[dayKey];
+              const pct = Math.min(1, kcal / KCAL_GOAL);
+              const isActive = dayKey === selectedDay;
               return (
-                <View key={label} style={styles.macroBarRow}>
-                  <Text style={styles.macroBarLabel}>{label}</Text>
+                <TouchableOpacity
+                  key={dayKey}
+                  style={[styles.macroBarRow, isActive && styles.macroBarRowActive]}
+                  onPress={() => setSelectedDay(dayKey)}
+                >
+                  <Text style={[styles.macroBarLabel, isActive && styles.macroBarLabelActive]}>
+                    {dayLabel.slice(0, 3)}
+                  </Text>
                   <View style={styles.macroBarTrack}>
-                    <View style={[styles.macroBarFill, { width: `${pct * 100}%` as any, backgroundColor: color }]} />
+                    <View style={[styles.macroBarFill, { width: `${pct * 100}%` as any, backgroundColor: isActive ? C.primary : C.textMuted }]} />
                   </View>
-                  <Text style={styles.macroBarVal}>{Math.round(value)}g</Text>
-                </View>
+                  <Text style={[styles.macroBarVal, isActive && { color: C.primary, fontWeight: '700' }]}>
+                    {kcal > 0 ? Math.round(kcal).toString() : '—'}
+                  </Text>
+                </TouchableOpacity>
               );
             })}
           </View>
@@ -569,46 +597,53 @@ const styles = StyleSheet.create({
   newWeekBtnText: { fontSize: 22, color: C.primary, fontWeight: '300' },
 
   // Day pills
-  dayPillsScroll: { backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
-  dayPillsContent: { paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
-  dayPill: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: RADIUS.pill, backgroundColor: C.bgPage },
-  dayPillActive: { backgroundColor: C.primary, ...(SHADOW.activePill as any) },
-  dayPillText: { fontSize: 13, fontWeight: '600', color: C.textMuted },
-  dayPillTextActive: { color: '#fff' },
+  dayPillsScroll: { backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, height: 72 },
+  dayPillsContent: { paddingHorizontal: 16, paddingVertical: 8, gap: 8, alignItems: 'flex-start' },
+  dayPill: { width: 56, height: 56, borderRadius: 14, backgroundColor: C.bgPage, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'transparent' },
+  dayPillActive: { backgroundColor: C.primaryLight, borderColor: C.primary },
+  dayPillText: { fontSize: 11, fontWeight: '700', color: C.textMuted, letterSpacing: 0.4, lineHeight: 13 },
+  dayPillTextActive: { color: C.primary },
+  dayPillDate: { fontSize: 15, fontWeight: '700', color: C.textSecondary, marginTop: 2, lineHeight: 17 },
+  dayPillDateActive: { color: C.primary },
 
   // Scroll content
   scroll: { flex: 1 },
-  scrollContent: { padding: 16, gap: 14 },
+  scrollContent: { paddingHorizontal: 16, paddingBottom: 20, paddingTop: 12, gap: 14 },
 
   // Daily kcal box
-  kcalBox: { backgroundColor: C.bgSurface, borderRadius: RADIUS.md, paddingVertical: 14, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', ...(SHADOW.sm as any) },
-  kcalBoxLabel: { fontSize: 13, color: C.textSecondary, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.4 },
-  kcalBoxValue: { fontSize: 22, fontWeight: '700', color: C.danger },
+  kcalBox: { backgroundColor: C.primaryLight, borderRadius: RADIUS.md, paddingVertical: 14, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: C.primary + '33' },
+  kcalBoxDayName: { fontSize: 14, fontWeight: '700', color: C.textPrimary },
+  kcalBoxLabel: { fontSize: 11, color: C.textSecondary, marginTop: 2 },
+  kcalBoxValue: { fontSize: 22, fontWeight: '700', color: C.primary },
 
   // Meal slots
   mealSlot: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, overflow: 'hidden', ...(SHADOW.sm as any) },
   mealSlotHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
-  mealSlotLabel: { fontSize: 11, fontWeight: '700', color: C.textSecondary, letterSpacing: 0.6 },
-  mealSlotCard: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 },
+  mealSlotLabel: { fontSize: 11, fontWeight: '700', color: C.primary, letterSpacing: 0.6 },
+  mealSlotDivider: { flex: 1, height: 1, backgroundColor: C.border },
+  mealSlotCard: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 12 },
+  mealSlotIconBox: { width: 50, height: 50, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
   mealSlotCardInfo: { flex: 1 },
-  mealSlotName: { fontSize: 15, fontWeight: '600', color: C.textPrimary, fontFamily: FONT.serif },
+  mealSlotName: { fontSize: 14, fontWeight: '600', color: C.textPrimary, fontFamily: FONT.serif },
   mealSlotKcal: { fontSize: 12, color: C.textMuted, marginTop: 3 },
   mealSlotBtns: { flexDirection: 'row', gap: 8 },
-  mealSlotBtnSec: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: RADIUS.sm, borderWidth: 1, borderColor: C.border },
-  mealSlotBtnSecText: { fontSize: 12, color: C.textSecondary, fontWeight: '600' },
-  mealSlotBtnPri: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: RADIUS.sm, backgroundColor: C.primary },
-  mealSlotBtnPriText: { fontSize: 12, color: '#fff', fontWeight: '600' },
-  addSlotBtn: { paddingVertical: 16, paddingHorizontal: 16, alignItems: 'center' },
+  mealSlotBtnVer: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: RADIUS.sm, backgroundColor: C.primaryLight },
+  mealSlotBtnVerText: { fontSize: 12, color: C.primary, fontWeight: '600' },
+  mealSlotBtnCambiar: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: RADIUS.sm, backgroundColor: '#FFF3E0' },
+  mealSlotBtnCambiarText: { fontSize: 12, color: C.accent, fontWeight: '600' },
+  addSlotBtn: { marginHorizontal: 14, marginVertical: 12, paddingVertical: 14, alignItems: 'center', borderRadius: RADIUS.md, borderWidth: 1.5, borderColor: C.primary + '66', borderStyle: 'dashed' },
   addSlotBtnText: { color: C.primary, fontSize: 14, fontWeight: '600' },
 
   // Weekly summary
-  weekSummary: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, padding: 20, ...(SHADOW.sm as any), gap: 12 },
+  weekSummary: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, padding: 20, ...(SHADOW.sm as any), gap: 10 },
   weekSummaryTitle: { fontSize: 14, fontWeight: '700', color: C.textPrimary, fontFamily: FONT.serif, marginBottom: 4 },
-  macroBarRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  macroBarLabel: { fontSize: 12, color: C.textSecondary, width: 64 },
+  macroBarRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4, paddingHorizontal: 6, borderRadius: RADIUS.sm },
+  macroBarRowActive: { backgroundColor: C.primaryLight },
+  macroBarLabel: { fontSize: 12, color: C.textSecondary, width: 36 },
+  macroBarLabelActive: { color: C.primary, fontWeight: '700' },
   macroBarTrack: { flex: 1, height: 8, backgroundColor: C.bgPage, borderRadius: RADIUS.pill, overflow: 'hidden' },
   macroBarFill: { height: '100%', borderRadius: RADIUS.pill },
-  macroBarVal: { fontSize: 12, color: C.textMuted, width: 44, textAlign: 'right' },
+  macroBarVal: { fontSize: 12, color: C.textMuted, width: 40, textAlign: 'right' },
 
   // Generate button
   generateBtn: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, alignItems: 'center', ...(SHADOW.sm as any) },

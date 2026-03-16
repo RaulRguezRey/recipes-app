@@ -1,5 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
-import { Sun, Moon, Coffee, Utensils, Star, FolderOpen, X, Camera, Check, XCircle, Plus, Clock } from 'lucide-react-native';
+import { Sun, Moon, Coffee, Utensils, Star, FolderOpen, X, Camera, Check, XCircle, Plus, Clock, Heart, Filter } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -166,7 +166,10 @@ function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
     <TouchableOpacity style={styles.card} onPress={() => onSelect(item)} activeOpacity={0.85}>
       {/* Colored header area */}
       <View style={[styles.cardBgArea, { backgroundColor: MEAL_BG[item.mealType] }]}>
-        <Icon size={28} color={C.textSecondary} strokeWidth={1.6} />
+        {item.photoUri
+          ? <Image source={{ uri: item.photoUri }} style={styles.cardBgImage} />
+          : <Icon size={28} color={C.textSecondary} strokeWidth={1.6} />
+        }
         {/* Badge */}
         {item.isFavorite && (
           <View style={styles.cardBadgeFav}>
@@ -180,7 +183,7 @@ function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
         )}
         {/* Favorite button */}
         <TouchableOpacity style={styles.cardHeartBtn} onPress={() => onToggleFavorite(item)}>
-          <Star
+          <Heart
             size={16}
             color={item.isFavorite ? C.accent : C.textMuted}
             fill={item.isFavorite ? C.accent : 'none'}
@@ -199,8 +202,13 @@ function RecipeCard({ item, onSelect, onToggleFavorite }: RecipeCardProps) {
             </>
           )}
           {item.caloriesPerServing > 0 && (
-            <Text style={[styles.cardSub, totalTime > 0 && { marginLeft: 8 }]}>
+            <Text style={[styles.cardSub, totalTime > 0 && { marginLeft: 6 }]}>
               🔥 {item.caloriesPerServing}
+            </Text>
+          )}
+          {item.proteinG > 0 && (
+            <Text style={[styles.cardSub, { marginLeft: 6, color: C.info }]}>
+              💪 {item.proteinG}g
             </Text>
           )}
         </View>
@@ -240,14 +248,20 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onImport }: List
   return (
     <View style={styles.flex}>
       <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Buscar receta..."
-          placeholderTextColor={C.textMuted}
-          clearButtonMode="while-editing"
-        />
+        <View style={styles.searchRow}>
+          <TextInput
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Buscar receta..."
+            placeholderTextColor={C.textMuted}
+            clearButtonMode="while-editing"
+          />
+          <TouchableOpacity style={styles.filterBtn}>
+            <Filter size={14} color={C.primary} strokeWidth={1.8} />
+            <Text style={styles.filterBtnText}>Filtrar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Category filter pills */}
@@ -844,13 +858,16 @@ const styles = StyleSheet.create({
 
   // List
   searchContainer: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10 },
-  searchInput: { backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.xl, paddingHorizontal: 18, paddingVertical: 12, fontSize: 15, color: C.textPrimary },
+  searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  searchInput: { flex: 1, backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.xl, paddingHorizontal: 18, paddingVertical: 12, fontSize: 15, color: C.textPrimary },
+  filterBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.primaryLight, borderRadius: RADIUS.pill, paddingHorizontal: 14, paddingVertical: 10, gap: 5 },
+  filterBtnText: { color: C.primary, fontSize: 13, fontWeight: '600' },
   importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: C.primary, borderRadius: RADIUS.pill, padding: 14, alignItems: 'center' },
   importButtonContent: { flexDirection: 'row', alignItems: 'center' },
   importButtonText: { color: C.primary, fontSize: 15, fontWeight: '600' },
-  categoryScroll: { marginBottom: 12 },
+  categoryScroll: { marginBottom: 12, flexGrow: 0 },
   categoryScrollContent: { paddingHorizontal: 16, gap: 8 },
-  categoryPill: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: RADIUS.pill, backgroundColor: C.bgSurface, borderWidth: 1, borderColor: C.border },
+  categoryPill: { paddingVertical: 6, paddingHorizontal: 14, borderRadius: RADIUS.pill, backgroundColor: C.bgSurface, borderWidth: 1, borderColor: C.border, alignSelf: 'flex-start' },
   categoryPillActive: { backgroundColor: C.primary, borderColor: C.primary },
   categoryPillText: { fontSize: 13, fontWeight: '600', color: C.textMuted },
   categoryPillTextActive: { color: '#fff' },
@@ -862,6 +879,7 @@ const styles = StyleSheet.create({
   // Grid card
   card: { flex: 1, backgroundColor: C.bgSurface, borderRadius: RADIUS.xl, marginBottom: 12, overflow: 'hidden', ...(SHADOW.sm as any) },
   cardBgArea: { height: 110, alignItems: 'center', justifyContent: 'center', position: 'relative' },
+  cardBgImage: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, resizeMode: 'cover' },
   cardBadgeFav: { position: 'absolute', top: 8, right: 8, backgroundColor: C.accent, borderRadius: RADIUS.pill, paddingHorizontal: 7, paddingVertical: 3 },
   cardBadgeNew: { position: 'absolute', top: 8, right: 8, backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingHorizontal: 7, paddingVertical: 3 },
   cardBadgeText: { fontSize: 9, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
