@@ -1,0 +1,35 @@
+═══════════════════════════════════════════════
+  COMANDOS DE DEPLOY — RECIPES APP
+═══════════════════════════════════════════════
+
+── GIT COMMIT ──────────────────────────────────
+
+git add <archivos>
+git commit -m "descripción del cambio"
+git push origin master
+
+
+── EAS UPDATE (OTA) ────────────────────────────
+
+eas update --branch main --message "descripción del cambio" --non-interactive
+
+
+── FLUJO COMPLETO ──────────────────────────────
+
+1. git add <archivos modificados>
+2. git commit -m "feat/fix: descripción"
+3. git push origin master
+4. eas update --branch main --message "descripción" --non-interactive
+
+
+── NOTAS ───────────────────────────────────────
+
+- EAS Update: actualización OTA (no requiere nueva build).
+  Los usuarios reciben el cambio al reabrir la app.
+
+- Si hay cambios en dependencias nativas (nuevo paquete,
+  app.json, etc.) hay que hacer una nueva BUILD, no solo update:
+  eas build --platform all
+
+- El .env NO se sube a git (está en .gitignore).
+  Las variables EXPO_PUBLIC_* sí se incluyen en el bundle de EAS.

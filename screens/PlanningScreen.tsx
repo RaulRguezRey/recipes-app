@@ -686,6 +686,17 @@ export default function PlanningScreen() {
               <Text style={[styles.dayPillDate, active && styles.dayPillDateActive]}>
                 {dateToDayNum(isoDate)}
               </Text>
+              <View style={styles.dayPillLines}>
+                {MEAL_TYPES.map(({ key }) => {
+                  const filled = entries.some((e) => e.date === isoDate && e.mealType === key);
+                  return (
+                    <View
+                      key={key}
+                      style={[styles.dayPillLine, filled && styles.dayPillLineFilled]}
+                    />
+                  );
+                })}
+              </View>
             </TouchableOpacity>
           );
         })}
@@ -869,6 +880,9 @@ const styles = StyleSheet.create({
   dayPillTextActive: { color: C.primary },
   dayPillDate: { fontSize: 15, fontWeight: '700', color: C.textSecondary, marginTop: 2, lineHeight: 17 },
   dayPillDateActive: { color: C.primary },
+  dayPillLines: { flexDirection: 'row', gap: 3, marginTop: 6 },
+  dayPillLine: { width: 5, height: 5, borderRadius: 3, backgroundColor: C.border },
+  dayPillLineFilled: { backgroundColor: C.primary },
 
   // Scroll content
   scroll: { flex: 1 },
