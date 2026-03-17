@@ -1,5 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
-import { Sun, Moon, Coffee, Utensils, Star, FolderOpen, X, Camera, Check, XCircle, Plus, Clock, Heart, Filter } from 'lucide-react-native';
+import { Sun, Moon, Coffee, Utensils, Star, FolderOpen, X, Camera, Check, XCircle, Plus, Clock, Heart, Filter, Sparkles } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -7,6 +7,7 @@ import {
   FlatList,
   Image,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -22,6 +23,7 @@ import ActionSheet from '../components/ActionSheet';
 import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 import SelectModal from '../components/SelectModal';
 import { addIngredient, addOrigin, addRecipe, deleteRecipe, getAllAccessibleRecipes, getIngredients, getOrigins, setRecipePublic, updateRecipe } from '../storage/recipeStorage';
+import { generateRecipeFromPrompt } from '../lib/groqRecipeGenerator';
 import { Difficulty, Ingredient, MealType, Recipe, RecipeIngredient } from '../types/Recipe';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -372,11 +374,9 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onTogglePublic, 
         />
       )}
 
-      {activeTab === 'mine' && (
-        <TouchableOpacity testID="recipes-addBtn" style={styles.fab} onPress={onAdd}>
-          <Plus size={28} color="#fff" strokeWidth={2} />
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity testID="recipes-addBtn" style={styles.fab} onPress={onAdd}>
+        <Plus size={28} color="#fff" strokeWidth={2} />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -426,6 +426,62 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
 
   // Photo action sheet
   const [showPhotoSheet, setShowPhotoSheet] = useState(false);
+
+  // AI generation
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+
+  async function handleAIGenerate() {
+    if (!aiPrompt.trim()) return;
+    setAiLoading(true);
+    try {
+      const generated = await generateRecipeFromPrompt(aiPrompt.trim(), localIngredients);
+      // Map ingredients: match existing or create new
+      const newIngredients: RecipeIngredient[] = [];
+      const updatedLocal = [...localIngredients];
+      for (const ing of generated.ingredients) {
+        const genName = ing.name.trim().toLowerCase();
+        const existing = updatedLocal.find((i) => {
+          const exName = i.name.toLowerCase();
+          return exName === genName || exName.startsWith(genName) || genName.startsWith(exName);
+        });
+        if (existing) {
+          newIngredients.push({ ingredientId: existing.id, quantity: ing.quantity, unit: existing.defaultUnit });
+        } else {
+          const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+          const newIngId = newId();
+          const newIng = { id: newIngId, name: capitalize(ing.name.trim()), defaultUnit: ing.unit };
+          addIngredient(newIng);
+          updatedLocal.push(newIng);
+          newIngredients.push({ ingredientId: newIngId, quantity: ing.quantity, unit: ing.unit });
+        }
+      }
+      setLocalIngredients(updatedLocal);
+      // Fill form fields
+      setName(generated.name);
+      setMealType(generated.mealType);
+      setDifficulty(generated.difficulty);
+      setOrigin(generated.origin);
+      setPrepTime(generated.prepTime.toString());
+      setCookTime(generated.cookTime.toString());
+      setServings(generated.servings.toString());
+      setCalories(generated.caloriesPerServing.toString());
+      setProtein(generated.proteinG.toString());
+      setFat(generated.fatG.toString());
+      setCarbsG(generated.carbsG.toString());
+      setCost(generated.costEur.toString());
+      setIngredients(newIngredients);
+      setSteps(generated.steps.length > 0 ? generated.steps : ['']);
+      if (generated.notes) setNotes(generated.notes);
+      setShowAIModal(false);
+      setAiPrompt('');
+    } catch (err: any) {
+      Alert.alert('Error', err?.message ?? 'No se pudo generar la receta.');
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   // Origin dropdown
   const [allOrigins, setAllOrigins] = useState<string[]>([]);
@@ -568,20 +624,61 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
 
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {/* AI Modal */}
+      <Modal visible={showAIModal} transparent animationType="slide" onRequestClose={() => setShowAIModal(false)}>
+        <KeyboardAvoidingView style={styles.aiOverlay} behavior="padding">
+          <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setShowAIModal(false)} />
+          <View style={styles.aiSheet}>
+            <View style={styles.aiSheetHeader}>
+              <Sparkles size={18} color={C.primary} strokeWidth={1.8} />
+              <Text style={styles.aiSheetTitle}>Generar receta con IA</Text>
+              <TouchableOpacity onPress={() => setShowAIModal(false)}>
+                <X size={22} color={C.textMuted} strokeWidth={2} />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.aiSheetHint}>Describe la receta que quieres. Cuanto más detallado, mejor resultado.</Text>
+            <TextInput
+              style={styles.aiInput}
+              value={aiPrompt}
+              onChangeText={setAiPrompt}
+              placeholder="Ej: macarrones con chorizo usando tomate triturado, para 4 personas y que sea fácil de hacer"
+              placeholderTextColor={C.textMuted}
+              multiline
+              autoFocus
+            />
+            <TouchableOpacity
+              style={[styles.aiGenerateBtn, (!aiPrompt.trim() || aiLoading) && { opacity: 0.5 }]}
+              onPress={handleAIGenerate}
+              disabled={!aiPrompt.trim() || aiLoading}
+            >
+              <Text style={styles.aiGenerateBtnText}>{aiLoading ? 'Generando…' : '✨ Generar receta'}</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
       {/* Header */}
       <View testID="recipeForm-header" style={styles.formHeader}>
         <TouchableOpacity onPress={onCancel} style={styles.formCancel}>
           <X size={26} color={C.primary} strokeWidth={2} />
         </TouchableOpacity>
-        <Text style={styles.formTitle}>{isEdit ? 'Edit Recipe' : 'New Recipe'}</Text>
-        <TouchableOpacity onPress={() => setIsFavorite(!isFavorite)}>
-          <Star
-            size={22}
-            color={isFavorite ? C.accent : C.textMuted}
-            fill={isFavorite ? C.accent : 'none'}
-            strokeWidth={1.8}
-          />
-        </TouchableOpacity>
+        <Text style={styles.formTitle}>{isEdit ? 'Editar receta' : 'Nueva receta'}</Text>
+        <View style={styles.formHeaderRight}>
+          {!isEdit && (
+            <TouchableOpacity onPress={() => setShowAIModal(true)} style={styles.aiHeaderBtn}>
+              <Text style={styles.aiHeaderBtnText}>AI</Text>
+              <Sparkles size={16} color="#FF7043" strokeWidth={1.8} />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity onPress={() => setIsFavorite(!isFavorite)}>
+            <Star
+              size={22}
+              color={isFavorite ? C.accent : C.textMuted}
+              fill={isFavorite ? C.accent : 'none'}
+              strokeWidth={1.8}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView ref={scrollRef} style={styles.flex} contentContainerStyle={styles.formContent}>
@@ -1149,7 +1246,20 @@ const styles = StyleSheet.create({
   formHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, backgroundColor: C.bgSurface },
   formTitle: { fontSize: 17, fontWeight: '700', fontFamily: FONT.serif, color: C.textPrimary },
   formCancel: { padding: 4 },
+  formHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  aiHeaderBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, padding: 4 },
+  aiHeaderBtnText: { fontSize: 13, fontWeight: '700', color: '#FF7043' },
   formContent: { padding: 20, backgroundColor: C.bgPage },
+
+  // AI modal
+  aiOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },
+  aiSheet: { backgroundColor: C.bgSurface, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, padding: 20, paddingBottom: 24 },
+  aiSheetHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  aiSheetTitle: { flex: 1, fontSize: 16, fontWeight: '700', color: C.textPrimary },
+  aiSheetHint: { fontSize: 13, color: C.textSecondary, marginBottom: 12, lineHeight: 19 },
+  aiInput: { backgroundColor: C.bgInput, borderRadius: RADIUS.md, borderWidth: 1, borderColor: C.border, padding: 14, fontSize: 14, color: C.textPrimary, height: 90, textAlignVertical: 'top', marginBottom: 14 },
+  aiGenerateBtn: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 15, alignItems: 'center' },
+  aiGenerateBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
 
   // Photo
   photoRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
