@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Sun, Moon, Coffee, Utensils, ShoppingCart } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Sun, Moon, Coffee, Utensils, ShoppingCart, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -13,8 +13,10 @@ import {
   View,
 } from 'react-native';
 import { getAllAccessibleRecipes } from '../storage/recipeStorage';
+import ShoppingListScreen from './ShoppingListScreen';
 import {
   deleteEntry,
+  deleteMealPlan,
   getEntriesForPlan,
   getMealPlans,
   getRecipeLastUsedMap,
@@ -31,18 +33,23 @@ function newId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
-function todayISODate(): string {
-  return new Date().toISOString().slice(0, 10);
+function localISODate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
+function todayISODate(): string {
+  return localISODate(new Date());
+}
 
 function generatePlanDays(startDate: string, endDate: string): string[] {
   const days: string[] = [];
-  const start = new Date(startDate + 'T00:00:00');
+  const current = new Date(startDate + 'T00:00:00');
   const end = new Date(endDate + 'T00:00:00');
-  const current = new Date(start);
   while (current <= end && days.length < 60) {
-    days.push(current.toISOString().slice(0, 10));
+    days.push(localISODate(current));
     current.setDate(current.getDate() + 1);
   }
   return days;
@@ -119,7 +126,7 @@ type CreatePlanModalProps = {
 function shiftDate(iso: string, days: number): string {
   const d = new Date(iso + 'T00:00:00');
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return localISODate(d);
 }
 
 function CreatePlanModal({ visible, onConfirm, onClose }: CreatePlanModalProps) {
@@ -212,7 +219,7 @@ type RecipeSelectorProps = {
   lastUsedMap: Record<string, string>;
   currentStartDate: string;
   currentEntries: MealPlanEntry[];
-  onSelect: (recipe: Recipe) => void;
+  onSelect: (recipe: Recipe, servings: number) => void;
   onClose: () => void;
 };
 
@@ -220,9 +227,15 @@ function RecipeSelector({
   visible, recipes, lastUsedMap, currentStartDate, currentEntries, onSelect, onClose,
 }: RecipeSelectorProps) {
   const [search, setSearch] = useState('');
+  const [pendingRecipe, setPendingRecipe] = useState<Recipe | null>(null);
+  const [pendingServings, setPendingServings] = useState(1);
+
+  function normalize(s: string) {
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
 
   const filtered = recipes.filter((r) =>
-    r.name.toLowerCase().includes(search.toLowerCase())
+    normalize(r.name).includes(normalize(search))
   );
 
   function lastUsedLabel(recipeId: string): string {
@@ -234,24 +247,36 @@ function RecipeSelector({
     return `hace ${Math.floor(days / 7)} sem.`;
   }
 
-  function handleSelect(recipe: Recipe) {
-    const alreadyInPlan = currentEntries.some((e) => e.recipeId === recipe.id);
+  function handleTapRecipe(recipe: Recipe) {
+    setPendingRecipe(recipe);
+    setPendingServings(recipe.servings > 0 ? recipe.servings : 1);
+  }
+
+  function handleConfirm() {
+    if (!pendingRecipe) return;
+    const alreadyInPlan = currentEntries.some((e) => e.recipeId === pendingRecipe.id);
     if (alreadyInPlan) {
       Alert.alert(
         'Receta ya en el planning',
-        `"${recipe.name}" ya está asignada en este planning. ¿Añadir igualmente?`,
+        `"${pendingRecipe.name}" ya está asignada en este planning. ¿Añadir igualmente?`,
         [
           { text: 'Cancelar', style: 'cancel' },
-          { text: 'Añadir igualmente', onPress: () => onSelect(recipe) },
+          { text: 'Añadir igualmente', onPress: () => onSelect(pendingRecipe, pendingServings) },
         ]
       );
     } else {
-      onSelect(recipe);
+      onSelect(pendingRecipe, pendingServings);
     }
   }
 
+  function handleClose() {
+    setPendingRecipe(null);
+    setSearch('');
+    onClose();
+  }
+
   return (
-    <Modal testID="planning-recipeSelector" visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal testID="planning-recipeSelector" visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
       <View style={styles.selectorOverlay}>
         <View style={styles.selectorCard}>
           <Text style={styles.selectorTitle}>Seleccionar receta</Text>
@@ -267,24 +292,57 @@ function RecipeSelector({
             testID="planning-recipeSelectorList"
             data={filtered}
             keyExtractor={(r) => r.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.selectorRow} onPress={() => handleSelect(item)}>
-                <View style={styles.selectorRowMain}>
-                  <Text style={styles.selectorName}>{item.name}</Text>
-                  <Text style={styles.selectorMeta}>
-                    {MEAL_TYPE_LABELS[item.mealType]} · {item.prepTime + item.cookTime} min
-                    {item.caloriesPerServing ? ` · ${item.caloriesPerServing} kcal` : ''}
-                    {item.costEur ? ` · ${item.costEur.toFixed(2)}€` : ''}
-                  </Text>
-                </View>
-                <Text style={styles.selectorLastUsed}>{lastUsedLabel(item.id)}</Text>
-              </TouchableOpacity>
-            )}
+            renderItem={({ item }) => {
+              const isPending = pendingRecipe?.id === item.id;
+              return (
+                <TouchableOpacity
+                  style={[styles.selectorRow, isPending && styles.selectorRowPending]}
+                  onPress={() => handleTapRecipe(item)}
+                >
+                  <View style={styles.selectorRowMain}>
+                    <Text style={styles.selectorName}>{item.name}</Text>
+                    <Text style={styles.selectorMeta}>
+                      {MEAL_TYPE_LABELS[item.mealType]} · {item.prepTime + item.cookTime} min
+                      {item.caloriesPerServing ? ` · ${item.caloriesPerServing} kcal` : ''}
+                      {item.costEur ? ` · ${item.costEur.toFixed(2)}€` : ''}
+                    </Text>
+                  </View>
+                  <Text style={styles.selectorLastUsed}>{lastUsedLabel(item.id)}</Text>
+                </TouchableOpacity>
+              );
+            }}
             ListEmptyComponent={
               <Text style={styles.selectorEmpty}>No hay recetas</Text>
             }
           />
-          <TouchableOpacity style={styles.selectorCancel} onPress={onClose}>
+
+          {/* Servings panel */}
+          {pendingRecipe && (
+            <View style={styles.selectorServingsPanel}>
+              <Text style={styles.selectorServingsName} numberOfLines={1}>{pendingRecipe.name}</Text>
+              <View style={styles.selectorServingsRow}>
+                <Text style={styles.selectorServingsLabel}>Raciones:</Text>
+                <TouchableOpacity
+                  style={styles.selectorServingsBtn}
+                  onPress={() => setPendingServings((v) => Math.max(1, v - 1))}
+                >
+                  <Text style={styles.selectorServingsBtnText}>−</Text>
+                </TouchableOpacity>
+                <Text style={styles.selectorServingsVal}>{pendingServings}</Text>
+                <TouchableOpacity
+                  style={styles.selectorServingsBtn}
+                  onPress={() => setPendingServings((v) => v + 1)}
+                >
+                  <Text style={styles.selectorServingsBtnText}>+</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.selectorServingsConfirm} onPress={handleConfirm}>
+                  <Text style={styles.selectorServingsConfirmText}>Añadir</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
+          <TouchableOpacity style={styles.selectorCancel} onPress={handleClose}>
             <Text style={styles.selectorCancelText}>Cancelar</Text>
           </TouchableOpacity>
         </View>
@@ -355,12 +413,8 @@ function ServingsModal({ visible, entry, recipeName, onSave, onDelete, onClose }
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
-type Props = {
-  onGenerateList: (planId: string) => void;
-};
-
-export default function PlanningScreen({ onGenerateList }: Props) {
-  const { user } = useAuth();
+export default function PlanningScreen() {
+  const { user, household } = useAuth();
   const [plans, setPlans] = useState<MealPlan[]>([]);
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
   const [entries, setEntries] = useState<MealPlanEntry[]>([]);
@@ -377,6 +431,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
 
   const [servingsVisible, setServingsVisible] = useState(false);
   const [editingEntry, setEditingEntry] = useState<MealPlanEntry | null>(null);
+  const [planView, setPlanView] = useState<'plan' | 'shop'>('plan');
 
   const load = useCallback(async () => {
     const [allPlans, allRecipes, luMap] = await Promise.all([
@@ -401,6 +456,38 @@ export default function PlanningScreen({ onGenerateList }: Props) {
 
   useEffect(() => { load().catch(console.warn); }, []);
 
+  function handleDeletePlan(planId: string) {
+    const plan = plans.find((p) => p.id === planId);
+    if (!plan) return;
+    Alert.alert(
+      'Borrar planning',
+      `¿Seguro que quieres borrar "${plan.title}"? Se eliminarán todas sus comidas.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Borrar',
+          style: 'destructive',
+          onPress: async () => {
+            await deleteMealPlan(planId);
+            const remaining = plans.filter((p) => p.id !== planId);
+            setPlans(remaining);
+            if (remaining.length > 0) {
+              const next = remaining[0];
+              setActivePlanId(next.id);
+              const planEntries = await getEntriesForPlan(next.id);
+              setEntries(planEntries);
+              const today = todayISODate();
+              setSelectedDate(today >= next.startDate && today <= next.endDate ? today : next.startDate);
+            } else {
+              setActivePlanId(null);
+              setEntries([]);
+            }
+          },
+        },
+      ]
+    );
+  }
+
   async function switchPlan(planId: string) {
     setActivePlanId(planId);
     const planEntries = await getEntriesForPlan(planId);
@@ -421,12 +508,16 @@ export default function PlanningScreen({ onGenerateList }: Props) {
       endDate,
       createdAt: new Date().toISOString(),
     };
-    await saveMealPlan(plan, user!.id);
-    setPlans((prev) => [plan, ...prev]);
-    setActivePlanId(plan.id);
-    setEntries([]);
-    const today = todayISODate();
-    setSelectedDate(today >= startDate && today <= endDate ? today : startDate);
+    try {
+      await saveMealPlan(plan, user!.id, household?.id);
+      setPlans((prev) => [plan, ...prev]);
+      setActivePlanId(plan.id);
+      setEntries([]);
+      const today = todayISODate();
+      setSelectedDate(today >= startDate && today <= endDate ? today : startDate);
+    } catch (err: any) {
+      Alert.alert('Error', `No se pudo crear el planning: ${err?.message ?? err}`);
+    }
   }
 
   function openSelector(date: string, mealType: MealType) {
@@ -440,7 +531,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
     setSelectorVisible(true);
   }
 
-  async function handleSelectRecipe(recipe: Recipe) {
+  async function handleSelectRecipe(recipe: Recipe, servings: number) {
     if (!activePlanId || !selectorTarget) return;
     setSelectorVisible(false);
 
@@ -457,7 +548,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
         date: selectorTarget.date,
         mealType: selectorTarget.mealType,
         recipeId: recipe.id,
-        servings: recipe.servings,
+        servings,
       };
       await saveEntry(entry);
       setEntries((prev) => [...prev, entry]);
@@ -547,11 +638,37 @@ export default function PlanningScreen({ onGenerateList }: Props) {
             </TouchableOpacity>
           ))}
         </ScrollView>
+        {activePlanId && (
+          <TouchableOpacity style={styles.newWeekBtn} onPress={() => handleDeletePlan(activePlanId)}>
+            <Trash2 size={18} color={C.danger} strokeWidth={1.8} />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity style={styles.newWeekBtn} onPress={() => setCreateModalVisible(true)}>
           <Text style={styles.newWeekBtnText}>+</Text>
         </TouchableOpacity>
       </View>
 
+      {/* Internal view tabs */}
+      <View style={styles.viewTabs}>
+        <TouchableOpacity
+          testID="planning-tabPlan"
+          style={[styles.viewTab, planView === 'plan' && styles.viewTabActive]}
+          onPress={() => setPlanView('plan')}
+        >
+          <Text style={[styles.viewTabText, planView === 'plan' && styles.viewTabTextActive]}>Planificación</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          testID="planning-tabShop"
+          style={[styles.viewTab, planView === 'shop' && styles.viewTabActive]}
+          onPress={() => setPlanView('shop')}
+        >
+          <Text style={[styles.viewTabText, planView === 'shop' && styles.viewTabTextActive]}>Lista de la compra</Text>
+        </TouchableOpacity>
+      </View>
+
+      {planView === 'shop' ? (
+        <ShoppingListScreen activePlanId={activePlanId} />
+      ) : (<>
       {/* Day pills */}
       <ScrollView testID="planning-dayPillsScroll" horizontal showsHorizontalScrollIndicator={false} style={styles.dayPillsScroll} contentContainerStyle={styles.dayPillsContent}>
         {planDays.map((isoDate) => {
@@ -678,7 +795,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
           <TouchableOpacity
             testID="planning-generateBtn"
             style={styles.generateBtn}
-            onPress={() => onGenerateList(activePlan.id)}
+            onPress={() => setPlanView('shop')}
           >
             <View style={styles.generateBtnContent}>
               <ShoppingCart size={18} color="#fff" strokeWidth={1.8} />
@@ -689,6 +806,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
 
         <View style={{ height: 20 }} />
       </ScrollView>
+      </>)}
 
       <CreatePlanModal
         visible={createModalVisible}
@@ -734,6 +852,13 @@ const styles = StyleSheet.create({
   planTabTextActive: { color: '#fff', fontWeight: '700' },
   newWeekBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   newWeekBtnText: { fontSize: 22, color: C.primary, fontWeight: '300' },
+
+  // View tabs (Planificación / Lista de la compra)
+  viewTabs: { flexDirection: 'row', backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
+  viewTab: { flex: 1, alignItems: 'center', paddingVertical: 12, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  viewTabActive: { borderBottomColor: C.primary },
+  viewTabText: { fontSize: 13, color: C.textMuted, fontWeight: '500' },
+  viewTabTextActive: { color: C.primary, fontWeight: '700' },
 
   // Day pills
   dayPillsScroll: { backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, height: 72, flexGrow: 0, flexShrink: 0 },
@@ -808,7 +933,7 @@ const styles = StyleSheet.create({
 
   // Recipe Selector Modal
   selectorOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },
-  selectorCard: { backgroundColor: C.bgSurface, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, maxHeight: '85%' },
+  selectorCard: { backgroundColor: C.bgSurface, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, height: 700 },
   selectorTitle: { fontSize: 17, fontWeight: '700', padding: 20, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, fontFamily: FONT.serif, color: C.textPrimary },
   searchInput: { margin: 14, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.xl, paddingHorizontal: 16, paddingVertical: 12, fontSize: 14, backgroundColor: C.bgInput, color: C.textPrimary },
   selectorRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 20, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
@@ -817,6 +942,16 @@ const styles = StyleSheet.create({
   selectorMeta: { fontSize: 12, color: C.textMuted, marginTop: 2 },
   selectorLastUsed: { fontSize: 12, color: C.primary, marginLeft: 12 },
   selectorEmpty: { textAlign: 'center', color: C.textMuted, padding: 40 },
+  selectorRowPending: { backgroundColor: C.primaryLight },
+  selectorServingsPanel: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border, paddingHorizontal: 20, paddingVertical: 14, backgroundColor: C.bgSurface, gap: 10 },
+  selectorServingsName: { fontSize: 14, fontWeight: '700', color: C.textPrimary, fontFamily: FONT.serif },
+  selectorServingsRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  selectorServingsLabel: { fontSize: 13, color: C.textSecondary, flex: 1 },
+  selectorServingsBtn: { width: 34, height: 34, borderRadius: RADIUS.pill, backgroundColor: C.bgPage, borderWidth: 1, borderColor: C.border, alignItems: 'center', justifyContent: 'center' },
+  selectorServingsBtnText: { fontSize: 20, color: C.primary, fontWeight: '300', lineHeight: 24 },
+  selectorServingsVal: { fontSize: 18, fontWeight: '700', color: C.textPrimary, minWidth: 28, textAlign: 'center' },
+  selectorServingsConfirm: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingHorizontal: 20, paddingVertical: 10, marginLeft: 8 },
+  selectorServingsConfirmText: { color: '#fff', fontWeight: '700', fontSize: 14 },
   selectorCancel: { padding: 18, alignItems: 'center', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   selectorCancelText: { color: C.danger, fontWeight: '600', fontSize: 16 },
 

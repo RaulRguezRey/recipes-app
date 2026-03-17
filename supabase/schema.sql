@@ -52,7 +52,8 @@ create table if not exists meal_plans (
   week_start    date not null,
   created_at    timestamptz not null default now(),
   -- Auth columns
-  owner_user_id uuid references auth.users(id) on delete cascade
+  owner_user_id uuid references auth.users(id) on delete cascade,
+  household_id  uuid references households(id) on delete set null
 );
 
 create table if not exists meal_plan_entries (
@@ -104,10 +105,11 @@ create table if not exists recipe_shares (
 
 -- ── Indexes ───────────────────────────────────────────────────────────────────
 
-create index if not exists idx_recipes_owner      on recipes(owner_user_id);
-create index if not exists idx_meal_plans_owner   on meal_plans(owner_user_id);
-create index if not exists idx_hm_user_id         on household_members(user_id);
-create index if not exists idx_hm_household_id    on household_members(household_id);
+create index if not exists idx_recipes_owner         on recipes(owner_user_id);
+create index if not exists idx_meal_plans_owner      on meal_plans(owner_user_id);
+create index if not exists idx_meal_plans_household  on meal_plans(household_id);
+create index if not exists idx_hm_user_id            on household_members(user_id);
+create index if not exists idx_hm_household_id       on household_members(household_id);
 
 -- ── Helper functions ──────────────────────────────────────────────────────────
 
@@ -290,36 +292,72 @@ create policy "insert own"  on recipes for insert with check (owner_user_id = au
 create policy "update own"  on recipes for update using  (owner_user_id = auth.uid());
 create policy "delete own"  on recipes for delete using  (owner_user_id = auth.uid());
 
+-- Helper: returns true if the current user can access a given meal plan
+-- (owns it, or is a member of its household)
+create or replace function can_access_meal_plan(p_meal_plan_id text)
+returns boolean
+language sql
+security definer
+stable
+as $$
+  select exists (
+    select 1 from meal_plans
+    where id = p_meal_plan_id
+      and (
+        owner_user_id = auth.uid()
+        or (
+          household_id is not null
+          and exists (
+            select 1 from household_members
+            where household_id = meal_plans.household_id
+              and user_id = auth.uid()
+          )
+        )
+      )
+  );
+$$;
+
 -- meal_plans
-create policy "own plans select" on meal_plans for select using (owner_user_id = auth.uid());
-create policy "own plans insert" on meal_plans for insert with check (owner_user_id = auth.uid());
-create policy "own plans update" on meal_plans for update using  (owner_user_id = auth.uid());
-create policy "own plans delete" on meal_plans for delete using  (owner_user_id = auth.uid());
+create policy "plans select" on meal_plans for select using (
+  owner_user_id = auth.uid()
+  or (
+    household_id is not null
+    and exists (
+      select 1 from household_members
+      where household_id = meal_plans.household_id and user_id = auth.uid()
+    )
+  )
+);
+create policy "plans insert" on meal_plans for insert with check (owner_user_id = auth.uid());
+create policy "plans update" on meal_plans for update using (
+  owner_user_id = auth.uid()
+  or (
+    household_id is not null
+    and exists (
+      select 1 from household_members
+      where household_id = meal_plans.household_id and user_id = auth.uid()
+    )
+  )
+);
+create policy "plans delete" on meal_plans for delete using (
+  owner_user_id = auth.uid()
+  or (
+    household_id is not null
+    and exists (
+      select 1 from household_members
+      where household_id = meal_plans.household_id and user_id = auth.uid()
+    )
+  )
+);
 
 -- meal_plan_entries
-create policy "entries select" on meal_plan_entries for select using (
-  exists (select 1 from meal_plans where id = meal_plan_id and owner_user_id = auth.uid())
-);
-create policy "entries insert" on meal_plan_entries for insert with check (
-  exists (select 1 from meal_plans where id = meal_plan_id and owner_user_id = auth.uid())
-);
-create policy "entries update" on meal_plan_entries for update using (
-  exists (select 1 from meal_plans where id = meal_plan_id and owner_user_id = auth.uid())
-);
-create policy "entries delete" on meal_plan_entries for delete using (
-  exists (select 1 from meal_plans where id = meal_plan_id and owner_user_id = auth.uid())
-);
+create policy "entries select" on meal_plan_entries for select using (can_access_meal_plan(meal_plan_id));
+create policy "entries insert" on meal_plan_entries for insert with check (can_access_meal_plan(meal_plan_id));
+create policy "entries update" on meal_plan_entries for update using (can_access_meal_plan(meal_plan_id));
+create policy "entries delete" on meal_plan_entries for delete using (can_access_meal_plan(meal_plan_id));
 
 -- shopping_lists
-create policy "lists select" on shopping_lists for select using (
-  exists (select 1 from meal_plans where id = meal_plan_id and owner_user_id = auth.uid())
-);
-create policy "lists insert" on shopping_lists for insert with check (
-  exists (select 1 from meal_plans where id = meal_plan_id and owner_user_id = auth.uid())
-);
-create policy "lists update" on shopping_lists for update using (
-  exists (select 1 from meal_plans where id = meal_plan_id and owner_user_id = auth.uid())
-);
-create policy "lists delete" on shopping_lists for delete using (
-  exists (select 1 from meal_plans where id = meal_plan_id and owner_user_id = auth.uid())
-);
+create policy "lists select" on shopping_lists for select using (can_access_meal_plan(meal_plan_id));
+create policy "lists insert" on shopping_lists for insert with check (can_access_meal_plan(meal_plan_id));
+create policy "lists update" on shopping_lists for update using (can_access_meal_plan(meal_plan_id));
+create policy "lists delete" on shopping_lists for delete using (can_access_meal_plan(meal_plan_id));

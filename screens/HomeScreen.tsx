@@ -26,18 +26,25 @@ const MEAL_BG: Record<MealType, string> = {
 
 const DAY_ABBRS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-function todayISODate(): string {
-  return new Date().toISOString().slice(0, 10);
+function localISODate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
-function generatePlanDays(startDate: string, endDate: string): string[] {
+function todayISODate(): string {
+  return localISODate(new Date());
+}
+
+function generateRollingDays(daysBefore: number, daysAfter: number): string[] {
   const days: string[] = [];
-  const start = new Date(startDate + 'T00:00:00');
-  const end = new Date(endDate + 'T00:00:00');
-  const cur = new Date(start);
-  while (cur <= end && days.length < 60) {
-    days.push(cur.toISOString().slice(0, 10));
-    cur.setDate(cur.getDate() + 1);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  for (let i = -daysBefore; i <= daysAfter; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    days.push(localISODate(d));
   }
   return days;
 }
@@ -72,7 +79,7 @@ type Props = { onNavigate: (screen: string) => void };
 
 export default function HomeScreen({ onNavigate }: Props) {
   const [selectedDate, setSelectedDate] = useState<string>(todayISODate());
-  const [planDays, setPlanDays] = useState<string[]>([]);
+  const [planDays, setPlanDays] = useState<string[]>(() => generateRollingDays(2, 7));
   const [plans, setPlans] = useState<MealPlan[]>([]);
   const [entries, setEntries] = useState<MealPlanEntry[]>([]);
   const [recipeMap, setRecipeMap] = useState<Record<string, Recipe>>({});
@@ -92,14 +99,11 @@ export default function HomeScreen({ onNavigate }: Props) {
     setSuggestions(sorted.slice(0, 8));
 
     setPlans(allPlans);
+    setPlanDays(generateRollingDays(2, 7));
     const latestPlan = allPlans[0];
     if (latestPlan) {
       const e = await getEntriesForPlan(latestPlan.id);
       setEntries(e);
-      const days = generatePlanDays(latestPlan.startDate, latestPlan.endDate);
-      setPlanDays(days);
-      const today = todayISODate();
-      setSelectedDate(today >= latestPlan.startDate && today <= latestPlan.endDate ? today : latestPlan.startDate);
     }
   }, []);
 
@@ -134,7 +138,7 @@ export default function HomeScreen({ onNavigate }: Props) {
 
       {/* Resumen del día */}
       <SectionHeader title="Resumen del día" action="Ver más" onAction={() => onNavigate('Nutrition')} />
-      <View testID="home-macroRow" style={styles.macroRow}>
+      <View testID="home-macroRow" style={[styles.macroRow, selectedDate < todayISODate() && { opacity: 0.6 }]}>
         {macros.map(({ icon: Icon, val, lbl, fill, color }) => (
           <View key={lbl} testID={`home-macroCard-${lbl}`} style={styles.macroCard}>
             <Icon size={16} color={color} strokeWidth={1.8} />
@@ -152,23 +156,24 @@ export default function HomeScreen({ onNavigate }: Props) {
       <ScrollView testID="home-dayScroll" horizontal showsHorizontalScrollIndicator={false} style={styles.dayScroll} contentContainerStyle={styles.dayScrollContent}>
         {planDays.map((isoDate) => {
           const active = isoDate === selectedDate;
+          const past = isoDate < todayISODate();
           return (
             <TouchableOpacity
               key={isoDate}
               testID={`home-dayPill-${isoDate}`}
-              style={[styles.dayPill, active && styles.dayPillActive]}
+              style={[styles.dayPill, past && styles.dayPillPast, active && styles.dayPillActive]}
               onPress={() => setSelectedDate(isoDate)}
             >
-              <Text style={[styles.dayPillAbbr, active && styles.dayPillAbbrActive]}>{dateToDayAbbr(isoDate).toUpperCase()}</Text>
-              <Text style={[styles.dayPillNum, active && styles.dayPillNumActive]}>{dateToDayNum(isoDate)}</Text>
+              <Text style={[styles.dayPillAbbr, past && styles.dayPillAbbrPast, active && styles.dayPillAbbrActive]}>{dateToDayAbbr(isoDate).toUpperCase()}</Text>
+              <Text style={[styles.dayPillNum, past && styles.dayPillNumPast, active && styles.dayPillNumActive]}>{dateToDayNum(isoDate)}</Text>
             </TouchableOpacity>
           );
         })}
       </ScrollView>
 
       {/* Comidas de hoy */}
-      <SectionHeader title="Comidas de hoy" action="Ver todas" onAction={() => onNavigate('Planning')} />
-      <View testID="home-mealsContainer" style={styles.mealsContainer}>
+      <SectionHeader title="Comidas del día" action="Ver todas" onAction={() => onNavigate('Planning')} />
+      <View testID="home-mealsContainer" style={[styles.mealsContainer, selectedDate < todayISODate() && { opacity: 0.6 }]}>
         {MEAL_TYPES.map(({ key, label, icon: Icon }) => {
           const entry = dayEntries.find((e) => e.mealType === key);
           const recipe = entry ? recipeMap[entry.recipeId] : null;
@@ -298,13 +303,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'transparent',
   },
-  dayPillActive: {
-    backgroundColor: C.primary,
-    borderColor: C.primary,
-  },
+  dayPillPast: { backgroundColor: C.bgInput, opacity: 0.6 },
+  dayPillActive: { backgroundColor: C.primary, borderColor: C.primary, opacity: 1 },
   dayPillAbbr: { fontSize: 9, fontWeight: '700', color: C.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
+  dayPillAbbrPast: { color: C.textMuted },
   dayPillAbbrActive: { color: 'rgba(255,255,255,0.8)' },
   dayPillNum: { fontSize: 15, fontWeight: '700', color: C.textPrimary, marginTop: 2 },
+  dayPillNumPast: { color: C.textMuted },
   dayPillNumActive: { color: '#fff' },
 
   // Meals

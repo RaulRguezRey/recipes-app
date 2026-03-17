@@ -1,4 +1,4 @@
-import { ShoppingCart, ShoppingBag, Store, Check } from 'lucide-react-native';
+import { ShoppingCart, Check } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Linking,
@@ -138,12 +138,9 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
     );
   }
 
-  const onlineItems = list.items.filter((i) => i.isOnline);
-  const offlineItems = list.items.filter((i) => !i.isOnline);
-
-  // Group offline items by category
+  // Group all items by category
   const categoryGroups: Record<string, ShoppingListItem[]> = {};
-  for (const item of offlineItems) {
+  for (const item of list.items) {
     const cat = item.category ?? 'Sin categoría';
     if (!categoryGroups[cat]) categoryGroups[cat] = [];
     categoryGroups[cat].push(item);
@@ -163,26 +160,10 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
       </View>
 
       <ScrollView testID="shopping-scroll" contentContainerStyle={styles.scroll}>
-        {/* ONLINE block */}
-        {onlineItems.length > 0 && (
-          <View testID="shopping-onlineBlock" style={styles.block}>
-            <View style={styles.blockTitleRow}>
-              <ShoppingBag size={13} color={C.primary} strokeWidth={1.8} />
-              <Text style={styles.blockTitle}> COMPRA ONLINE ({onlineItems.length})</Text>
-            </View>
-            {onlineItems.map((item) => (
-              <ItemRow key={item.id} item={item} onToggle={() => toggleItem(item.id)} showUrl />
-            ))}
-          </View>
-        )}
-
-        {/* SUPERMERCADO block */}
-        {offlineItems.length > 0 && (
-          <View testID="shopping-offlineBlock" style={styles.block}>
-            <View style={styles.blockTitleRow}>
-              <Store size={13} color={C.primary} strokeWidth={1.8} />
-              <Text style={styles.blockTitle}> SUPERMERCADO ({offlineItems.length})</Text>
-            </View>
+        {list.items.length === 0 ? (
+          <Text style={styles.emptyText}>No hay ingredientes en el planning.</Text>
+        ) : (
+          <View testID="shopping-categoryBlock" style={styles.block}>
             {Object.entries(categoryGroups).map(([cat, items]) => (
               <View key={cat}>
                 <TouchableOpacity
@@ -196,17 +177,11 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
                 </TouchableOpacity>
                 {!collapsedCategories.has(cat) &&
                   items.map((item) => (
-                    <ItemRow key={item.id} item={item} onToggle={() => toggleItem(item.id)} />
+                    <ItemRow key={item.id} item={item} onToggle={() => toggleItem(item.id)} showUrl={!!item.purchaseUrl} />
                   ))}
               </View>
             ))}
           </View>
-        )}
-
-        {list.items.length === 0 && (
-          <Text style={styles.emptyText}>
-            No hay ingredientes en el planning.
-          </Text>
         )}
       </ScrollView>
     </View>
@@ -231,8 +206,6 @@ const styles = StyleSheet.create({
 
   scroll: { padding: 14, gap: 14 },
   block: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, overflow: 'hidden', marginBottom: 14, ...(SHADOW.sm as any) },
-  blockTitleRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgCard, paddingVertical: 12, paddingHorizontal: 16 },
-  blockTitle: { fontSize: 12, fontWeight: '700', color: C.primary, textTransform: 'uppercase', letterSpacing: 0.8 },
 
   categoryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 16, backgroundColor: C.bgInput, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   categoryLabel: { fontSize: 12, fontWeight: '700', color: C.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },

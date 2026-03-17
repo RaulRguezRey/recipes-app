@@ -363,7 +363,7 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onTogglePublic, 
           renderItem={({ item }) => (
             <RecipeCard
               item={item}
-              onSelect={activeTab === 'community' && item.isSeed ? () => {} : onSelect}
+              onSelect={onSelect}
               onToggleFavorite={onToggleFavorite}
               showShareToggle={activeTab === 'mine'}
               onTogglePublic={onTogglePublic}
@@ -813,13 +813,177 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
   );
 }
 
+// ─── Recipe Detail (read-only) ────────────────────────────────────────────────
+
+const MEAL_LABEL_ES: Record<MealType, string> = {
+  breakfast: 'Desayuno',
+  lunch:     'Almuerzo',
+  snack:     'Merienda',
+  dinner:    'Cena',
+};
+
+const DIFFICULTY_LABEL_ES: Record<Difficulty, string> = {
+  easy:   'Fácil',
+  medium: 'Media',
+  hard:   'Difícil',
+};
+
+type DetailViewProps = {
+  recipe: Recipe;
+  allIngredients: Ingredient[];
+  onClose: () => void;
+};
+
+function DetailView({ recipe, allIngredients, onClose }: DetailViewProps) {
+  const ingName = (ri: RecipeIngredient) =>
+    allIngredients.find((i) => i.id === ri.ingredientId)?.name ?? ri.ingredientId;
+  const totalTime = (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0);
+  const filledSteps = recipe.steps.filter((s) => s.trim());
+
+  return (
+    <View style={styles.flex}>
+      {/* Header */}
+      <View style={styles.formHeader}>
+        <TouchableOpacity onPress={onClose} style={styles.formCancel}>
+          <X size={26} color={C.primary} strokeWidth={2} />
+        </TouchableOpacity>
+        <Text style={styles.formTitle} numberOfLines={1}>{recipe.name}</Text>
+        <View style={{ width: 34 }} />
+      </View>
+
+      <ScrollView style={styles.flex} contentContainerStyle={styles.formContent}>
+        {/* Photo */}
+        {recipe.photoUri ? (
+          <Image source={{ uri: recipe.photoUri }} style={styles.photoPreview} />
+        ) : null}
+
+        {/* Tags */}
+        <View style={[styles.chipRow, { marginTop: recipe.photoUri ? 0 : 4 }]}>
+          <View style={[styles.chip, styles.chipActive]}>
+            <Text style={[styles.chipText, styles.chipTextActive]}>{MEAL_LABEL_ES[recipe.mealType]}</Text>
+          </View>
+          <View style={styles.chip}>
+            <Text style={styles.chipText}>{DIFFICULTY_LABEL_ES[recipe.difficulty]}</Text>
+          </View>
+          {recipe.origin ? (
+            <View style={styles.chip}>
+              <Text style={styles.chipText}>{recipe.origin}</Text>
+            </View>
+          ) : null}
+        </View>
+
+        {/* Meta boxes */}
+        <View style={[styles.row3, { marginBottom: 20 }]}>
+          {totalTime > 0 ? (
+            <View style={detailStyles.metaBox}>
+              <Text style={detailStyles.metaValue}>{totalTime} min</Text>
+              <Text style={detailStyles.metaLabel}>Tiempo total</Text>
+            </View>
+          ) : null}
+          <View style={detailStyles.metaBox}>
+            <Text style={detailStyles.metaValue}>{recipe.servings}</Text>
+            <Text style={detailStyles.metaLabel}>Raciones</Text>
+          </View>
+          {recipe.caloriesPerServing > 0 ? (
+            <View style={detailStyles.metaBox}>
+              <Text style={detailStyles.metaValue}>{recipe.caloriesPerServing} kcal</Text>
+              <Text style={detailStyles.metaLabel}>Por ración</Text>
+            </View>
+          ) : null}
+        </View>
+
+        {/* Ingredients */}
+        {recipe.ingredients.length > 0 ? (
+          <>
+            <Text style={styles.sectionLabel}>Ingredientes</Text>
+            {recipe.ingredients.map((ri, i) => (
+              <View key={i} style={styles.ingRow}>
+                <Text style={styles.ingText}>{ri.quantity} {ri.unit} — {ingName(ri)}</Text>
+              </View>
+            ))}
+          </>
+        ) : null}
+
+        {/* Steps */}
+        {filledSteps.length > 0 ? (
+          <>
+            <Text style={styles.sectionLabel}>Preparación</Text>
+            {filledSteps.map((step, i) => (
+              <View key={i} style={styles.stepRow}>
+                <Text style={styles.stepNum}>{i + 1}.</Text>
+                <Text style={detailStyles.stepText}>{step}</Text>
+              </View>
+            ))}
+          </>
+        ) : null}
+
+        {/* Nutrition */}
+        {(recipe.proteinG > 0 || recipe.fatG > 0 || recipe.carbsG > 0) ? (
+          <>
+            <Text style={styles.sectionLabel}>Nutrición por ración</Text>
+            <View style={styles.row3}>
+              <View style={detailStyles.metaBox}>
+                <Text style={detailStyles.metaValue}>{recipe.proteinG}g</Text>
+                <Text style={detailStyles.metaLabel}>Proteínas</Text>
+              </View>
+              <View style={detailStyles.metaBox}>
+                <Text style={detailStyles.metaValue}>{recipe.fatG}g</Text>
+                <Text style={detailStyles.metaLabel}>Grasas</Text>
+              </View>
+              <View style={detailStyles.metaBox}>
+                <Text style={detailStyles.metaValue}>{recipe.carbsG}g</Text>
+                <Text style={detailStyles.metaLabel}>Carbohidratos</Text>
+              </View>
+            </View>
+          </>
+        ) : null}
+
+        {/* Notes */}
+        {recipe.notes ? (
+          <>
+            <Text style={styles.sectionLabel}>Notas</Text>
+            <Text style={detailStyles.notes}>{recipe.notes}</Text>
+          </>
+        ) : null}
+
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    </View>
+  );
+}
+
+const detailStyles = StyleSheet.create({
+  metaBox: {
+    flex: 1,
+    backgroundColor: C.bgSurface,
+    borderRadius: RADIUS.md,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  metaValue: { fontSize: 15, fontWeight: '700', color: C.textPrimary },
+  metaLabel: { fontSize: 11, color: C.textMuted, marginTop: 2 },
+  stepText: { flex: 1, fontSize: 14, color: C.textPrimary, lineHeight: 21, paddingTop: 10 },
+  notes: {
+    fontSize: 14,
+    color: C.textSecondary,
+    lineHeight: 21,
+    backgroundColor: C.bgSurface,
+    borderRadius: RADIUS.md,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+});
+
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function RecipesScreen() {
   const { user } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
-  const [view, setView] = useState<'list' | 'form'>('list');
+  const [view, setView] = useState<'list' | 'form' | 'detail'>('list');
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [activeTab, setActiveTab] = useState<'community' | 'mine'>('community');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -883,7 +1047,18 @@ export default function RecipesScreen() {
 
   function openEdit(recipe: Recipe) {
     setEditingRecipe(recipe);
-    setView('form');
+    const isReadOnly = recipe.isSeed || (recipe.isPublic && recipe.ownerUserId !== user?.id);
+    setView(isReadOnly ? 'detail' : 'form');
+  }
+
+  if (view === 'detail' && editingRecipe) {
+    return (
+      <DetailView
+        recipe={editingRecipe}
+        allIngredients={allIngredients}
+        onClose={() => { setView('list'); setEditingRecipe(null); }}
+      />
+    );
   }
 
   if (view === 'form') {
@@ -938,8 +1113,8 @@ const styles = StyleSheet.create({
   importButton: { marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: C.primary, borderRadius: RADIUS.pill, padding: 14, alignItems: 'center' },
   importButtonContent: { flexDirection: 'row', alignItems: 'center' },
   importButtonText: { color: C.primary, fontSize: 15, fontWeight: '600' },
-  categoryScroll: { marginBottom: 12, flexGrow: 0 },
-  categoryScrollContent: { paddingHorizontal: 16, gap: 8 },
+  categoryScroll: { marginBottom: 12, flexGrow: 0, flexShrink: 0 },
+  categoryScrollContent: { paddingHorizontal: 16, paddingVertical: 8, gap: 8, alignItems: 'center' },
   categoryPill: { paddingVertical: 6, paddingHorizontal: 14, borderRadius: RADIUS.pill, backgroundColor: C.bgSurface, borderWidth: 1, borderColor: C.border, alignSelf: 'flex-start' },
   categoryPillActive: { backgroundColor: C.primary, borderColor: C.primary },
   categoryPillText: { fontSize: 13, fontWeight: '600', color: C.textMuted },

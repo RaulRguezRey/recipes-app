@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { Home, BookOpen, CalendarDays, BarChart2, User, Bell, Search } from 'lucide-react-native';
+import { Home, BookOpen, CalendarDays, BarChart2, User, Bell } from 'lucide-react-native';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { C, FONT, RADIUS, SHADOW } from './constants/theme';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,13 +9,12 @@ import LoginScreen from './screens/auth/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import RecipesScreen from './screens/RecipesScreen';
 import PlanningScreen from './screens/PlanningScreen';
-import ShoppingListScreen from './screens/ShoppingListScreen';
 import NutritionScreen from './screens/NutritionScreen';
 import IngredientsScreen from './screens/IngredientsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
 type Tab = 'Home' | 'Recipes' | 'Planning' | 'Nutrition' | 'Settings';
-type Screen = Tab | 'Shopping List' | 'Ingredients';
+type Screen = Tab | 'Ingredients';
 type LucideIcon = React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
 
 const TABS: { name: Tab; lucideIcon: LucideIcon; label: string }[] = [
@@ -25,14 +24,12 @@ const TABS: { name: Tab; lucideIcon: LucideIcon; label: string }[] = [
   { name: 'Nutrition', lucideIcon: BarChart2,    label: 'Nutrición'  },
   { name: 'Settings',  lucideIcon: User,         label: 'Perfil'     },
 ];
-
 const SCREEN_TITLES: Partial<Record<Screen, string>> = {
-  Recipes:        'Recetas',
-  Planning:       'Mi Planificación',
-  'Shopping List':'Lista de la compra',
-  Nutrition:      'Nutrición',
-  Settings:       'Perfil',
-  Ingredients:    'Ingredientes',
+  Recipes:     'Recetas',
+  Planning:    'Mi Planificación',
+  Nutrition:   'Nutrición',
+  Settings:    'Perfil',
+  Ingredients: 'Ingredientes',
 };
 
 // ── App Header ─────────────────────────────────────────────────────────────────
@@ -43,12 +40,16 @@ function AppHeader({ currentScreen }: { currentScreen: Screen }) {
   const isHome = currentScreen === 'Home';
 
   return (
-    <View style={[hStyles.header, isHome && hStyles.headerHome]}>
+    <View style={hStyles.header}>
       <View style={hStyles.topRow}>
-        {isHome
-          ? <Text style={hStyles.logo}>Nutri<Text style={hStyles.logoAccent}>Plato</Text></Text>
-          : <Text style={hStyles.screenTitle}>{SCREEN_TITLES[currentScreen] ?? ''}</Text>
-        }
+        {isHome ? (
+          <View>
+            <Text style={hStyles.greeting}>Buenos días,</Text>
+            <Text style={hStyles.userName}>{firstName}</Text>
+          </View>
+        ) : (
+          <Text style={hStyles.screenTitle}>{SCREEN_TITLES[currentScreen] ?? ''}</Text>
+        )}
         <View style={hStyles.iconRow}>
           <TouchableOpacity style={hStyles.iconBtn}>
             <Bell size={16} color="#fff" strokeWidth={1.8} />
@@ -58,17 +59,6 @@ function AppHeader({ currentScreen }: { currentScreen: Screen }) {
           </TouchableOpacity>
         </View>
       </View>
-
-      {isHome && (
-        <>
-          <Text style={hStyles.greeting}>Buenos días,</Text>
-          <Text style={hStyles.userName}>{firstName}</Text>
-          <View style={hStyles.searchBar}>
-            <Search size={16} color={C.textSecondary} strokeWidth={1.8} />
-            <Text style={hStyles.searchPlaceholder}>Buscar recetas, ingredientes…</Text>
-          </View>
-        </>
-      )}
     </View>
   );
 }
@@ -80,15 +70,12 @@ const hStyles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 14,
   },
-  headerHome: { paddingBottom: 20 },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 6,
   },
-  logo: { fontFamily: FONT.serif, color: '#fff', fontSize: 22, fontWeight: '700', letterSpacing: -0.5 },
-  logoAccent: { color: '#FFD54F' },
   screenTitle: { fontFamily: FONT.serif, color: '#fff', fontSize: 20, fontWeight: '700' },
   iconRow: { flexDirection: 'row', gap: 10 },
   iconBtn: {
@@ -96,19 +83,8 @@ const hStyles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.18)',
     alignItems: 'center', justifyContent: 'center',
   },
-  greeting: { color: 'rgba(255,255,255,0.75)', fontSize: 13, marginTop: 8, marginBottom: 2 },
-  userName: { color: '#fff', fontSize: 19, fontWeight: '700', marginBottom: 14 },
-  searchBar: {
-    backgroundColor: '#fff',
-    borderRadius: RADIUS.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    gap: 10,
-    ...(SHADOW.sm as any),
-  },
-  searchPlaceholder: { color: C.textMuted, fontSize: 14, flex: 1 },
+  greeting: { color: 'rgba(255,255,255,0.75)', fontSize: 12 },
+  userName: { color: '#fff', fontSize: 17, fontWeight: '700' },
 });
 
 // ── Loading ────────────────────────────────────────────────────────────────────
@@ -126,12 +102,6 @@ function LoadingScreen() {
 function MainTabs() {
   const insets = useSafeAreaInsets();
   const [currentScreen, setCurrentScreen] = useState<Screen>('Home');
-  const [activePlanId, setActivePlanId] = useState<string | null>(null);
-
-  function handleGenerateList(planId: string) {
-    setActivePlanId(planId);
-    setCurrentScreen('Shopping List');
-  }
 
   function renderScreen() {
     switch (currentScreen) {
@@ -140,11 +110,9 @@ function MainTabs() {
       case 'Recipes':
         return <RecipesScreen />;
       case 'Planning':
-        return <PlanningScreen onGenerateList={handleGenerateList} />;
-      case 'Shopping List':
-        return <ShoppingListScreen activePlanId={activePlanId} />;
+        return <PlanningScreen />;
       case 'Nutrition':
-        return <NutritionScreen activePlanId={activePlanId} />;
+        return <NutritionScreen activePlanId={null} />;
       case 'Ingredients':
         return <IngredientsScreen />;
       case 'Settings':
@@ -152,16 +120,11 @@ function MainTabs() {
     }
   }
 
-  const activeTab: Tab = (
-    currentScreen === 'Ingredients' ? 'Settings' :
-    currentScreen === 'Shopping List' ? 'Planning' :
-    currentScreen as Tab
-  );
+  const activeTab: Tab = currentScreen === 'Ingredients' ? 'Settings' : currentScreen as Tab;
 
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="light" />
-      {/* Status bar area — green */}
       <View style={{ height: insets.top, backgroundColor: C.primaryDark }} />
       <AppHeader currentScreen={currentScreen} />
       <View style={{ flex: 1, backgroundColor: C.bgPage }}>
