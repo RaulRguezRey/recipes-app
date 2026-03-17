@@ -153,7 +153,7 @@ function CreatePlanModal({ visible, onConfirm, onClose }: CreatePlanModalProps) 
   }
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal testID="planning-createModal" visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
         <TouchableOpacity style={styles.createCard} activeOpacity={1}>
           <Text style={styles.createTitle}>Nueva planificación</Text>
@@ -192,7 +192,7 @@ function CreatePlanModal({ visible, onConfirm, onClose }: CreatePlanModalProps) 
             placeholderTextColor={C.textMuted}
           />
 
-          <TouchableOpacity style={styles.createConfirmBtn} onPress={handleConfirm}>
+          <TouchableOpacity testID="planning-createConfirmBtn" style={styles.createConfirmBtn} onPress={handleConfirm}>
             <Text style={styles.createConfirmText}>Crear planificación</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.createCancelBtn} onPress={onClose}>
@@ -251,11 +251,12 @@ function RecipeSelector({
   }
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal testID="planning-recipeSelector" visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.selectorOverlay}>
         <View style={styles.selectorCard}>
           <Text style={styles.selectorTitle}>Seleccionar receta</Text>
           <TextInput
+            testID="planning-recipeSelectorSearch"
             style={styles.searchInput}
             placeholder="Buscar por nombre…"
             value={search}
@@ -263,6 +264,7 @@ function RecipeSelector({
             autoFocus
           />
           <FlatList
+            testID="planning-recipeSelectorList"
             data={filtered}
             keyExtractor={(r) => r.id}
             renderItem={({ item }) => (
@@ -310,7 +312,7 @@ function ServingsModal({ visible, entry, recipeName, onSave, onDelete, onClose }
   }, [entry]);
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal testID="planning-servingsModal" visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity style={styles.servOverlay} activeOpacity={1} onPress={onClose}>
         <TouchableOpacity style={styles.servCard} activeOpacity={1}>
           <Text style={styles.servTitle}>{recipeName}</Text>
@@ -336,12 +338,13 @@ function ServingsModal({ visible, entry, recipeName, onSave, onDelete, onClose }
             </TouchableOpacity>
           </View>
           <TouchableOpacity
+            testID="planning-servingsSaveBtn"
             style={styles.servSave}
             onPress={() => onSave(Math.max(1, parseInt(servings) || 1))}
           >
             <Text style={styles.servSaveText}>Guardar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.servDelete} onPress={onDelete}>
+          <TouchableOpacity testID="planning-servingsDeleteBtn" style={styles.servDelete} onPress={onDelete}>
             <Text style={styles.servDeleteText}>Eliminar del planning</Text>
           </TouchableOpacity>
         </TouchableOpacity>
@@ -527,13 +530,14 @@ export default function PlanningScreen({ onGenerateList }: Props) {
     }, 0);
 
   return (
-    <View style={styles.container}>
+    <View testID="planning-container" style={styles.container}>
       {/* Plan selector + new plan button */}
-      <View style={styles.planBar}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.planTabs} contentContainerStyle={{ paddingHorizontal: 8, paddingVertical: 8, gap: 8 }}>
+      <View testID="planning-planBar" style={styles.planBar}>
+        <ScrollView testID="planning-planTabs" horizontal showsHorizontalScrollIndicator={false} style={styles.planTabs} contentContainerStyle={{ paddingHorizontal: 8, paddingVertical: 8, gap: 8 }}>
           {plans.map((p) => (
             <TouchableOpacity
               key={p.id}
+              testID={`planning-planTab-${p.id}`}
               style={[styles.planTab, p.id === activePlanId && styles.planTabActive]}
               onPress={() => switchPlan(p.id)}
             >
@@ -549,12 +553,13 @@ export default function PlanningScreen({ onGenerateList }: Props) {
       </View>
 
       {/* Day pills */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dayPillsScroll} contentContainerStyle={styles.dayPillsContent}>
+      <ScrollView testID="planning-dayPillsScroll" horizontal showsHorizontalScrollIndicator={false} style={styles.dayPillsScroll} contentContainerStyle={styles.dayPillsContent}>
         {planDays.map((isoDate) => {
           const active = selectedDate === isoDate;
           return (
             <TouchableOpacity
               key={isoDate}
+              testID={`planning-dayPill-${isoDate}`}
               style={[styles.dayPill, active && styles.dayPillActive]}
               onPress={() => setSelectedDate(isoDate)}
             >
@@ -569,10 +574,10 @@ export default function PlanningScreen({ onGenerateList }: Props) {
         })}
       </ScrollView>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} automaticallyAdjustContentInsets={false} contentInsetAdjustmentBehavior="never">
+      <ScrollView testID="planning-scroll" style={styles.scroll} contentContainerStyle={styles.scrollContent} automaticallyAdjustContentInsets={false} contentInsetAdjustmentBehavior="never">
 
         {/* Daily kcal box */}
-        <View style={styles.kcalBox}>
+        <View testID="planning-kcalBox" style={styles.kcalBox}>
           <View>
             <Text style={styles.kcalBoxDayName}>{dateToDayLabel(selectedDate)}</Text>
             <Text style={styles.kcalBoxLabel}>Total del día</Text>
@@ -587,7 +592,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
           const recipe = firstEntry ? recipeMap[firstEntry.recipeId] : null;
 
           return (
-            <View key={mealType} style={styles.mealSlot}>
+            <View key={mealType} testID={`planning-mealSlot-${mealType}`} style={styles.mealSlot}>
               <View style={styles.mealSlotHeader}>
                 <MealIcon size={15} color={C.primary} strokeWidth={1.8} />
                 <Text style={styles.mealSlotLabel}>{mealLabel.toUpperCase()}</Text>
@@ -636,7 +641,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
 
         {/* Planning summary bars */}
         {entries.length > 0 && (
-          <View style={styles.weekSummary}>
+          <View testID="planning-weekSummary" style={styles.weekSummary}>
             <Text style={styles.weekSummaryTitle}>Resumen del planning</Text>
             {planDays.map((isoDate) => {
               const kcal = entries
@@ -671,6 +676,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
         {/* Generate shopping list button */}
         {activePlan && entries.length > 0 && (
           <TouchableOpacity
+            testID="planning-generateBtn"
             style={styles.generateBtn}
             onPress={() => onGenerateList(activePlan.id)}
           >
@@ -730,7 +736,7 @@ const styles = StyleSheet.create({
   newWeekBtnText: { fontSize: 22, color: C.primary, fontWeight: '300' },
 
   // Day pills
-  dayPillsScroll: { backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, height: 72 },
+  dayPillsScroll: { backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, height: 72, flexGrow: 0, flexShrink: 0 },
   dayPillsContent: { paddingHorizontal: 16, paddingVertical: 8, gap: 8, alignItems: 'flex-start' },
   dayPill: { width: 56, height: 56, borderRadius: 14, backgroundColor: C.bgPage, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'transparent' },
   dayPillActive: { backgroundColor: C.primaryLight, borderColor: C.primary },

@@ -101,6 +101,7 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
+      testID="login-root"
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
@@ -116,9 +117,9 @@ export default function LoginScreen() {
         </View>
 
         {/* Card */}
-        <View style={styles.card}>
+        <View testID="login-card" style={styles.card}>
           {/* Mode tabs */}
-          <View style={styles.tabs}>
+          <View testID="login-tabs" style={styles.tabs}>
             <Pressable style={[styles.tab, mode === 'signin' && styles.tabActive]} onPress={() => switchMode('signin')}>
               <Text style={[styles.tabText, mode === 'signin' && styles.tabTextActive]}>Entrar</Text>
             </Pressable>
@@ -143,6 +144,7 @@ export default function LoginScreen() {
               {/* Display name (signup only) */}
               {mode === 'signup' && (
                 <TextInput
+                  testID="login-displayNameInput"
                   style={styles.input}
                   placeholder="Tu nombre"
                   placeholderTextColor={C.textMuted}
@@ -155,6 +157,7 @@ export default function LoginScreen() {
 
               {/* Email */}
               <TextInput
+                testID="login-emailInput"
                 style={styles.input}
                 placeholder="Email"
                 placeholderTextColor={C.textMuted}
@@ -169,6 +172,7 @@ export default function LoginScreen() {
               {/* Password */}
               {mode !== 'magic' && (
                 <TextInput
+                  testID="login-passwordInput"
                   style={styles.input}
                   placeholder="Contraseña"
                   placeholderTextColor={C.textMuted}
@@ -182,6 +186,7 @@ export default function LoginScreen() {
               {/* Confirm password (signup only) */}
               {mode === 'signup' && (
                 <TextInput
+                  testID="login-confirmPasswordInput"
                   style={styles.input}
                   placeholder="Confirmar contraseña"
                   placeholderTextColor={C.textMuted}
@@ -197,6 +202,7 @@ export default function LoginScreen() {
 
               {/* Primary action button */}
               <Pressable
+                testID="login-submitBtn"
                 style={[styles.btn, styles.btnPrimary, loading && styles.btnDisabled]}
                 onPress={mode === 'signup' ? handleSignUp : handleSignIn}
                 disabled={loading}
@@ -230,6 +236,7 @@ export default function LoginScreen() {
 
             {/* Google */}
             <Pressable
+              testID="login-googleBtn"
               style={[styles.btn, styles.btnOAuth, loading && styles.btnDisabled]}
               onPress={handleGoogle}
               disabled={loading}

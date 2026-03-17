@@ -71,9 +71,10 @@ function CreateHouseholdModal({ visible, onClose }: { visible: boolean; onClose:
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.modalOverlay}>
-        <View style={styles.modalCard}>
+        <View testID="settings-createHouseholdCard" style={styles.modalCard}>
           <Text style={styles.modalTitle}>Crear hogar</Text>
           <TextInput
+            testID="settings-householdNameInput"
             style={styles.modalInput}
             placeholder="Nombre del hogar (ej: Casa de Raúl y Moni)"
             placeholderTextColor={C.textMuted}
@@ -123,12 +124,13 @@ function JoinHouseholdModal({ visible, onClose }: { visible: boolean; onClose: (
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.modalOverlay}>
-        <View style={styles.modalCard}>
+        <View testID="settings-joinHouseholdCard" style={styles.modalCard}>
           <Text style={styles.modalTitle}>Unirse a un hogar</Text>
           <Text style={styles.modalSubtitle}>
             Pide a tu pareja o compañero el código de su hogar e introdúcelo aquí.
           </Text>
           <TextInput
+            testID="settings-householdCodeInput"
             style={[styles.modalInput, styles.codeInput]}
             placeholder="ABCD-1234"
             placeholderTextColor={C.textMuted}
@@ -209,7 +211,7 @@ export default function SettingsScreen({ onOpenIngredients }: Props) {
 
   return (
     <>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <ScrollView testID="settings-scroll" style={styles.container} contentContainerStyle={styles.content}>
 
         {/* Account */}
         <Section title="Cuenta">
@@ -254,7 +256,7 @@ export default function SettingsScreen({ onOpenIngredients }: Props) {
       {/* Members modal */}
       <Modal visible={showMembers} transparent animationType="fade" onRequestClose={() => setShowMembers(false)}>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
+          <View testID="settings-membersCard" style={styles.modalCard}>
             <Text style={styles.modalTitle}>Miembros del hogar</Text>
             {members.map((m) => (
               <View key={m.id} style={styles.memberRow}>

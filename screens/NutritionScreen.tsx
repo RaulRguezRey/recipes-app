@@ -144,20 +144,21 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
 
   if (!currentPlanId || plans.length === 0) {
     return (
-      <View style={styles.empty}>
+      <View testID="nutrition-empty" style={styles.empty}>
         <Text style={styles.emptyText}>Crea un planning para ver el resumen nutricional.</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView testID="nutrition-scroll" style={styles.container} contentContainerStyle={styles.content}>
       {/* Plan selector */}
       {plans.length > 1 && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.planTabs}>
+        <ScrollView testID="nutrition-planTabs" horizontal showsHorizontalScrollIndicator={false} style={styles.planTabs}>
           {plans.map((p) => (
             <TouchableOpacity
               key={p.id}
+              testID={`nutrition-planTab-${p.id}`}
               style={[styles.planTab, p.id === currentPlanId && styles.planTabActive]}
               onPress={() => switchPlan(p.id)}
             >
@@ -170,7 +171,7 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
       )}
 
       {/* Summary card */}
-      <View style={styles.card}>
+      <View testID="nutrition-summaryCard" style={styles.card}>
         <Text style={styles.cardTitle}>Resumen del planning</Text>
         <View style={styles.macroRow}>
           <MacroBar label="Kcal/día" value={Math.round(avgKcal)} unit="" color={C.danger} />
@@ -188,6 +189,7 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
       {dayData.map(({ date, recipes: dayRecipes, totals }) => (
         <TouchableOpacity
           key={date}
+          testID={`nutrition-dayCard-${date}`}
           style={styles.dayCard}
           onPress={() => toggleDay(date)}
           activeOpacity={0.7}

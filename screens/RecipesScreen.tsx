@@ -169,7 +169,7 @@ function RecipeCard({ item, onSelect, onToggleFavorite, showShareToggle, onToggl
   const totalTime = item.prepTime + item.cookTime;
 
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onSelect(item)} activeOpacity={0.85}>
+    <TouchableOpacity testID={`recipe-card-${item.id}`} style={styles.card} onPress={() => onSelect(item)} activeOpacity={0.85}>
       {/* Colored header area */}
       <View style={[styles.cardBgArea, { backgroundColor: MEAL_BG[item.mealType] }]}>
         {item.photoUri
@@ -194,7 +194,7 @@ function RecipeCard({ item, onSelect, onToggleFavorite, showShareToggle, onToggl
         )}
         {/* Favorite button — only for non-seeds */}
         {!item.isSeed && (
-          <TouchableOpacity style={styles.cardHeartBtn} onPress={() => onToggleFavorite(item)}>
+          <TouchableOpacity testID={`recipe-heartBtn-${item.id}`} style={styles.cardHeartBtn} onPress={() => onToggleFavorite(item)}>
             <Heart
               size={16}
               color={item.isFavorite ? C.accent : C.textMuted}
@@ -278,12 +278,13 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onTogglePublic, 
   });
 
   return (
-    <View style={styles.flex}>
+    <View testID="recipes-listView" style={styles.flex}>
       {/* Tab bar */}
-      <View style={styles.tabBar}>
+      <View testID="recipes-tabBar" style={styles.tabBar}>
         {(['community', 'mine'] as const).map((tab) => (
           <TouchableOpacity
             key={tab}
+            testID={`recipes-tab-${tab}`}
             style={[styles.tabBtn, activeTab === tab && styles.tabBtnActive]}
             onPress={() => onTabChange(tab)}
           >
@@ -296,6 +297,7 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onTogglePublic, 
       <View style={styles.searchContainer}>
         <View style={styles.searchRow}>
           <TextInput
+            testID="recipes-searchInput"
             style={styles.searchInput}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -312,6 +314,7 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onTogglePublic, 
 
       {/* Category filter pills */}
       <ScrollView
+        testID="recipes-categoryScroll"
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.categoryScroll}
@@ -322,6 +325,7 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onTogglePublic, 
           return (
             <TouchableOpacity
               key={String(p.key)}
+              testID={`recipes-categoryPill-${p.key ?? 'all'}`}
               style={[styles.categoryPill, active && styles.categoryPillActive]}
               onPress={() => setActiveMeal(p.key)}
             >
@@ -350,6 +354,7 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onTogglePublic, 
         </View>
       ) : (
         <FlatList
+          testID="recipes-list"
           data={filtered}
           keyExtractor={(item) => item.id}
           numColumns={2}
@@ -368,7 +373,7 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onTogglePublic, 
       )}
 
       {activeTab === 'mine' && (
-        <TouchableOpacity style={styles.fab} onPress={onAdd}>
+        <TouchableOpacity testID="recipes-addBtn" style={styles.fab} onPress={onAdd}>
           <Plus size={28} color="#fff" strokeWidth={2} />
         </TouchableOpacity>
       )}
@@ -564,7 +569,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {/* Header */}
-      <View style={styles.formHeader}>
+      <View testID="recipeForm-header" style={styles.formHeader}>
         <TouchableOpacity onPress={onCancel} style={styles.formCancel}>
           <X size={26} color={C.primary} strokeWidth={2} />
         </TouchableOpacity>
@@ -602,6 +607,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
         {/* Basic info */}
         <Text style={styles.sectionLabel}>Name *</Text>
         <TextInput
+          testID="recipeForm-nameInput"
           style={[styles.input, nameError && styles.inputError]}
           value={name}
           onChangeText={(v) => { setName(v); if (v.trim()) setNameError(false); }}
@@ -791,12 +797,12 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
         />
 
         {/* Save */}
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <TouchableOpacity testID="recipeForm-saveBtn" style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>{isEdit ? 'Save changes' : 'Save recipe'}</Text>
         </TouchableOpacity>
 
         {isEdit && (
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+          <TouchableOpacity testID="recipeForm-deleteBtn" style={styles.deleteButton} onPress={handleDelete}>
             <Text style={styles.deleteButtonText}>Delete recipe</Text>
           </TouchableOpacity>
         )}

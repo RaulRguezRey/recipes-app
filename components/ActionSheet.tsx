@@ -13,7 +13,7 @@ export default function ActionSheet({ visible, actions, onClose }: ActionSheetPr
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
-        <View style={styles.sheet}>
+        <View testID="actionSheet-sheet" style={styles.sheet}>
           {actions.map((action, i) => (
             <TouchableOpacity key={i} style={styles.action} onPress={action.onPress}>
               <Text style={styles.actionText}>{action.label}</Text>

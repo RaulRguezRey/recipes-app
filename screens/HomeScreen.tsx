@@ -130,13 +130,13 @@ export default function HomeScreen({ onNavigate }: Props) {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <ScrollView testID="home-scroll" style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
       {/* Resumen del día */}
       <SectionHeader title="Resumen del día" action="Ver más" onAction={() => onNavigate('Nutrition')} />
-      <View style={styles.macroRow}>
+      <View testID="home-macroRow" style={styles.macroRow}>
         {macros.map(({ icon: Icon, val, lbl, fill, color }) => (
-          <View key={lbl} style={styles.macroCard}>
+          <View key={lbl} testID={`home-macroCard-${lbl}`} style={styles.macroCard}>
             <Icon size={16} color={color} strokeWidth={1.8} />
             <Text style={styles.macroVal}>{val}</Text>
             <Text style={styles.macroLbl}>{lbl}</Text>
@@ -149,12 +149,13 @@ export default function HomeScreen({ onNavigate }: Props) {
 
       {/* Plan semanal */}
       <SectionHeader title="Plan semanal" action="Editar" onAction={() => onNavigate('Planning')} />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dayScroll} contentContainerStyle={styles.dayScrollContent}>
+      <ScrollView testID="home-dayScroll" horizontal showsHorizontalScrollIndicator={false} style={styles.dayScroll} contentContainerStyle={styles.dayScrollContent}>
         {planDays.map((isoDate) => {
           const active = isoDate === selectedDate;
           return (
             <TouchableOpacity
               key={isoDate}
+              testID={`home-dayPill-${isoDate}`}
               style={[styles.dayPill, active && styles.dayPillActive]}
               onPress={() => setSelectedDate(isoDate)}
             >
@@ -167,7 +168,7 @@ export default function HomeScreen({ onNavigate }: Props) {
 
       {/* Comidas de hoy */}
       <SectionHeader title="Comidas de hoy" action="Ver todas" onAction={() => onNavigate('Planning')} />
-      <View style={styles.mealsContainer}>
+      <View testID="home-mealsContainer" style={styles.mealsContainer}>
         {MEAL_TYPES.map(({ key, label, icon: Icon }) => {
           const entry = dayEntries.find((e) => e.mealType === key);
           const recipe = entry ? recipeMap[entry.recipeId] : null;
@@ -175,7 +176,7 @@ export default function HomeScreen({ onNavigate }: Props) {
           const prot = recipe ? Math.round(recipe.proteinG * (entry?.servings ?? 1)) : 0;
 
           return (
-            <View key={key} style={styles.mealRow}>
+            <View key={key} testID={`home-mealRow-${key}`} style={styles.mealRow}>
               {/* Colored icon box */}
               <View style={[styles.mealIconBox, { backgroundColor: MEAL_BG[key] }]}>
                 <Icon size={22} color={C.textSecondary} strokeWidth={1.8} />
@@ -206,6 +207,7 @@ export default function HomeScreen({ onNavigate }: Props) {
         <>
           <SectionHeader title="Recetas para ti" action="Ver más" onAction={() => onNavigate('Recipes')} />
           <FlatList
+            testID="home-suggestionsList"
             horizontal
             data={suggestions}
             keyExtractor={(r) => r.id}
@@ -215,7 +217,7 @@ export default function HomeScreen({ onNavigate }: Props) {
               const Icon = MEAL_TYPES.find((m) => m.key === item.mealType)?.icon ?? Utensils;
               const totalTime = item.prepTime + item.cookTime;
               return (
-                <TouchableOpacity style={styles.suggCard} onPress={() => onNavigate('Recipes')} activeOpacity={0.85}>
+                <TouchableOpacity testID={`home-suggCard-${item.id}`} style={styles.suggCard} onPress={() => onNavigate('Recipes')} activeOpacity={0.85}>
                   <View style={[styles.suggBg, { backgroundColor: MEAL_BG[item.mealType] }]}>
                     <Icon size={38} color={C.textSecondary} strokeWidth={1.4} />
                   </View>
@@ -244,7 +246,7 @@ export default function HomeScreen({ onNavigate }: Props) {
       )}
 
       {plans.length === 0 && suggestions.length === 0 && (
-        <TouchableOpacity style={styles.emptyCard} onPress={() => onNavigate('Recipes')}>
+        <TouchableOpacity testID="home-emptyCard" style={styles.emptyCard} onPress={() => onNavigate('Recipes')}>
           <Text style={styles.emptyTitle}>¡Empieza añadiendo recetas!</Text>
           <Text style={styles.emptyBody}>Crea tu primera receta y planifica tu semana.</Text>
         </TouchableOpacity>

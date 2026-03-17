@@ -34,7 +34,7 @@ function ItemRow({ item, onToggle, showUrl }: ItemRowProps) {
   const origins = item.originRecipes.map((o) => o.recipeName).join(', ');
 
   return (
-    <TouchableOpacity style={styles.itemRow} onPress={onToggle} activeOpacity={0.7}>
+    <TouchableOpacity testID={`shopping-item-${item.id}`} style={styles.itemRow} onPress={onToggle} activeOpacity={0.7}>
       <View style={[styles.checkbox, item.isChecked && styles.checkboxChecked]}>
         {item.isChecked && <Check size={14} color="#fff" strokeWidth={2.5} />}
       </View>
@@ -124,7 +124,7 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
         <Text style={styles.emptyText}>
           Genera la lista de la compra a partir del planning activo.
         </Text>
-        <TouchableOpacity style={styles.generateBtn} onPress={handleGenerate} disabled={loading}>
+        <TouchableOpacity testID="shopping-generateBtn" style={styles.generateBtn} onPress={handleGenerate} disabled={loading}>
           {loading ? (
             <Text style={styles.generateBtnText}>Generando…</Text>
           ) : (
@@ -153,19 +153,19 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
   const totalCount = list.items.length;
 
   return (
-    <View style={styles.container}>
+    <View testID="shopping-container" style={styles.container}>
       {/* Header bar */}
-      <View style={styles.header}>
+      <View testID="shopping-header" style={styles.header}>
         <Text style={styles.headerProgress}>{checkedCount}/{totalCount} ítems</Text>
         <TouchableOpacity onPress={handleGenerate} disabled={loading}>
           <Text style={styles.headerRegen}>{loading ? '…' : '↺ Regenerar'}</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView testID="shopping-scroll" contentContainerStyle={styles.scroll}>
         {/* ONLINE block */}
         {onlineItems.length > 0 && (
-          <View style={styles.block}>
+          <View testID="shopping-onlineBlock" style={styles.block}>
             <View style={styles.blockTitleRow}>
               <ShoppingBag size={13} color={C.primary} strokeWidth={1.8} />
               <Text style={styles.blockTitle}> COMPRA ONLINE ({onlineItems.length})</Text>
@@ -178,7 +178,7 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
 
         {/* SUPERMERCADO block */}
         {offlineItems.length > 0 && (
-          <View style={styles.block}>
+          <View testID="shopping-offlineBlock" style={styles.block}>
             <View style={styles.blockTitleRow}>
               <Store size={13} color={C.primary} strokeWidth={1.8} />
               <Text style={styles.blockTitle}> SUPERMERCADO ({offlineItems.length})</Text>

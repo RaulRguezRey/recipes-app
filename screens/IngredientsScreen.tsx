@@ -87,14 +87,14 @@ function IngredientFormModal({ visible, ingredient, onSave, onDelete, onClose }:
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.formOverlay}>
-        <View style={styles.formCard}>
+        <View testID="ingredientForm-card" style={styles.formCard}>
           <ScrollView>
             <Text style={styles.formTitle}>
               {ingredient ? 'Editar ingrediente' : 'Nuevo ingrediente'}
             </Text>
 
             <Text style={styles.label}>Nombre *</Text>
-            <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Nombre canónico" />
+            <TextInput testID="ingredientForm-nameInput" style={styles.input} value={name} onChangeText={setName} placeholder="Nombre canónico" />
 
             <Text style={styles.label}>Unidad por defecto</Text>
             <TextInput style={styles.input} value={defaultUnit} onChangeText={setDefaultUnit} placeholder="ud, g, ml…" />
@@ -132,6 +132,7 @@ function IngredientFormModal({ visible, ingredient, onSave, onDelete, onClose }:
             )}
 
             <TouchableOpacity
+              testID="ingredientForm-saveBtn"
               style={[styles.saveBtn, !name.trim() && styles.saveBtnDisabled]}
               onPress={handleSave}
               disabled={!name.trim()}
@@ -140,7 +141,7 @@ function IngredientFormModal({ visible, ingredient, onSave, onDelete, onClose }:
             </TouchableOpacity>
 
             {ingredient && onDelete && (
-              <TouchableOpacity style={styles.deleteBtn} onPress={() => onDelete(ingredient.id)}>
+              <TouchableOpacity testID="ingredientForm-deleteBtn" style={styles.deleteBtn} onPress={() => onDelete(ingredient.id)}>
                 <Text style={styles.deleteBtnText}>Eliminar ingrediente</Text>
               </TouchableOpacity>
             )}
@@ -227,20 +228,22 @@ export default function IngredientsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchBar}>
+    <View testID="ingredients-container" style={styles.container}>
+      <View testID="ingredients-searchBar" style={styles.searchBar}>
         <TextInput
+          testID="ingredients-searchInput"
           style={styles.searchInput}
           placeholder="Buscar ingrediente…"
           value={search}
           onChangeText={setSearch}
         />
-        <TouchableOpacity style={styles.addBtn} onPress={openNew}>
+        <TouchableOpacity testID="ingredients-addBtn" style={styles.addBtn} onPress={openNew}>
           <Text style={styles.addBtnText}>+ Nuevo</Text>
         </TouchableOpacity>
       </View>
 
       <FlatList
+        testID="ingredients-list"
         data={filtered}
         keyExtractor={(i) => i.id}
         contentContainerStyle={styles.list}
@@ -248,7 +251,7 @@ export default function IngredientsScreen() {
           <Text style={styles.emptyText}>No hay ingredientes</Text>
         }
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.row} onPress={() => openEdit(item)}>
+          <TouchableOpacity testID={`ingredient-row-${item.id}`} style={styles.row} onPress={() => openEdit(item)}>
             <View style={styles.rowLeft}>
               <Text style={styles.rowName}>{item.name}</Text>
               {item.category && <Text style={styles.rowCat}>{item.category}</Text>}

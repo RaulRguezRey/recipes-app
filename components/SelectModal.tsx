@@ -19,10 +19,11 @@ export default function SelectModal({
 }: SelectModalProps) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
-        <TouchableOpacity style={styles.card} activeOpacity={1}>
+      <TouchableOpacity testID="selectModal-overlay" style={styles.overlay} activeOpacity={1} onPress={onClose}>
+        <TouchableOpacity testID="selectModal-card" style={styles.card} activeOpacity={1}>
           <Text style={styles.title}>{title}</Text>
           <FlatList
+            testID="selectModal-list"
             data={options}
             keyExtractor={(item) => item.value}
             style={styles.list}
