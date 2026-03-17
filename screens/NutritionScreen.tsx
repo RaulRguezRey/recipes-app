@@ -5,23 +5,45 @@ import { getEntriesForPlan, getMealPlans } from '../storage/mealPlanStorage';
 import { MealPlan, MealPlanEntry, Recipe } from '../types/Recipe';
 import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 
-const DAY_LABELS: Record<string, string> = {
-  monday: 'Lunes', tuesday: 'Martes', wednesday: 'Miércoles',
-  thursday: 'Jueves', friday: 'Viernes', saturday: 'Sábado', sunday: 'Domingo',
-};
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const DAY_ABBRS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const DAY_FULL  = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+function generatePlanDays(startDate: string, endDate: string): string[] {
+  const days: string[] = [];
+  const cur = new Date(startDate + 'T00:00:00');
+  const end = new Date(endDate + 'T00:00:00');
+  while (cur <= end && days.length < 60) {
+    days.push(cur.toISOString().slice(0, 10));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return days;
+}
+
+function dateToDayLabel(iso: string): string {
+  return DAY_FULL[new Date(iso + 'T00:00:00').getDay()];
+}
+
+function dateToDayShort(iso: string): string {
+  const d = new Date(iso + 'T00:00:00');
+  return `${DAY_ABBRS[d.getDay()]} ${d.getDate()}`;
+}
+
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 type DayNutrition = {
-  day: string;
+  date: string;
   recipes: { name: string; servings: number; kcal: number; protein: number; fat: number; carbs: number; cost: number }[];
   totals: { kcal: number; protein: number; fat: number; carbs: number; cost: number };
 };
 
-function calcDayNutrition(day: string, entries: MealPlanEntry[], recipeMap: Record<string, Recipe>): DayNutrition {
-  const dayEntries = entries.filter((e) => e.dayOfWeek === day);
+function calcDayNutrition(date: string, entries: MealPlanEntry[], recipeMap: Record<string, Recipe>): DayNutrition {
+  const dayEntries = entries.filter((e) => e.date === date);
   const recipes = dayEntries.map((entry) => {
     const recipe = recipeMap[entry.recipeId];
     if (!recipe) return null;
-    const f = entry.servings; // already per-serving in the recipe model
+    const f = entry.servings;
     return {
       name: recipe.name,
       servings: entry.servings,
@@ -44,8 +66,10 @@ function calcDayNutrition(day: string, entries: MealPlanEntry[], recipeMap: Reco
     { kcal: 0, protein: 0, fat: 0, carbs: 0, cost: 0 }
   );
 
-  return { day, recipes, totals };
+  return { date, recipes, totals };
 }
+
+// ── MacroBar ──────────────────────────────────────────────────────────────────
 
 type MacroBarProps = { label: string; value: number; unit: string; color: string };
 function MacroBar({ label, value, unit, color }: MacroBarProps) {
@@ -58,6 +82,8 @@ function MacroBar({ label, value, unit, color }: MacroBarProps) {
     </View>
   );
 }
+
+// ── Main Screen ───────────────────────────────────────────────────────────────
 
 export default function NutritionScreen({ activePlanId }: { activePlanId: string | null }) {
   const [plans, setPlans] = useState<MealPlan[]>([]);
@@ -73,7 +99,7 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
     for (const r of recipes) rMap[r.id] = r;
     setRecipeMap(rMap);
 
-    const planId = currentPlanId ?? allPlans[allPlans.length - 1]?.id ?? null;
+    const planId = currentPlanId ?? allPlans[0]?.id ?? null;
     setCurrentPlanId(planId);
     if (planId) {
       const e = await getEntriesForPlan(planId);
@@ -89,19 +115,20 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
     setEntries(e);
   }
 
-  function toggleDay(day: string) {
+  function toggleDay(date: string) {
     setExpandedDays((prev) => {
       const next = new Set(prev);
-      if (next.has(day)) next.delete(day);
-      else next.add(day);
+      if (next.has(date)) next.delete(date);
+      else next.add(date);
       return next;
     });
   }
 
-  const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-  const dayData = days.map((d) => calcDayNutrition(d, entries, recipeMap));
+  const currentPlan = plans.find((p) => p.id === currentPlanId) ?? null;
+  const planDays = currentPlan ? generatePlanDays(currentPlan.startDate, currentPlan.endDate) : [];
+  const dayData = planDays.map((d) => calcDayNutrition(d, entries, recipeMap));
 
-  const weekTotals = dayData.reduce(
+  const planTotals = dayData.reduce(
     (acc, d) => ({
       kcal: acc.kcal + d.totals.kcal,
       protein: acc.protein + d.totals.protein,
@@ -113,7 +140,7 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
   );
 
   const activeDays = dayData.filter((d) => d.recipes.length > 0).length || 1;
-  const avgKcal = weekTotals.kcal / activeDays;
+  const avgKcal = planTotals.kcal / activeDays;
 
   if (!currentPlanId || plans.length === 0) {
     return (
@@ -142,31 +169,34 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
         </ScrollView>
       )}
 
-      {/* Weekly summary card */}
+      {/* Summary card */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Resumen semanal</Text>
+        <Text style={styles.cardTitle}>Resumen del planning</Text>
         <View style={styles.macroRow}>
           <MacroBar label="Kcal/día" value={Math.round(avgKcal)} unit="" color={C.danger} />
-          <MacroBar label="Proteína" value={weekTotals.protein} unit="g" color={C.info} />
-          <MacroBar label="Grasas" value={weekTotals.fat} unit="g" color={C.warning} />
-          <MacroBar label="Carbos" value={weekTotals.carbs} unit="g" color={C.primary} />
+          <MacroBar label="Proteína" value={Math.round(planTotals.protein)} unit="g" color={C.info} />
+          <MacroBar label="Grasas" value={Math.round(planTotals.fat)} unit="g" color={C.warning} />
+          <MacroBar label="Carbos" value={Math.round(planTotals.carbs)} unit="g" color={C.primary} />
         </View>
         <View style={styles.costRow}>
-          <Text style={styles.costLabel}>Coste estimado semanal</Text>
-          <Text style={styles.costValue}>{weekTotals.cost.toFixed(2)} €</Text>
+          <Text style={styles.costLabel}>Coste estimado total</Text>
+          <Text style={styles.costValue}>{planTotals.cost.toFixed(2)} €</Text>
         </View>
       </View>
 
       {/* Per-day breakdown */}
-      {dayData.map(({ day, recipes: dayRecipes, totals }) => (
+      {dayData.map(({ date, recipes: dayRecipes, totals }) => (
         <TouchableOpacity
-          key={day}
+          key={date}
           style={styles.dayCard}
-          onPress={() => toggleDay(day)}
+          onPress={() => toggleDay(date)}
           activeOpacity={0.7}
         >
           <View style={styles.dayHeader}>
-            <Text style={styles.dayLabel}>{DAY_LABELS[day]}</Text>
+            <View>
+              <Text style={styles.dayLabel}>{dateToDayLabel(date)}</Text>
+              <Text style={styles.dayDate}>{dateToDayShort(date)}</Text>
+            </View>
             <View style={styles.dayHeaderRight}>
               {totals.kcal > 0 && (
                 <Text style={styles.dayKcal}>{Math.round(totals.kcal)} kcal</Text>
@@ -174,10 +204,10 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
               {totals.cost > 0 && (
                 <Text style={styles.dayCost}>{totals.cost.toFixed(2)} €</Text>
               )}
-              <Text style={styles.dayChevron}>{expandedDays.has(day) ? '▲' : '▼'}</Text>
+              <Text style={styles.dayChevron}>{expandedDays.has(date) ? '▲' : '▼'}</Text>
             </View>
           </View>
-          {expandedDays.has(day) && dayRecipes.length > 0 && (
+          {expandedDays.has(date) && dayRecipes.length > 0 && (
             <View style={styles.dayDetail}>
               {dayRecipes.map((r, i) => (
                 <View key={i} style={styles.dayRecipeRow}>
@@ -190,7 +220,7 @@ export default function NutritionScreen({ activePlanId }: { activePlanId: string
               ))}
             </View>
           )}
-          {expandedDays.has(day) && dayRecipes.length === 0 && (
+          {expandedDays.has(date) && dayRecipes.length === 0 && (
             <Text style={styles.dayEmpty}>Sin recetas este día</Text>
           )}
         </TouchableOpacity>
@@ -224,6 +254,7 @@ const styles = StyleSheet.create({
   dayCard: { backgroundColor: C.bgSurface, borderRadius: RADIUS.md, overflow: 'hidden', ...(SHADOW.sm as any) },
   dayHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 18 },
   dayLabel: { fontSize: 15, fontWeight: '700', color: C.textPrimary, fontFamily: FONT.serif },
+  dayDate: { fontSize: 11, color: C.textMuted, marginTop: 2 },
   dayHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   dayKcal: { fontSize: 13, color: C.danger, fontWeight: '600' },
   dayCost: { fontSize: 13, color: C.primary, fontWeight: '600' },

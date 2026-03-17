@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getEntriesForPlan, getMealPlans } from '../storage/mealPlanStorage';
 import { getAllAccessibleRecipes } from '../storage/recipeStorage';
-import { DayOfWeek, MealPlan, MealPlanEntry, MealType, Recipe } from '../types/Recipe';
+import { MealPlan, MealPlanEntry, MealType, Recipe } from '../types/Recipe';
 import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -24,26 +24,30 @@ const MEAL_BG: Record<MealType, string> = {
   dinner:    '#FBE9E7',
 };
 
-const DAY_KEYS: DayOfWeek[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-const DAY_ABBR = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+const DAY_ABBRS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-function todayDayOfWeek(): DayOfWeek {
-  const map: DayOfWeek[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  return map[new Date().getDay()];
+function todayISODate(): string {
+  return new Date().toISOString().slice(0, 10);
 }
 
-/** Returns the date number for each day of the current week (Mon=0 … Sun=6) */
-function getWeekDateNumbers(): number[] {
-  const today = new Date();
-  const dow = today.getDay(); // 0=sun
-  const mondayOffset = dow === 0 ? -6 : 1 - dow;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + mondayOffset);
-  return DAY_KEYS.map((_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return d.getDate();
-  });
+function generatePlanDays(startDate: string, endDate: string): string[] {
+  const days: string[] = [];
+  const start = new Date(startDate + 'T00:00:00');
+  const end = new Date(endDate + 'T00:00:00');
+  const cur = new Date(start);
+  while (cur <= end && days.length < 60) {
+    days.push(cur.toISOString().slice(0, 10));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return days;
+}
+
+function dateToDayAbbr(iso: string): string {
+  return DAY_ABBRS[new Date(iso + 'T00:00:00').getDay()];
+}
+
+function dateToDayNum(iso: string): number {
+  return new Date(iso + 'T00:00:00').getDate();
 }
 
 // ── Shared section header ──────────────────────────────────────────────────────
@@ -67,13 +71,12 @@ function SectionHeader({ title, action, onAction }: { title: string; action?: st
 type Props = { onNavigate: (screen: string) => void };
 
 export default function HomeScreen({ onNavigate }: Props) {
-  const [selectedDay, setSelectedDay] = useState<DayOfWeek>(todayDayOfWeek());
+  const [selectedDate, setSelectedDate] = useState<string>(todayISODate());
+  const [planDays, setPlanDays] = useState<string[]>([]);
   const [plans, setPlans] = useState<MealPlan[]>([]);
   const [entries, setEntries] = useState<MealPlanEntry[]>([]);
   const [recipeMap, setRecipeMap] = useState<Record<string, Recipe>>({});
   const [suggestions, setSuggestions] = useState<Recipe[]>([]);
-
-  const weekDates = getWeekDateNumbers();
 
   const load = useCallback(async () => {
     const [allPlans, allRecipes] = await Promise.all([getMealPlans(), getAllAccessibleRecipes()]);
@@ -89,17 +92,21 @@ export default function HomeScreen({ onNavigate }: Props) {
     setSuggestions(sorted.slice(0, 8));
 
     setPlans(allPlans);
-    const latestPlan = allPlans[allPlans.length - 1];
+    const latestPlan = allPlans[0];
     if (latestPlan) {
       const e = await getEntriesForPlan(latestPlan.id);
       setEntries(e);
+      const days = generatePlanDays(latestPlan.startDate, latestPlan.endDate);
+      setPlanDays(days);
+      const today = todayISODate();
+      setSelectedDate(today >= latestPlan.startDate && today <= latestPlan.endDate ? today : latestPlan.startDate);
     }
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
   // Macros for selected day
-  const dayEntries = entries.filter((e) => e.dayOfWeek === selectedDay);
+  const dayEntries = entries.filter((e) => e.date === selectedDate);
   const dayMacros = dayEntries.reduce(
     (acc, e) => {
       const r = recipeMap[e.recipeId];
@@ -143,16 +150,16 @@ export default function HomeScreen({ onNavigate }: Props) {
       {/* Plan semanal */}
       <SectionHeader title="Plan semanal" action="Editar" onAction={() => onNavigate('Planning')} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dayScroll} contentContainerStyle={styles.dayScrollContent}>
-        {DAY_KEYS.map((key, i) => {
-          const active = key === selectedDay;
+        {planDays.map((isoDate) => {
+          const active = isoDate === selectedDate;
           return (
             <TouchableOpacity
-              key={key}
+              key={isoDate}
               style={[styles.dayPill, active && styles.dayPillActive]}
-              onPress={() => setSelectedDay(key)}
+              onPress={() => setSelectedDate(isoDate)}
             >
-              <Text style={[styles.dayPillAbbr, active && styles.dayPillAbbrActive]}>{DAY_ABBR[i]}</Text>
-              <Text style={[styles.dayPillNum, active && styles.dayPillNumActive]}>{weekDates[i]}</Text>
+              <Text style={[styles.dayPillAbbr, active && styles.dayPillAbbrActive]}>{dateToDayAbbr(isoDate).toUpperCase()}</Text>
+              <Text style={[styles.dayPillNum, active && styles.dayPillNumActive]}>{dateToDayNum(isoDate)}</Text>
             </TouchableOpacity>
           );
         })}

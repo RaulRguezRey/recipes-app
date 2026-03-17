@@ -1,5 +1,5 @@
-import { Sun, Moon, Coffee, Utensils, ShoppingCart } from 'lucide-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, Sun, Moon, Coffee, Utensils, ShoppingCart } from 'lucide-react-native';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   Alert,
@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import { getAllAccessibleRecipes } from '../storage/recipeStorage';
 import {
-  deleteMealPlan,
   deleteEntry,
   getEntriesForPlan,
   getMealPlans,
@@ -22,19 +21,69 @@ import {
   saveMealPlan,
   saveEntry,
 } from '../storage/mealPlanStorage';
-import { DayOfWeek, MealPlan, MealPlanEntry, MealType, Recipe } from '../types/Recipe';
+import { MealPlan, MealPlanEntry, MealType, Recipe } from '../types/Recipe';
 
 import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 
-const DAYS: { key: DayOfWeek; label: string }[] = [
-  { key: 'monday', label: 'Lunes' },
-  { key: 'tuesday', label: 'Martes' },
-  { key: 'wednesday', label: 'Miércoles' },
-  { key: 'thursday', label: 'Jueves' },
-  { key: 'friday', label: 'Viernes' },
-  { key: 'saturday', label: 'Sábado' },
-  { key: 'sunday', label: 'Domingo' },
-];
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function newId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+function todayISODate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+
+function generatePlanDays(startDate: string, endDate: string): string[] {
+  const days: string[] = [];
+  const start = new Date(startDate + 'T00:00:00');
+  const end = new Date(endDate + 'T00:00:00');
+  const current = new Date(start);
+  while (current <= end && days.length < 60) {
+    days.push(current.toISOString().slice(0, 10));
+    current.setDate(current.getDate() + 1);
+  }
+  return days;
+}
+
+const DAY_ABBRS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const DAY_LABELS_ES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const MONTH_NAMES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+function dateToDayAbbr(isoDate: string): string {
+  return DAY_ABBRS[new Date(isoDate + 'T00:00:00').getDay()];
+}
+
+function dateToDayNum(isoDate: string): number {
+  return new Date(isoDate + 'T00:00:00').getDate();
+}
+
+function dateToDayLabel(isoDate: string): string {
+  return DAY_LABELS_ES[new Date(isoDate + 'T00:00:00').getDay()];
+}
+
+function formatRangeLabel(startDate: string, endDate: string): string {
+  const s = new Date(startDate + 'T00:00:00');
+  const e = new Date(endDate + 'T00:00:00');
+  if (s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear()) {
+    return `Del ${s.getDate()} al ${e.getDate()} de ${MONTH_NAMES[s.getMonth()]}`;
+  }
+  return `${s.getDate()} ${MONTH_NAMES[s.getMonth()]} – ${e.getDate()} ${MONTH_NAMES[e.getMonth()]}`;
+}
+
+function formatDateDisplay(isoDate: string): string {
+  const d = new Date(isoDate + 'T00:00:00');
+  return `${DAY_LABELS_ES[d.getDay()]} ${d.getDate()} de ${MONTH_NAMES[d.getMonth()]}`;
+}
+
+function daysAgo(isoDate: string): number {
+  const then = new Date(isoDate + 'T00:00:00').getTime();
+  return Math.floor((Date.now() - then) / (24 * 60 * 60 * 1000));
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 type LucideIcon = React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
 
@@ -52,10 +101,6 @@ const MEAL_TYPE_LABELS: Record<MealType, string> = {
   dinner: 'Cena',
 };
 
-function newId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
-}
-
 const MEAL_BG: Record<MealType, string> = {
   breakfast: '#FFF8E1',
   lunch:     '#E8F5E9',
@@ -63,32 +108,100 @@ const MEAL_BG: Record<MealType, string> = {
   dinner:    '#FBE9E7',
 };
 
-function getDayDates(weekStart: string): number[] {
-  const monday = new Date(weekStart + 'T00:00:00');
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return d.getDate();
-  });
-}
+// ─── Create Plan Modal ────────────────────────────────────────────────────────
 
-function getMondayOfWeek(date: Date): string {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
+type CreatePlanModalProps = {
+  visible: boolean;
+  onConfirm: (startDate: string, endDate: string, title: string) => void;
+  onClose: () => void;
+};
+
+function shiftDate(iso: string, days: number): string {
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + days);
   return d.toISOString().slice(0, 10);
 }
 
-function formatWeekLabel(weekStart: string): string {
-  const d = new Date(weekStart + 'T00:00:00');
-  return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-}
+function CreatePlanModal({ visible, onConfirm, onClose }: CreatePlanModalProps) {
+  const today = todayISODate();
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(() => shiftDate(today, 6));
+  const [title, setTitle] = useState('');
 
-function weeksAgo(weekStart: string): number {
-  const then = new Date(weekStart + 'T00:00:00').getTime();
-  const now = new Date().getTime();
-  return Math.floor((now - then) / (7 * 24 * 60 * 60 * 1000));
+  useEffect(() => {
+    setTitle(formatRangeLabel(startDate, endDate));
+  }, [startDate, endDate]);
+
+  function handleStartChange(days: number) {
+    const next = shiftDate(startDate, days);
+    setStartDate(next);
+    // keep end >= start
+    if (endDate < next) setEndDate(next);
+  }
+
+  function handleEndChange(days: number) {
+    const next = shiftDate(endDate, days);
+    if (next < startDate) return;
+    setEndDate(next);
+  }
+
+  function handleConfirm() {
+    onConfirm(startDate, endDate, title.trim() || formatRangeLabel(startDate, endDate));
+    const t = todayISODate();
+    setStartDate(t);
+    setEndDate(shiftDate(t, 6));
+  }
+
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
+        <TouchableOpacity style={styles.createCard} activeOpacity={1}>
+          <Text style={styles.createTitle}>Nueva planificación</Text>
+
+          {/* Start date */}
+          <Text style={styles.createLabel}>Fecha de inicio</Text>
+          <View style={styles.dateStepper}>
+            <TouchableOpacity style={styles.dateArrow} onPress={() => handleStartChange(-1)}>
+              <ChevronLeft size={20} color={C.primary} strokeWidth={2} />
+            </TouchableOpacity>
+            <Text style={styles.dateStepperText}>{formatDateDisplay(startDate)}</Text>
+            <TouchableOpacity style={styles.dateArrow} onPress={() => handleStartChange(1)}>
+              <ChevronRight size={20} color={C.primary} strokeWidth={2} />
+            </TouchableOpacity>
+          </View>
+
+          {/* End date */}
+          <Text style={[styles.createLabel, { marginTop: 16 }]}>Fecha de fin</Text>
+          <View style={styles.dateStepper}>
+            <TouchableOpacity style={styles.dateArrow} onPress={() => handleEndChange(-1)}>
+              <ChevronLeft size={20} color={C.primary} strokeWidth={2} />
+            </TouchableOpacity>
+            <Text style={styles.dateStepperText}>{formatDateDisplay(endDate)}</Text>
+            <TouchableOpacity style={styles.dateArrow} onPress={() => handleEndChange(1)}>
+              <ChevronRight size={20} color={C.primary} strokeWidth={2} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Title */}
+          <Text style={[styles.createLabel, { marginTop: 16 }]}>Título</Text>
+          <TextInput
+            style={styles.createInput}
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Nombre de la planificación"
+            placeholderTextColor={C.textMuted}
+          />
+
+          <TouchableOpacity style={styles.createConfirmBtn} onPress={handleConfirm}>
+            <Text style={styles.createConfirmText}>Crear planificación</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.createCancelBtn} onPress={onClose}>
+            <Text style={styles.createCancelText}>Cancelar</Text>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
+  );
 }
 
 // ─── RecipeSelector Modal ─────────────────────────────────────────────────────
@@ -97,14 +210,14 @@ type RecipeSelectorProps = {
   visible: boolean;
   recipes: Recipe[];
   lastUsedMap: Record<string, string>;
-  currentWeekStart: string;
+  currentStartDate: string;
   currentEntries: MealPlanEntry[];
   onSelect: (recipe: Recipe) => void;
   onClose: () => void;
 };
 
 function RecipeSelector({
-  visible, recipes, lastUsedMap, currentWeekStart, currentEntries, onSelect, onClose,
+  visible, recipes, lastUsedMap, currentStartDate, currentEntries, onSelect, onClose,
 }: RecipeSelectorProps) {
   const [search, setSearch] = useState('');
 
@@ -113,11 +226,12 @@ function RecipeSelector({
   );
 
   function lastUsedLabel(recipeId: string): string {
-    const lastWeek = lastUsedMap[recipeId];
-    if (!lastWeek) return 'nunca';
-    if (lastWeek === currentWeekStart) return 'esta sem.';
-    const weeks = weeksAgo(lastWeek);
-    return `hace ${weeks} sem.`;
+    const lastDate = lastUsedMap[recipeId];
+    if (!lastDate) return 'nunca';
+    if (lastDate >= currentStartDate) return 'este plan';
+    const days = daysAgo(lastDate);
+    if (days < 7) return `hace ${days}d`;
+    return `hace ${Math.floor(days / 7)} sem.`;
   }
 
   function handleSelect(recipe: Recipe) {
@@ -125,7 +239,7 @@ function RecipeSelector({
     if (alreadyInPlan) {
       Alert.alert(
         'Receta ya en el planning',
-        `"${recipe.name}" ya está asignada esta semana. ¿Añadir igualmente?`,
+        `"${recipe.name}" ya está asignada en este planning. ¿Añadir igualmente?`,
         [
           { text: 'Cancelar', style: 'cancel' },
           { text: 'Añadir igualmente', onPress: () => onSelect(recipe) },
@@ -250,13 +364,12 @@ export default function PlanningScreen({ onGenerateList }: Props) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [lastUsedMap, setLastUsedMap] = useState<Record<string, string>>({});
 
-  const [selectedDay, setSelectedDay] = useState<DayOfWeek>(() => {
-    const map: DayOfWeek[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    return map[new Date().getDay()];
-  });
+  const [selectedDate, setSelectedDate] = useState<string>(todayISODate());
+
+  const [createModalVisible, setCreateModalVisible] = useState(false);
 
   const [selectorVisible, setSelectorVisible] = useState(false);
-  const [selectorTarget, setSelectorTarget] = useState<{ day: DayOfWeek; mealType: MealType } | null>(null);
+  const [selectorTarget, setSelectorTarget] = useState<{ date: string; mealType: MealType } | null>(null);
   const [replacingEntryId, setReplacingEntryId] = useState<string | null>(null);
 
   const [servingsVisible, setServingsVisible] = useState(false);
@@ -272,43 +385,55 @@ export default function PlanningScreen({ onGenerateList }: Props) {
     setRecipes(allRecipes);
     setLastUsedMap(luMap);
     if (allPlans.length > 0) {
-      const current = activePlanId ?? allPlans[allPlans.length - 1].id;
+      const current = activePlanId ?? allPlans[0].id;
       setActivePlanId(current);
       const planEntries = await getEntriesForPlan(current);
       setEntries(planEntries);
+      // Select today if within plan range, else first day
+      const plan = allPlans.find((p) => p.id === current) ?? allPlans[0];
+      const today = todayISODate();
+      setSelectedDate(today >= plan.startDate && today <= plan.endDate ? today : plan.startDate);
     }
   }, [activePlanId]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load().catch(console.warn); }, []);
 
   async function switchPlan(planId: string) {
     setActivePlanId(planId);
     const planEntries = await getEntriesForPlan(planId);
     setEntries(planEntries);
+    const plan = plans.find((p) => p.id === planId);
+    if (plan) {
+      const today = todayISODate();
+      setSelectedDate(today >= plan.startDate && today <= plan.endDate ? today : plan.startDate);
+    }
   }
 
-  async function createNewPlan() {
-    const weekStart = getMondayOfWeek(new Date());
-    const label = formatWeekLabel(weekStart);
+  async function handleCreatePlan(startDate: string, endDate: string, title: string) {
+    setCreateModalVisible(false);
     const plan: MealPlan = {
       id: newId(),
-      title: `Semana del ${label}`,
-      weekStart,
+      title,
+      startDate,
+      endDate,
       createdAt: new Date().toISOString(),
     };
     await saveMealPlan(plan, user!.id);
-    setPlans((prev) => [...prev, plan]);
-    await switchPlan(plan.id);
+    setPlans((prev) => [plan, ...prev]);
+    setActivePlanId(plan.id);
+    setEntries([]);
+    const today = todayISODate();
+    setSelectedDate(today >= startDate && today <= endDate ? today : startDate);
   }
 
-  function openSelector(day: DayOfWeek, mealType: MealType) {
-    setSelectorTarget({ day, mealType });
+  function openSelector(date: string, mealType: MealType) {
+    setSelectorTarget({ date, mealType });
     setSelectorVisible(true);
   }
 
   function openSelectorForChange(entry: MealPlanEntry) {
     setReplacingEntryId(entry.id);
-    setSelectorTarget({ day: entry.dayOfWeek, mealType: entry.mealType });
+    setSelectorTarget({ date: entry.date, mealType: entry.mealType });
     setSelectorVisible(true);
   }
 
@@ -316,28 +441,30 @@ export default function PlanningScreen({ onGenerateList }: Props) {
     if (!activePlanId || !selectorTarget) return;
     setSelectorVisible(false);
 
-    // If replacing an existing entry, delete it first
-    if (replacingEntryId) {
-      await deleteEntry(replacingEntryId);
-      setEntries((prev) => prev.filter((e) => e.id !== replacingEntryId));
-      setReplacingEntryId(null);
-    }
+    try {
+      if (replacingEntryId) {
+        await deleteEntry(replacingEntryId);
+        setEntries((prev) => prev.filter((e) => e.id !== replacingEntryId));
+        setReplacingEntryId(null);
+      }
 
-    const entry: MealPlanEntry = {
-      id: newId(),
-      mealPlanId: activePlanId,
-      dayOfWeek: selectorTarget.day,
-      mealType: selectorTarget.mealType,
-      recipeId: recipe.id,
-      servings: recipe.servings,
-    };
-    await saveEntry(entry);
-    setEntries((prev) => [...prev, entry]);
+      const entry: MealPlanEntry = {
+        id: newId(),
+        mealPlanId: activePlanId,
+        date: selectorTarget.date,
+        mealType: selectorTarget.mealType,
+        recipeId: recipe.id,
+        servings: recipe.servings,
+      };
+      await saveEntry(entry);
+      setEntries((prev) => [...prev, entry]);
 
-    // Update lastUsedMap with current week
-    const activePlan = plans.find((p) => p.id === activePlanId);
-    if (activePlan) {
-      setLastUsedMap((prev) => ({ ...prev, [recipe.id]: activePlan.weekStart }));
+      const activePlan = plans.find((p) => p.id === activePlanId);
+      if (activePlan) {
+        setLastUsedMap((prev) => ({ ...prev, [recipe.id]: activePlan.startDate }));
+      }
+    } catch (err: any) {
+      Alert.alert('Error', `No se pudo guardar la receta: ${err?.message ?? err}`);
     }
   }
 
@@ -364,42 +491,36 @@ export default function PlanningScreen({ onGenerateList }: Props) {
   }
 
   const activePlan = plans.find((p) => p.id === activePlanId);
-  const dayDates = activePlan ? getDayDates(activePlan.weekStart) : DAYS.map(() => 0);
+  const planDays = activePlan ? generatePlanDays(activePlan.startDate, activePlan.endDate) : [];
   const recipeMap: Record<string, Recipe> = {};
   for (const r of recipes) recipeMap[r.id] = r;
 
-  function entriesFor(day: DayOfWeek, mealType: MealType) {
-    return entries.filter((e) => e.dayOfWeek === day && e.mealType === mealType);
+  function entriesFor(date: string, mealType: MealType) {
+    return entries.filter((e) => e.date === date && e.mealType === mealType);
   }
 
   if (plans.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No hay ningún planning creado todavía.</Text>
-        <TouchableOpacity style={styles.newPlanBtn} onPress={createNewPlan}>
-          <Text style={styles.newPlanBtnText}>+ Nueva semana</Text>
+        <TouchableOpacity style={styles.newPlanBtn} onPress={() => setCreateModalVisible(true)}>
+          <Text style={styles.newPlanBtnText}>+ Nueva planificación</Text>
         </TouchableOpacity>
+        <CreatePlanModal
+          visible={createModalVisible}
+          onConfirm={handleCreatePlan}
+          onClose={() => setCreateModalVisible(false)}
+        />
       </View>
     );
   }
 
   const editingRecipeName = editingEntry ? (recipeMap[editingEntry.recipeId]?.name ?? '') : '';
 
-  // Per-day kcal for weekly summary
   const KCAL_GOAL = 2000;
-  const dayKcalValues: Record<DayOfWeek, number> = {} as Record<DayOfWeek, number>;
-  for (const { key } of DAYS) {
-    dayKcalValues[key] = entries
-      .filter((e) => e.dayOfWeek === key)
-      .reduce((acc, e) => {
-        const r = recipeMap[e.recipeId];
-        return r ? acc + r.caloriesPerServing * e.servings : acc;
-      }, 0);
-  }
 
-  // Kcal for selected day
   const dayKcal = entries
-    .filter((e) => e.dayOfWeek === selectedDay)
+    .filter((e) => e.date === selectedDate)
     .reduce((acc, e) => {
       const r = recipeMap[e.recipeId];
       return r ? acc + r.caloriesPerServing * e.servings : acc;
@@ -422,26 +543,27 @@ export default function PlanningScreen({ onGenerateList }: Props) {
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <TouchableOpacity style={styles.newWeekBtn} onPress={createNewPlan}>
+        <TouchableOpacity style={styles.newWeekBtn} onPress={() => setCreateModalVisible(true)}>
           <Text style={styles.newWeekBtnText}>+</Text>
         </TouchableOpacity>
       </View>
 
       {/* Day pills */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dayPillsScroll} contentContainerStyle={styles.dayPillsContent}>
-        {DAYS.map(({ key: dayKey, label: dayLabel }, idx) => {
-          const active = selectedDay === dayKey;
-          const shortLabel = dayLabel.slice(0, 3).toUpperCase();
+        {planDays.map((isoDate) => {
+          const active = selectedDate === isoDate;
           return (
             <TouchableOpacity
-              key={dayKey}
+              key={isoDate}
               style={[styles.dayPill, active && styles.dayPillActive]}
-              onPress={() => setSelectedDay(dayKey)}
+              onPress={() => setSelectedDate(isoDate)}
             >
-              <Text style={[styles.dayPillText, active && styles.dayPillTextActive]}>{shortLabel}</Text>
-              {dayDates[idx] > 0 && (
-                <Text style={[styles.dayPillDate, active && styles.dayPillDateActive]}>{dayDates[idx]}</Text>
-              )}
+              <Text style={[styles.dayPillText, active && styles.dayPillTextActive]}>
+                {dateToDayAbbr(isoDate).toUpperCase()}
+              </Text>
+              <Text style={[styles.dayPillDate, active && styles.dayPillDateActive]}>
+                {dateToDayNum(isoDate)}
+              </Text>
             </TouchableOpacity>
           );
         })}
@@ -452,7 +574,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
         {/* Daily kcal box */}
         <View style={styles.kcalBox}>
           <View>
-            <Text style={styles.kcalBoxDayName}>{DAYS.find(d => d.key === selectedDay)?.label ?? ''}</Text>
+            <Text style={styles.kcalBoxDayName}>{dateToDayLabel(selectedDate)}</Text>
             <Text style={styles.kcalBoxLabel}>Total del día</Text>
           </View>
           <Text style={styles.kcalBoxValue}>{dayKcal > 0 ? `${Math.round(dayKcal)} kcal` : '— kcal'}</Text>
@@ -460,7 +582,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
 
         {/* Meal slots for selected day */}
         {MEAL_TYPES.map(({ key: mealType, label: mealLabel, icon: MealIcon }) => {
-          const slotEntries = entriesFor(selectedDay, mealType);
+          const slotEntries = entriesFor(selectedDate, mealType);
           const firstEntry = slotEntries[0] ?? null;
           const recipe = firstEntry ? recipeMap[firstEntry.recipeId] : null;
 
@@ -503,7 +625,7 @@ export default function PlanningScreen({ onGenerateList }: Props) {
               ) : (
                 <TouchableOpacity
                   style={styles.addSlotBtn}
-                  onPress={() => openSelector(selectedDay, mealType)}
+                  onPress={() => openSelector(selectedDate, mealType)}
                 >
                   <Text style={styles.addSlotBtnText}>+ Añadir receta</Text>
                 </TouchableOpacity>
@@ -512,22 +634,27 @@ export default function PlanningScreen({ onGenerateList }: Props) {
           );
         })}
 
-        {/* Weekly summary bars */}
+        {/* Planning summary bars */}
         {entries.length > 0 && (
           <View style={styles.weekSummary}>
-            <Text style={styles.weekSummaryTitle}>Resumen semanal</Text>
-            {DAYS.map(({ key: dayKey, label: dayLabel }) => {
-              const kcal = dayKcalValues[dayKey];
+            <Text style={styles.weekSummaryTitle}>Resumen del planning</Text>
+            {planDays.map((isoDate) => {
+              const kcal = entries
+                .filter((e) => e.date === isoDate)
+                .reduce((acc, e) => {
+                  const r = recipeMap[e.recipeId];
+                  return r ? acc + r.caloriesPerServing * e.servings : acc;
+                }, 0);
               const pct = Math.min(1, kcal / KCAL_GOAL);
-              const isActive = dayKey === selectedDay;
+              const isActive = isoDate === selectedDate;
               return (
                 <TouchableOpacity
-                  key={dayKey}
+                  key={isoDate}
                   style={[styles.macroBarRow, isActive && styles.macroBarRowActive]}
-                  onPress={() => setSelectedDay(dayKey)}
+                  onPress={() => setSelectedDate(isoDate)}
                 >
                   <Text style={[styles.macroBarLabel, isActive && styles.macroBarLabelActive]}>
-                    {dayLabel.slice(0, 3)}
+                    {dateToDayAbbr(isoDate)} {dateToDayNum(isoDate)}
                   </Text>
                   <View style={styles.macroBarTrack}>
                     <View style={[styles.macroBarFill, { width: `${pct * 100}%` as any, backgroundColor: isActive ? C.primary : C.textMuted }]} />
@@ -557,11 +684,17 @@ export default function PlanningScreen({ onGenerateList }: Props) {
         <View style={{ height: 20 }} />
       </ScrollView>
 
+      <CreatePlanModal
+        visible={createModalVisible}
+        onConfirm={handleCreatePlan}
+        onClose={() => setCreateModalVisible(false)}
+      />
+
       <RecipeSelector
         visible={selectorVisible}
         recipes={recipes}
         lastUsedMap={lastUsedMap}
-        currentWeekStart={activePlan?.weekStart ?? ''}
+        currentStartDate={activePlan?.startDate ?? ''}
         currentEntries={entries}
         onSelect={handleSelectRecipe}
         onClose={() => { setSelectorVisible(false); setReplacingEntryId(null); }}
@@ -587,7 +720,7 @@ const styles = StyleSheet.create({
   newPlanBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 
   // Plan bar
-  planBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
+  planBar: { flexDirection: 'row', alignItems: 'center', height: 56, flexShrink: 0, backgroundColor: C.bgSurface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   planTabs: { flex: 1 },
   planTab: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: RADIUS.pill, backgroundColor: C.bgPage },
   planTabActive: { backgroundColor: C.primary, ...(SHADOW.activePill as any) },
@@ -634,12 +767,12 @@ const styles = StyleSheet.create({
   addSlotBtn: { marginHorizontal: 14, marginVertical: 12, paddingVertical: 14, alignItems: 'center', borderRadius: RADIUS.md, borderWidth: 1.5, borderColor: C.primary + '66', borderStyle: 'dashed' },
   addSlotBtnText: { color: C.primary, fontSize: 14, fontWeight: '600' },
 
-  // Weekly summary
+  // Planning summary
   weekSummary: { backgroundColor: C.bgSurface, borderRadius: RADIUS.lg, padding: 20, ...(SHADOW.sm as any), gap: 10 },
   weekSummaryTitle: { fontSize: 14, fontWeight: '700', color: C.textPrimary, fontFamily: FONT.serif, marginBottom: 4 },
   macroBarRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4, paddingHorizontal: 6, borderRadius: RADIUS.sm },
   macroBarRowActive: { backgroundColor: C.primaryLight },
-  macroBarLabel: { fontSize: 12, color: C.textSecondary, width: 36 },
+  macroBarLabel: { fontSize: 12, color: C.textSecondary, width: 46 },
   macroBarLabelActive: { color: C.primary, fontWeight: '700' },
   macroBarTrack: { flex: 1, height: 8, backgroundColor: C.bgPage, borderRadius: RADIUS.pill, overflow: 'hidden' },
   macroBarFill: { height: '100%', borderRadius: RADIUS.pill },
@@ -649,6 +782,23 @@ const styles = StyleSheet.create({
   generateBtn: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, alignItems: 'center', ...(SHADOW.sm as any) },
   generateBtnContent: { flexDirection: 'row', alignItems: 'center' },
   generateBtnText: { color: '#fff', fontSize: 15, fontWeight: '600' },
+
+  // Create Plan Modal
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },
+  createCard: { backgroundColor: C.bgSurface, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, padding: 24, paddingBottom: 40 },
+  createTitle: { fontSize: 18, fontWeight: '700', color: C.textPrimary, fontFamily: FONT.serif, marginBottom: 20, textAlign: 'center' },
+  createLabel: { fontSize: 12, fontWeight: '700', color: C.textMuted, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 },
+  dateBtn: { backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.md, paddingHorizontal: 16, paddingVertical: 14 },
+  dateBtnText: { fontSize: 15, color: C.textPrimary, fontWeight: '500' },
+  datePicker: { marginTop: 8 },
+  createInput: { backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.md, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15, color: C.textPrimary },
+  dateStepper: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.md },
+  dateArrow: { padding: 14 },
+  dateStepperText: { flex: 1, textAlign: 'center', fontSize: 15, color: C.textPrimary, fontWeight: '500' },
+  createConfirmBtn: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, alignItems: 'center', marginTop: 24, ...(SHADOW.sm as any) },
+  createConfirmText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  createCancelBtn: { paddingVertical: 14, alignItems: 'center' },
+  createCancelText: { color: C.textMuted, fontSize: 15 },
 
   // Recipe Selector Modal
   selectorOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },

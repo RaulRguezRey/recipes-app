@@ -52,15 +52,16 @@ export type DayOfWeek =
 
 export type MealPlan = {
   id: string;
-  title: string;      // ej: "Semana del 10 de marzo"
-  weekStart: string;  // ISO date string del lunes (YYYY-MM-DD)
+  title: string;        // ej: "Del 10 al 16 de marzo"
+  startDate: string;    // ISO date (YYYY-MM-DD)
+  endDate: string;      // ISO date (YYYY-MM-DD)
   createdAt: string;
 };
 
 export type MealPlanEntry = {
   id: string;
   mealPlanId: string;
-  dayOfWeek: DayOfWeek;
+  date: string;         // ISO date (YYYY-MM-DD)
   mealType: MealType;
   recipeId: string;
   servings: number;
