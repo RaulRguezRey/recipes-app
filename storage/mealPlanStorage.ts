@@ -64,11 +64,18 @@ export async function getEntriesForPlan(planId: string): Promise<MealPlanEntry[]
   return (data ?? []).map(rowToEntry);
 }
 
+const DAY_OF_WEEK = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
+
+function isoDateToDayOfWeek(isoDate: string): string {
+  return DAY_OF_WEEK[new Date(isoDate + 'T00:00:00').getDay()];
+}
+
 export async function saveEntry(entry: MealPlanEntry): Promise<void> {
   const { error } = await supabase.from('meal_plan_entries').upsert({
     id: entry.id,
     meal_plan_id: entry.mealPlanId,
     date: entry.date,
+    day_of_week: isoDateToDayOfWeek(entry.date),
     meal_type: entry.mealType,
     recipe_id: entry.recipeId,
     servings: entry.servings,
