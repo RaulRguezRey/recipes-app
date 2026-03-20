@@ -37,7 +37,7 @@ function rowToRecipe(row: any): Recipe {
     prepTime: row.prep_time,
     cookTime: row.cook_time,
     servings: row.servings,
-    ingredients: row.ingredients ?? [],
+    ingredients: (row.ingredients ?? []).map((ri: any) => ({ ...ri, ingredientId: String(ri.ingredientId) })),
     steps: row.steps ?? [],
     caloriesPerServing: row.calories_per_serving,
     proteinG: row.protein_g,

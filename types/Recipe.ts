@@ -61,10 +61,14 @@ export type MealPlan = {
 export type MealPlanEntry = {
   id: string;
   mealPlanId: string;
-  date: string;         // ISO date (YYYY-MM-DD)
+  date: string;               // ISO date (YYYY-MM-DD)
   mealType: MealType;
-  recipeId: string;
-  servings: number;
+  recipeId?: string | null;   // set for recipe entries
+  servings?: number;          // raciones (recipe entries)
+  ingredientId?: string | null; // set for loose ingredient entries
+  quantity?: number;          // cantidad (loose ingredient entries)
+  unit?: string;              // unidad (loose ingredient entries)
+  ingredientName?: string;    // cached name for display (not stored in DB)
 };
 
 // ─── Shopping List ────────────────────────────────────────────────────────────

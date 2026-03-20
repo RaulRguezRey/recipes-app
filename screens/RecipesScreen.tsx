@@ -1,5 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
-import { Sun, Moon, Coffee, Utensils, Star, FolderOpen, X, Camera, Check, XCircle, Plus, Clock, Heart, Filter, Sparkles } from 'lucide-react-native';
+import { Sun, Moon, Coffee, Utensils, Star, FolderOpen, X, Camera, Check, XCircle, Plus, Clock, Heart, Filter, Sparkles, CalendarPlus, ChevronLeft, ChevronRight, Flame, Beef } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -20,11 +20,13 @@ import {
   View,
 } from 'react-native';
 import ActionSheet from '../components/ActionSheet';
+import RecipeDetailModal from '../components/RecipeDetailModal';
 import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 import SelectModal from '../components/SelectModal';
 import { addIngredient, addOrigin, addRecipe, deleteRecipe, getAllAccessibleRecipes, getIngredients, getOrigins, setRecipePublic, updateRecipe } from '../storage/recipeStorage';
 import { generateRecipeFromPrompt } from '../lib/groqRecipeGenerator';
-import { Difficulty, Ingredient, MealType, Recipe, RecipeIngredient } from '../types/Recipe';
+import { Difficulty, Ingredient, MealPlanEntry, MealType, Recipe, RecipeIngredient } from '../types/Recipe';
+import { getOrCreateGlobalPlan, saveEntry } from '../storage/mealPlanStorage';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -217,14 +219,16 @@ function RecipeCard({ item, onSelect, onToggleFavorite, showShareToggle, onToggl
             </>
           )}
           {item.caloriesPerServing > 0 && (
-            <Text style={[styles.cardSub, totalTime > 0 && { marginLeft: 6 }]}>
-              🔥 {item.caloriesPerServing}
-            </Text>
+            <>
+              <Flame size={11} color="#FF7043" strokeWidth={1.8} style={totalTime > 0 ? { marginLeft: 6 } : undefined} />
+              <Text style={styles.cardSub}> {item.caloriesPerServing}</Text>
+            </>
           )}
           {item.proteinG > 0 && (
-            <Text style={[styles.cardSub, { marginLeft: 6, color: C.info }]}>
-              💪 {item.proteinG}g
-            </Text>
+            <>
+              <Beef size={11} color={C.info} strokeWidth={1.8} style={{ marginLeft: 6 }} />
+              <Text style={[styles.cardSub, { color: C.info }]}> {item.proteinG}g</Text>
+            </>
           )}
         </View>
         {showShareToggle && (
@@ -925,6 +929,156 @@ const DIFFICULTY_LABEL_ES: Record<Difficulty, string> = {
   hard:   'Difícil',
 };
 
+// ─── Add-to-Plan helpers & modal ─────────────────────────────────────────────
+
+const ATP_DAY_ABBRS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const ATP_DAY_LABELS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const ATP_MONTH_NAMES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+function atpLocalISODate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function atpShiftDate(iso: string, days: number): string {
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return atpLocalISODate(d);
+}
+function atpFormatDate(iso: string): string {
+  const d = new Date(iso + 'T00:00:00');
+  return `${ATP_DAY_LABELS[d.getDay()]} ${d.getDate()} de ${ATP_MONTH_NAMES[d.getMonth()]}`;
+}
+
+const ATP_MEAL_TYPES: { key: MealType; label: string }[] = [
+  { key: 'breakfast', label: 'Desayuno' },
+  { key: 'lunch',     label: 'Almuerzo' },
+  { key: 'snack',     label: 'Merienda' },
+  { key: 'dinner',    label: 'Cena'     },
+];
+
+type AddToPlanModalProps = {
+  visible: boolean;
+  recipe: Recipe;
+  userId: string;
+  householdId?: string | null;
+  onClose: () => void;
+};
+
+function AddToPlanModal({ visible, recipe, userId, householdId, onClose }: AddToPlanModalProps) {
+  const [date, setDate] = useState(() => atpLocalISODate(new Date()));
+  const [mealType, setMealType] = useState<MealType>(recipe.mealType);
+  const [servings, setServings] = useState(recipe.servings > 0 ? recipe.servings : 1);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      setDate(atpLocalISODate(new Date()));
+      setMealType(recipe.mealType);
+      setServings(recipe.servings > 0 ? recipe.servings : 1);
+    }
+  }, [visible]);
+
+  async function handleAdd() {
+    setSaving(true);
+    try {
+      const plan = await getOrCreateGlobalPlan(userId, householdId);
+      const entry: MealPlanEntry = {
+        id: newId(),
+        mealPlanId: plan.id,
+        date,
+        mealType,
+        recipeId: recipe.id,
+        servings,
+      };
+      await saveEntry(entry);
+      onClose();
+      Alert.alert('¡Añadido!', `"${recipe.name}" añadido al planning del ${atpFormatDate(date)}`);
+    } catch (err: any) {
+      Alert.alert('Error', err?.message ?? 'No se pudo añadir al planning');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <TouchableOpacity style={atpStyles.overlay} activeOpacity={1} onPress={onClose}>
+        <TouchableOpacity style={atpStyles.card} activeOpacity={1}>
+          <Text style={atpStyles.title}>Añadir al planning</Text>
+
+          <Text style={atpStyles.label}>DÍA</Text>
+          <View style={atpStyles.stepper}>
+            <TouchableOpacity style={atpStyles.stepperArrow} onPress={() => setDate((d) => atpShiftDate(d, -1))}>
+              <ChevronLeft size={20} color={C.primary} strokeWidth={2} />
+            </TouchableOpacity>
+            <Text style={atpStyles.stepperText}>{atpFormatDate(date)}</Text>
+            <TouchableOpacity style={atpStyles.stepperArrow} onPress={() => setDate((d) => atpShiftDate(d, 1))}>
+              <ChevronRight size={20} color={C.primary} strokeWidth={2} />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={[atpStyles.label, { marginTop: 16 }]}>COMIDA</Text>
+          <View style={atpStyles.mealRow}>
+            {ATP_MEAL_TYPES.map((mt) => (
+              <TouchableOpacity
+                key={mt.key}
+                style={[atpStyles.mealPill, mealType === mt.key && atpStyles.mealPillActive]}
+                onPress={() => setMealType(mt.key)}
+              >
+                <Text style={[atpStyles.mealPillText, mealType === mt.key && atpStyles.mealPillTextActive]}>
+                  {mt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <Text style={[atpStyles.label, { marginTop: 16 }]}>RACIONES</Text>
+          <View style={atpStyles.servRow}>
+            <TouchableOpacity style={atpStyles.servBtn} onPress={() => setServings((v) => Math.max(1, v - 1))}>
+              <Text style={atpStyles.servBtnText}>−</Text>
+            </TouchableOpacity>
+            <Text style={atpStyles.servVal}>{servings}</Text>
+            <TouchableOpacity style={atpStyles.servBtn} onPress={() => setServings((v) => v + 1)}>
+              <Text style={atpStyles.servBtnText}>+</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={atpStyles.confirmBtn} onPress={handleAdd} disabled={saving}>
+            <Text style={atpStyles.confirmText}>{saving ? 'Guardando…' : 'Añadir al planning'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={atpStyles.cancelBtn} onPress={onClose}>
+            <Text style={atpStyles.cancelText}>Cancelar</Text>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
+  );
+}
+
+const atpStyles = StyleSheet.create({
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },
+  card: { backgroundColor: C.bgSurface, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, padding: 24, paddingBottom: 40 },
+  title: { fontSize: 18, fontWeight: '700', color: C.textPrimary, fontFamily: FONT.serif, textAlign: 'center', marginBottom: 20 },
+  label: { fontSize: 11, fontWeight: '700', color: C.textMuted, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 },
+  stepper: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bgInput, borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.md },
+  stepperArrow: { padding: 14 },
+  stepperText: { flex: 1, textAlign: 'center', fontSize: 15, color: C.textPrimary, fontWeight: '500' },
+  mealRow: { flexDirection: 'row', gap: 8 },
+  mealPill: { flex: 1, paddingVertical: 10, borderRadius: RADIUS.pill, backgroundColor: C.bgPage, borderWidth: 1, borderColor: C.border, alignItems: 'center' },
+  mealPillActive: { backgroundColor: C.primary, borderColor: C.primary },
+  mealPillText: { fontSize: 12, fontWeight: '600', color: C.textSecondary },
+  mealPillTextActive: { color: '#fff' },
+  servRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 20 },
+  servBtn: { width: 44, height: 44, borderRadius: RADIUS.pill, backgroundColor: C.bgPage, borderWidth: 1, borderColor: C.border, alignItems: 'center', justifyContent: 'center' },
+  servBtnText: { fontSize: 24, color: C.primary, fontWeight: '300' },
+  servVal: { fontSize: 22, fontWeight: '700', color: C.textPrimary, minWidth: 36, textAlign: 'center' },
+  confirmBtn: { backgroundColor: C.primary, borderRadius: RADIUS.pill, paddingVertical: 16, alignItems: 'center', marginTop: 24 },
+  confirmText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  cancelBtn: { paddingVertical: 14, alignItems: 'center' },
+  cancelText: { color: C.textMuted, fontSize: 15 },
+});
+
+// ─── Detail View ──────────────────────────────────────────────────────────────
+
 type DetailViewProps = {
   recipe: Recipe;
   allIngredients: Ingredient[];
@@ -932,6 +1086,9 @@ type DetailViewProps = {
 };
 
 function DetailView({ recipe, allIngredients, onClose }: DetailViewProps) {
+  const { user, household } = useAuth();
+  const [addToPlanVisible, setAddToPlanVisible] = useState(false);
+
   const ingName = (ri: RecipeIngredient) =>
     allIngredients.find((i) => i.id === ri.ingredientId)?.name ?? ri.ingredientId;
   const totalTime = (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0);
@@ -944,9 +1101,22 @@ function DetailView({ recipe, allIngredients, onClose }: DetailViewProps) {
         <TouchableOpacity onPress={onClose} style={styles.formCancel}>
           <X size={26} color={C.primary} strokeWidth={2} />
         </TouchableOpacity>
-        <Text style={styles.formTitle} numberOfLines={1}>{recipe.name}</Text>
-        <View style={{ width: 34 }} />
+        <Text style={[styles.formTitle, { flex: 1, marginHorizontal: 8 }]} numberOfLines={1}>{recipe.name}</Text>
+        <TouchableOpacity onPress={() => setAddToPlanVisible(true)} style={styles.detailAddPlanBtn}>
+          <CalendarPlus size={16} color="#fff" strokeWidth={2} />
+          <Text style={styles.detailAddPlanBtnText}>Planning</Text>
+        </TouchableOpacity>
       </View>
+
+      {user && (
+        <AddToPlanModal
+          visible={addToPlanVisible}
+          recipe={recipe}
+          userId={user.id}
+          householdId={household?.id}
+          onClose={() => setAddToPlanVisible(false)}
+        />
+      )}
 
       <ScrollView style={styles.flex} contentContainerStyle={styles.formContent}>
         {/* Photo */}
@@ -1148,16 +1318,6 @@ export default function RecipesScreen() {
     setView(isReadOnly ? 'detail' : 'form');
   }
 
-  if (view === 'detail' && editingRecipe) {
-    return (
-      <DetailView
-        recipe={editingRecipe}
-        allIngredients={allIngredients}
-        onClose={() => { setView('list'); setEditingRecipe(null); }}
-      />
-    );
-  }
-
   if (view === 'form') {
     return (
       <FormView
@@ -1191,6 +1351,12 @@ export default function RecipesScreen() {
         onImport={() => fileInputRef.current?.click()}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+      />
+      <RecipeDetailModal
+        recipe={view === 'detail' ? editingRecipe : null}
+        allIngredients={allIngredients}
+        visible={view === 'detail' && editingRecipe !== null}
+        onClose={() => { setView('list'); setEditingRecipe(null); }}
       />
     </>
   );
@@ -1246,6 +1412,8 @@ const styles = StyleSheet.create({
   formHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, backgroundColor: C.bgSurface },
   formTitle: { fontSize: 17, fontWeight: '700', fontFamily: FONT.serif, color: C.textPrimary },
   formCancel: { padding: 4 },
+  detailAddPlanBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: C.accent, borderRadius: RADIUS.pill, paddingHorizontal: 10, paddingVertical: 7 },
+  detailAddPlanBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
   formHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   aiHeaderBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, padding: 4 },
   aiHeaderBtnText: { fontSize: 13, fontWeight: '700', color: '#FF7043' },

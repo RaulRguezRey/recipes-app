@@ -234,26 +234,31 @@ export default function LoginScreen() {
               <View style={styles.dividerLine} />
             </View>
 
-            {/* Google */}
-            <Pressable
-              testID="login-googleBtn"
-              style={[styles.btn, styles.btnOAuth, loading && styles.btnDisabled]}
-              onPress={handleGoogle}
-              disabled={loading}
-            >
-              <Text style={styles.btnOAuthText}>Continuar con Google</Text>
-            </Pressable>
+            <View style={styles.oauthBox}>
+              {/* Google */}
+              <Pressable
+                testID="login-googleBtn"
+                style={[styles.btn, styles.btnOAuth, loading && styles.btnDisabled]}
+                onPress={handleGoogle}
+                disabled={loading}
+              >
+                <Text style={styles.btnOAuthText}>Continuar con Google</Text>
+              </Pressable>
 
-            {/* Apple (iOS only) */}
-            {Platform.OS === 'ios' && (
-              <AppleAuthentication.AppleAuthenticationButton
-                buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-                buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-                cornerRadius={RADIUS.sm}
-                style={styles.appleBtn}
-                onPress={handleApple}
-              />
-            )}
+              {/* Apple (iOS only) */}
+              {Platform.OS === 'ios' && (
+                <AppleAuthentication.AppleAuthenticationButton
+                  buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+                  buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                  cornerRadius={RADIUS.sm}
+                  style={styles.appleBtn}
+                  onPress={handleApple}
+                />
+              )}
+            </View>
+            <Text style={styles.oauthWip}>
+              Esto sigue en desarrollo, siempre hay que dejar margen de mejora
+            </Text>
           </>
         )}
       </ScrollView>
@@ -411,5 +416,18 @@ const styles = StyleSheet.create({
   appleBtn: {
     height: 50,
     width: '100%',
+  },
+  oauthBox: {
+    borderWidth: 2,
+    borderColor: '#F97316',
+    borderRadius: RADIUS.md,
+    padding: 12,
+  },
+  oauthWip: {
+    color: '#F97316',
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 8,
+    fontStyle: 'italic',
   },
 });

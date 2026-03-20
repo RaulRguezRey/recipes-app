@@ -55,20 +55,51 @@ export function generateShoppingList(
   const acc: Record<string, Acc> = {};
 
   for (const entry of entries) {
-    const recipe = recipeMap[entry.recipeId];
-    if (!recipe) continue;
-    const factor = entry.servings / recipe.servings;
+    // Recipe entry
+    if (entry.recipeId) {
+      const recipe = recipeMap[entry.recipeId];
+      if (!recipe) continue;
+      const factor = (entry.servings ?? 1) / recipe.servings;
 
-    for (const ri of recipe.ingredients) {
-      const ingredient = ingredientMap[ri.ingredientId];
-      const name = ingredient?.name ?? ri.ingredientId;
-      const key = `${ri.ingredientId}|${ri.unit}`;
+      for (const ri of recipe.ingredients) {
+        const ingredient = ingredientMap[ri.ingredientId];
+        const name = ingredient?.name ?? ri.ingredientId;
+        const key = `${ri.ingredientId}|${ri.unit}`;
+
+        if (!acc[key]) {
+          acc[key] = {
+            ingredientId: ri.ingredientId,
+            name,
+            unit: ri.unit,
+            quantity: 0,
+            origins: [],
+            isOnline: ingredient?.isOnline ?? false,
+            purchaseUrl: ingredient?.purchaseUrl ?? null,
+            category: ingredient?.category ?? null,
+          };
+        }
+
+        acc[key].quantity += ri.quantity * factor;
+        acc[key].origins.push({
+          recipeId: entry.recipeId,
+          recipeName: recipe.name,
+          servings: entry.servings ?? 1,
+        });
+      }
+      continue;
+    }
+
+    // Loose ingredient entry
+    if (entry.ingredientId && entry.quantity && entry.unit) {
+      const ingredient = ingredientMap[entry.ingredientId];
+      const name = ingredient?.name ?? entry.ingredientId;
+      const key = `${entry.ingredientId}|${entry.unit}`;
 
       if (!acc[key]) {
         acc[key] = {
-          ingredientId: ri.ingredientId,
+          ingredientId: entry.ingredientId,
           name,
-          unit: ri.unit,
+          unit: entry.unit,
           quantity: 0,
           origins: [],
           isOnline: ingredient?.isOnline ?? false,
@@ -77,11 +108,11 @@ export function generateShoppingList(
         };
       }
 
-      acc[key].quantity += ri.quantity * factor;
+      acc[key].quantity += entry.quantity;
       acc[key].origins.push({
-        recipeId: entry.recipeId,
-        recipeName: recipe.name,
-        servings: entry.servings,
+        recipeId: '',
+        recipeName: 'Ingrediente suelto',
+        servings: 1,
       });
     }
   }
@@ -142,6 +173,25 @@ export async function saveShoppingList(list: ShoppingList): Promise<void> {
     items: list.items,
   });
   if (error) throw error;
+}
+
+export async function addItemToShoppingList(
+  listId: string,
+  item: ShoppingListItem
+): Promise<void> {
+  const { data, error } = await supabase
+    .from('shopping_lists')
+    .select('items')
+    .eq('id', listId)
+    .single();
+  if (error || !data) return;
+
+  const items = [...(data.items as ShoppingListItem[]), item];
+  const { error: updateError } = await supabase
+    .from('shopping_lists')
+    .update({ items })
+    .eq('id', listId);
+  if (updateError) throw updateError;
 }
 
 export async function updateShoppingListItem(

@@ -1,4 +1,4 @@
-import { ShoppingCart, Check } from 'lucide-react-native';
+import { ShoppingCart, Check, Plus } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Linking,
@@ -8,16 +8,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { getAllAccessibleRecipes, getIngredients } from '../storage/recipeStorage';
-import { getEntriesForPlan } from '../storage/mealPlanStorage';
+import { addIngredient, getAllAccessibleRecipes, getIngredients } from '../storage/recipeStorage';
+import { getEntriesForDateRange, getEntriesForPlan } from '../storage/mealPlanStorage';
 import {
+  addItemToShoppingList,
   generateShoppingList,
   getShoppingListForPlan,
   saveShoppingList,
   updateShoppingListItem,
 } from '../storage/shoppingListStorage';
-import { ShoppingList, ShoppingListItem } from '../types/Recipe';
+import { Ingredient, ShoppingList, ShoppingListItem } from '../types/Recipe';
 import { C, RADIUS, SHADOW } from '../constants/theme';
+import LooseIngredientModal from '../components/LooseIngredientModal';
 
 function formatQty(qty: number, unit: string): string {
   if (Number.isInteger(qty)) return `${qty} ${unit}`;
@@ -58,27 +60,44 @@ function ItemRow({ item, onToggle, showUrl }: ItemRowProps) {
 
 type Props = {
   activePlanId: string | null;
+  startDate?: string;
+  endDate?: string;
 };
 
-export default function ShoppingListScreen({ activePlanId }: Props) {
+function newId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+export default function ShoppingListScreen({ activePlanId, startDate, endDate }: Props) {
   const [list, setList] = useState<ShoppingList | null>(null);
   const [loading, setLoading] = useState(false);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
+  const [looseIngVisible, setLooseIngVisible] = useState(false);
 
   const load = useCallback(async () => {
     if (!activePlanId) return;
-    const existing = await getShoppingListForPlan(activePlanId);
+    const [existing, ings] = await Promise.all([
+      getShoppingListForPlan(activePlanId),
+      getIngredients(),
+    ]);
     setList(existing);
+    setAllIngredients(ings);
   }, [activePlanId]);
 
   useEffect(() => { load(); }, [load]);
+
+  // Reset list when date range changes so user regenerates for the new range
+  useEffect(() => { setList(null); }, [startDate, endDate]);
 
   async function handleGenerate() {
     if (!activePlanId) return;
     setLoading(true);
     try {
       const [entries, recipes, ingredients] = await Promise.all([
-        getEntriesForPlan(activePlanId),
+        startDate && endDate
+          ? getEntriesForDateRange(activePlanId, startDate, endDate)
+          : getEntriesForPlan(activePlanId),
         getAllAccessibleRecipes(),
         getIngredients(),
       ]);
@@ -99,6 +118,40 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
     const newList = { ...list, items: newItems };
     setList(newList);
     await updateShoppingListItem(list.id, itemId, { isChecked: updated.isChecked });
+  }
+
+  async function handleAddLooseIngredient(
+    ingredientId: string | null,
+    name: string,
+    quantity: number,
+    unit: string
+  ) {
+    setLooseIngVisible(false);
+    if (!list || !activePlanId) return;
+
+    let resolvedId = ingredientId;
+    if (!resolvedId) {
+      const newIng: Ingredient = { id: newId(), name, defaultUnit: unit };
+      await addIngredient(newIng);
+      setAllIngredients((prev) => [...prev, newIng]);
+      resolvedId = newIng.id;
+    }
+
+    const ing = allIngredients.find((i) => i.id === resolvedId);
+    const newItem: ShoppingListItem = {
+      id: newId(),
+      name,
+      quantity,
+      unit,
+      category: ing?.category ?? null,
+      isOnline: ing?.isOnline ?? false,
+      purchaseUrl: ing?.purchaseUrl ?? null,
+      originRecipes: [],
+      isChecked: false,
+    };
+
+    await addItemToShoppingList(list.id, newItem);
+    setList((prev) => prev ? { ...prev, items: [...prev.items, newItem] } : prev);
   }
 
   function toggleCategory(cat: string) {
@@ -154,9 +207,15 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
       {/* Header bar */}
       <View testID="shopping-header" style={styles.header}>
         <Text style={styles.headerProgress}>{checkedCount}/{totalCount} ítems</Text>
-        <TouchableOpacity onPress={handleGenerate} disabled={loading}>
-          <Text style={styles.headerRegen}>{loading ? '…' : '↺ Regenerar'}</Text>
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity onPress={() => setLooseIngVisible(true)} style={styles.headerAddBtn}>
+            <Plus size={14} color={C.primary} strokeWidth={2} />
+            <Text style={styles.headerAddBtnText}> Ingrediente</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleGenerate} disabled={loading}>
+            <Text style={styles.headerRegen}>{loading ? '…' : '↺ Regenerar'}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView testID="shopping-scroll" contentContainerStyle={styles.scroll}>
@@ -184,6 +243,13 @@ export default function ShoppingListScreen({ activePlanId }: Props) {
           </View>
         )}
       </ScrollView>
+
+      <LooseIngredientModal
+        visible={looseIngVisible}
+        ingredients={allIngredients}
+        onConfirm={handleAddLooseIngredient}
+        onClose={() => setLooseIngVisible(false)}
+      />
     </View>
   );
 }
@@ -202,6 +268,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border,
   },
   headerProgress: { fontSize: 14, color: C.textSecondary, fontWeight: '500' },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  headerAddBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.primaryLight, borderRadius: RADIUS.pill, paddingHorizontal: 10, paddingVertical: 6 },
+  headerAddBtnText: { fontSize: 13, color: C.primary, fontWeight: '600' },
   headerRegen: { fontSize: 14, color: C.primary, fontWeight: '600' },
 
   scroll: { padding: 14, gap: 14 },

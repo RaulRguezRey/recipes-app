@@ -19,8 +19,11 @@ function rowToEntry(row: any): MealPlanEntry {
     mealPlanId: row.meal_plan_id,
     date: row.date,
     mealType: row.meal_type,
-    recipeId: row.recipe_id,
-    servings: row.servings,
+    recipeId: row.recipe_id ?? null,
+    servings: row.servings ?? null,
+    ingredientId: row.ingredient_id ?? null,
+    quantity: row.quantity ?? null,
+    unit: row.unit ?? null,
   };
 }
 
@@ -79,8 +82,11 @@ export async function saveEntry(entry: MealPlanEntry): Promise<void> {
     date: entry.date,
     day_of_week: isoDateToDayOfWeek(entry.date),
     meal_type: entry.mealType,
-    recipe_id: entry.recipeId,
-    servings: entry.servings,
+    recipe_id: entry.recipeId ?? null,
+    servings: entry.servings ?? null,
+    ingredient_id: entry.ingredientId ?? null,
+    quantity: entry.quantity ?? null,
+    unit: entry.unit ?? null,
   });
   if (error) throw error;
 }
@@ -93,28 +99,53 @@ export async function deleteEntry(id: string): Promise<void> {
 // ── History ───────────────────────────────────────────────────────────────────
 
 /**
- * Returns a map of recipeId → ISO startDate string of the last plan it was used in.
+ * Returns a map of recipeId → ISO date string of the last entry date for that recipe.
  */
 export async function getRecipeLastUsedMap(): Promise<Record<string, string>> {
-  const [plans, { data: entriesData, error }] = await Promise.all([
-    getMealPlans(),
-    supabase.from('meal_plan_entries').select('meal_plan_id, recipe_id'),
-  ]);
+  const { data: entriesData, error } = await supabase
+    .from('meal_plan_entries')
+    .select('recipe_id, date');
   if (error) throw error;
-
-  const planDateMap: Record<string, string> = {};
-  for (const p of plans) {
-    planDateMap[p.id] = p.startDate;
-  }
 
   const result: Record<string, string> = {};
   for (const entry of (entriesData ?? [])) {
-    const startDate = planDateMap[entry.meal_plan_id];
-    if (!startDate) continue;
+    if (!entry.recipe_id) continue;
     const prev = result[entry.recipe_id];
-    if (!prev || startDate > prev) {
-      result[entry.recipe_id] = startDate;
+    if (!prev || entry.date > prev) {
+      result[entry.recipe_id] = entry.date;
     }
   }
   return result;
+}
+
+/**
+ * Returns the first available plan for the user, or creates a new global plan if none exists.
+ */
+export async function getOrCreateGlobalPlan(userId: string, householdId?: string | null): Promise<MealPlan> {
+  const plans = await getMealPlans();
+  if (plans.length > 0) return plans[0];
+
+  const plan: MealPlan = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+    title: 'Mi planificación',
+    startDate: '2020-01-01',
+    endDate: '2099-12-31',
+    createdAt: new Date().toISOString(),
+  };
+  await saveMealPlan(plan, userId, householdId);
+  return plan;
+}
+
+/**
+ * Returns entries for a plan filtered by date range (inclusive).
+ */
+export async function getEntriesForDateRange(planId: string, startDate: string, endDate: string): Promise<MealPlanEntry[]> {
+  const { data, error } = await supabase
+    .from('meal_plan_entries')
+    .select('*')
+    .eq('meal_plan_id', planId)
+    .gte('date', startDate)
+    .lte('date', endDate);
+  if (error) throw error;
+  return (data ?? []).map(rowToEntry);
 }
