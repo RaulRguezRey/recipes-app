@@ -128,8 +128,35 @@ export async function updateRecipe(updated: Recipe): Promise<void> {
 }
 
 export async function deleteRecipe(id: string): Promise<void> {
-  const { error } = await supabase.from('recipes').delete().eq('id', id);
+  // Clean up orphaned ingredients (best-effort — never blocks recipe deletion)
+  try {
+    const [targetRes, othersRes] = await Promise.all([
+      supabase.from('recipes').select('ingredients').eq('id', id).single(),
+      supabase.from('recipes').select('ingredients').neq('id', id),
+    ]);
+
+    const targetIngIds: string[] = (targetRes.data?.ingredients ?? []).map(
+      (ri: any) => String(ri.ingredientId),
+    );
+
+    if (targetIngIds.length > 0) {
+      const usedElsewhere = new Set<string>(
+        (othersRes.data ?? []).flatMap((r: any) =>
+          (r.ingredients ?? []).map((ri: any) => String(ri.ingredientId)),
+        ),
+      );
+      const orphanIds = targetIngIds.filter((ingId) => !usedElsewhere.has(ingId));
+      if (orphanIds.length > 0) {
+        await supabase.from('ingredients').delete().in('id', orphanIds);
+      }
+    }
+  } catch {
+    // Ingredient cleanup is non-critical — proceed with recipe deletion regardless
+  }
+
+  const { data: deleted, error } = await supabase.from('recipes').delete().eq('id', id).select('id');
   if (error) throw error;
+  if (!deleted || deleted.length === 0) throw new Error(`No se pudo borrar la receta. Es posible que las políticas de Supabase (RLS) lo impidan.`);
 }
 
 // ── Ingredients ──────────────────────────────────────────────────────────────
@@ -140,15 +167,22 @@ export async function getIngredients(): Promise<Ingredient[]> {
   return (data ?? []).map(rowToIngredient);
 }
 
+function normalizeIngredientName(name: string): string {
+  const t = name.trim();
+  return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+}
+
 export async function addIngredient(ingredient: Ingredient): Promise<void> {
-  const { error } = await supabase.from('ingredients').insert(ingredientToRow(ingredient));
+  const normalized = { ...ingredient, name: normalizeIngredientName(ingredient.name) };
+  const { error } = await supabase.from('ingredients').insert(ingredientToRow(normalized));
   if (error) throw error;
 }
 
 export async function updateIngredient(updated: Ingredient): Promise<void> {
+  const normalized = { ...updated, name: normalizeIngredientName(updated.name) };
   const { error } = await supabase
     .from('ingredients')
-    .update(ingredientToRow(updated))
+    .update(ingredientToRow(normalized))
     .eq('id', updated.id);
   if (error) throw error;
 }

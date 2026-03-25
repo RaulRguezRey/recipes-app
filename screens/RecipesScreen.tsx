@@ -20,11 +20,13 @@ import {
   View,
 } from 'react-native';
 import ActionSheet from '../components/ActionSheet';
+import GoogleImagePickerModal from '../components/GoogleImagePickerModal';
 import RecipeDetailModal from '../components/RecipeDetailModal';
 import { C, FONT, RADIUS, SHADOW } from '../constants/theme';
 import SelectModal from '../components/SelectModal';
 import { addIngredient, addOrigin, addRecipe, deleteRecipe, getAllAccessibleRecipes, getIngredients, getOrigins, setRecipePublic, updateRecipe } from '../storage/recipeStorage';
 import { generateRecipeFromPrompt } from '../lib/groqRecipeGenerator';
+import { getFirstGoogleImage } from '../lib/googleImages';
 import { Difficulty, Ingredient, MealPlanEntry, MealType, Recipe, RecipeIngredient } from '../types/Recipe';
 import { getOrCreateGlobalPlan, saveEntry } from '../storage/mealPlanStorage';
 
@@ -390,13 +392,15 @@ function ListView({ recipes, onAdd, onSelect, onToggleFavorite, onTogglePublic, 
 type FormViewProps = {
   recipe: Recipe | null;
   allIngredients: Ingredient[];
+  userId: string | null;
   onSave: (recipe: Recipe) => void;
   onDelete: (id: string) => void;
   onCancel: () => void;
 };
 
-function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormViewProps) {
+function FormView({ recipe, allIngredients, userId, onSave, onDelete, onCancel }: FormViewProps) {
   const isEdit = recipe !== null;
+  const canDelete = isEdit;
 
   const [name, setName] = useState(recipe?.name ?? '');
   const [mealType, setMealType] = useState<MealType>(recipe?.mealType ?? 'lunch');
@@ -430,6 +434,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
 
   // Photo action sheet
   const [showPhotoSheet, setShowPhotoSheet] = useState(false);
+  const [showImageSearch, setShowImageSearch] = useState(false);
 
   // AI generation
   const [showAIModal, setShowAIModal] = useState(false);
@@ -442,14 +447,44 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
     try {
       const generated = await generateRecipeFromPrompt(aiPrompt.trim(), localIngredients);
       // Map ingredients: match existing or create new
+      const normalize = (s: string) =>
+        s.toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
+          .replace(/es$/, '').replace(/s$/, '')             // basic Spanish plural stemming
+          .trim();
+
+      const wordOverlap = (a: string, b: string): number => {
+        const wa = new Set(normalize(a).split(/\s+/).filter(w => w.length > 2));
+        const wb = new Set(normalize(b).split(/\s+/).filter(w => w.length > 2));
+        if (wa.size === 0 || wb.size === 0) return 0;
+        const common = [...wa].filter(w => wb.has(w)).length;
+        return common / Math.min(wa.size, wb.size);
+      };
+
+      const findBestMatch = (genName: string, catalogue: typeof localIngredients) => {
+        const normGen = normalize(genName);
+        let best: { item: typeof catalogue[0]; score: number } | null = null;
+        for (const item of catalogue) {
+          const normEx = normalize(item.name);
+          let score = 0;
+          if (normEx === normGen) {
+            score = 1;
+          } else if (normEx.includes(normGen) || normGen.includes(normEx)) {
+            score = 0.85;
+          } else {
+            score = wordOverlap(genName, item.name);
+          }
+          if (score > 0.5 && (!best || score > best.score)) {
+            best = { item, score };
+          }
+        }
+        return best?.item ?? null;
+      };
+
       const newIngredients: RecipeIngredient[] = [];
       const updatedLocal = [...localIngredients];
       for (const ing of generated.ingredients) {
-        const genName = ing.name.trim().toLowerCase();
-        const existing = updatedLocal.find((i) => {
-          const exName = i.name.toLowerCase();
-          return exName === genName || exName.startsWith(genName) || genName.startsWith(exName);
-        });
+        const existing = findBestMatch(ing.name.trim(), updatedLocal);
         if (existing) {
           newIngredients.push({ ingredientId: existing.id, quantity: ing.quantity, unit: existing.defaultUnit });
         } else {
@@ -462,6 +497,9 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
         }
       }
       setLocalIngredients(updatedLocal);
+      // Auto-fetch photo from Google Images
+      const autoPhoto = await getFirstGoogleImage(generated.name);
+      if (autoPhoto) setPhotoUri(autoPhoto);
       // Fill form fields
       setName(generated.name);
       setMealType(generated.mealType);
@@ -700,9 +738,16 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
           visible={showPhotoSheet}
           onClose={() => setShowPhotoSheet(false)}
           actions={[
-            { label: 'Choose from gallery', onPress: () => { setShowPhotoSheet(false); pickImage('gallery'); } },
-            { label: 'Take a photo', onPress: () => { setShowPhotoSheet(false); pickImage('camera'); } },
+            { label: 'Buscar en Google', onPress: () => { setShowPhotoSheet(false); setShowImageSearch(true); } },
+            { label: 'Elegir de la galería', onPress: () => { setShowPhotoSheet(false); pickImage('gallery'); } },
+            { label: 'Hacer una foto', onPress: () => { setShowPhotoSheet(false); pickImage('camera'); } },
           ]}
+        />
+        <GoogleImagePickerModal
+          visible={showImageSearch}
+          initialQuery={name || 'receta comida'}
+          onSelect={(url) => setPhotoUri(url)}
+          onClose={() => setShowImageSearch(false)}
         />
 
         {/* Basic info */}
@@ -902,7 +947,7 @@ function FormView({ recipe, allIngredients, onSave, onDelete, onCancel }: FormVi
           <Text style={styles.saveButtonText}>{isEdit ? 'Save changes' : 'Save recipe'}</Text>
         </TouchableOpacity>
 
-        {isEdit && (
+        {canDelete && (
           <TouchableOpacity testID="recipeForm-deleteBtn" style={styles.deleteButton} onPress={handleDelete}>
             <Text style={styles.deleteButtonText}>Delete recipe</Text>
           </TouchableOpacity>
@@ -1275,10 +1320,14 @@ export default function RecipesScreen() {
   }
 
   async function handleDelete(id: string) {
-    await deleteRecipe(id);
-    await loadData();
-    setView('list');
-    setEditingRecipe(null);
+    try {
+      await deleteRecipe(id);
+      await loadData();
+      setView('list');
+      setEditingRecipe(null);
+    } catch (err: any) {
+      Alert.alert('Error al borrar', err?.message ?? 'No se pudo borrar la receta.');
+    }
   }
 
   async function handleToggleFavorite(recipe: Recipe) {
@@ -1323,6 +1372,7 @@ export default function RecipesScreen() {
       <FormView
         recipe={editingRecipe}
         allIngredients={allIngredients}
+        userId={user?.id ?? null}
         onSave={handleSave}
         onDelete={handleDelete}
         onCancel={() => { setView('list'); setEditingRecipe(null); }}
